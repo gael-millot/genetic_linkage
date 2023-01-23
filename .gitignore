@@ -1,0 +1,7 @@
+work/
+singularity/
+results/
+.nextflow/
+.nextflow*
+old_working/
+dataset/
