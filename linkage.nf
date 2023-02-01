@@ -418,6 +418,7 @@ process custom_lod_graph {
     path full_ch // no parallelization
     path r_custom_lod_graph_gael_conf
     path r_main_functions_conf_ch
+    path human_chr_info_ch
     // variable
     val MERLIN_ANALYSE_OPTION_CONF
     val MERLIN_PARAM_CONF
@@ -439,6 +440,7 @@ process custom_lod_graph {
 "${full_ch}" \
 ${r_custom_lod_graph_gael_conf} \
 ${r_main_functions_conf_ch} \
+${human_chr_info_ch} \
 "${MERLIN_ANALYSE_OPTION_CONF}" \
 "${MERLIN_PARAM_CONF}" \
 "\${MERLIN_DISPLAY_CHROMO_CONF}" \
@@ -447,7 +449,83 @@ ${r_main_functions_conf_ch} \
     """
 }
 
+process info_files_assembly {
+    label 'bash'
+    publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{info_files_assembly_report*}", overwrite: false
+    publishDir path: "${out_path}", mode: 'copy', pattern: "complete_information*.tsv", overwrite: false
 
+    cache 'true'
+
+    input:
+    // channel
+    path info_files // no parallelization but 69 files
+    path map_files // no parallelization but 69 files
+    val nb_of_groups
+    path r_main_functions_conf_ch
+    path r_info_files_assembly_conf
+
+    output:
+    path "info_files_assembly_report*"
+    path "complete_information*.tsv", emit: full_info_ch // a single file
+
+    script:
+    """
+    #!/bin/bash -uel
+    # -l is required for the module command
+    info_files_assembly.sh \
+${r_info_files_assembly_conf} \
+${r_main_functions_conf_ch} \
+"${info_files}" \
+"${map_files}" \
+${nb_of_groups} \
+|& tee -a info_files_assembly_report.log
+    """
+}
+
+
+process custom_info_graph {
+    label 'r_ext'
+    publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{custom_info_graph_*}", overwrite: false
+    publishDir path: "${out_path}", mode: 'copy', pattern: "info*.pdf", overwrite: false
+    publishDir path: "${out_path}", mode: 'copy', pattern: "cutoff*", overwrite: false
+    cache 'true'
+
+    input:
+    // channel
+    path full_info_ch // no parallelization
+    path r_custom_info_graph_gael_conf
+    path r_main_functions_conf_ch
+    path human_chr_info_ch
+    // variable
+    val MERLIN_ANALYSE_OPTION_CONF
+    val MERLIN_PARAM_CONF
+    val MERLIN_DISPLAY_CHROMO_CONF
+    val MERLIN_LOD_CUTOFF_CONF
+
+    output:
+    path "custom_info_graph_*"
+    path "info*.pdf", optional: true
+    path "cutoff*", optional: true
+
+    script:
+    """
+    #!/bin/bash -ue
+    # -l is required for the module command
+    # WARNING : lod_files_assembly.sh reused here because no need to change anything
+    MERLIN_DISPLAY_CHROMO_CONF=\$(eval $MERLIN_DISPLAY_CHROMO_CONF)
+    MERLIN_LOD_CUTOFF_CONF=\$(eval $MERLIN_LOD_CUTOFF_CONF)
+    custom_lod_graph.sh \
+"${full_info_ch}" \
+${r_custom_info_graph_gael_conf} \
+${r_main_functions_conf_ch} \
+${human_chr_info_ch} \
+"${MERLIN_ANALYSE_OPTION_CONF}" \
+"${MERLIN_PARAM_CONF}" \
+"\${MERLIN_DISPLAY_CHROMO_CONF}" \
+"\$MERLIN_LOD_CUTOFF_CONF" \
+|& tee -a custom_info_graph_report.log
+    """
+}
 
 
 
@@ -528,6 +606,11 @@ workflow {
     }else{
         RAW_PEDIGREE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${RAW_PEDIGREE_FILE_NAME_CONF}", checkIfExists: false)
     }
+   if( ! file(RAW_INPUT_DIR_CONF+"/"+human_chr_info).exists()){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID human_chr_info PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${human_chr_info}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }else{
+        human_chr_info_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${human_chr_info}", checkIfExists: false)
+    }
     if( ! GROUP_CONF in String){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID GROUP_CONF PARAMETER IN linkage.config FILE:\n${GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
     }
@@ -563,6 +646,17 @@ workflow {
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_custom_lod_graph_gael_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_custom_lod_graph_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_custom_lod_graph_gael_conf_ch = Channel.fromPath("${r_custom_lod_graph_gael_conf}", checkIfExists: false)
+    }
+
+   if( ! file(r_info_files_assembly_conf).exists()){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_info_files_assembly_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_info_files_assembly_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }else{
+        r_info_files_assembly_conf_ch = Channel.fromPath("${r_info_files_assembly_conf}", checkIfExists: false)
+    }
+   if( ! file(r_custom_info_graph_gael_conf).exists()){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_custom_info_graph_gael_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_custom_info_graph_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }else{
+        r_custom_info_graph_gael_conf_ch = Channel.fromPath("${r_custom_info_graph_gael_conf}", checkIfExists: false)
     }
    if( ! file(alohomora_bch_conf).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID alohomora_bch_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${alohomora_bch_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
@@ -671,6 +765,26 @@ workflow {
         lod_files_assembly.out.full_ch,
         r_custom_lod_graph_gael_conf,
         r_main_functions_conf_ch,
+        human_chr_info_ch, 
+        MERLIN_ANALYSE_OPTION_CONF,
+        MERLIN_PARAM_CONF,
+        MERLIN_DISPLAY_CHROMO_CONF,
+        MERLIN_LOD_CUTOFF_CONF
+    )
+
+    info_files_assembly(
+        merlin.out.info_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
+        merlin.out.map_ch.collect(),
+        splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
+        r_main_functions_conf_ch,
+        r_info_files_assembly_conf
+    )
+
+    custom_info_graph(
+        info_files_assembly.out.full_info_ch,
+        r_custom_lod_graph_gael_conf,
+        r_main_functions_conf_ch,
+        human_chr_info_ch, 
         MERLIN_ANALYSE_OPTION_CONF,
         MERLIN_PARAM_CONF,
         MERLIN_DISPLAY_CHROMO_CONF,

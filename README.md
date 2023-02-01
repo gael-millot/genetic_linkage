@@ -3,7 +3,7 @@
 
 | usage | dependencies |
 | --- | --- |
-| [![Nextflow](https://img.shields.io/badge/code-Nextflow-blue?style=plastic)](https://www.nextflow.io/) | [![Dependencies: Nextflow Version](https://img.shields.io/badge/Nextflow-v21.04.2-blue?style=plastic)](https://github.com/nextflow-io/nextflow) |
+| [![Nextflow](https://img.shields.io/badge/code-Nextflow-blue?style=plastic)](https://www.nextflow.io/) | [![Dependencies: Nextflow Version](https://img.shields.io/badge/Nextflow-v22.10.3-blue?style=plastic)](https://github.com/nextflow-io/nextflow) |
 | [![License: GPL-3.0](https://img.shields.io/badge/licence-GPL%20(%3E%3D3)-green?style=plastic)](https://www.gnu.org/licenses) | |
 
 <br /><br />
@@ -38,24 +38,38 @@
 <br /><br />
 **dataset**: Folder containing some datasets (batch of fasta files) than can be used as examples
 <br /><br />
-**example_of_results**: Folder containing examples of result obtained with the dataset. See the OUTPUT section for the description of the folder and files.
+**bin**: Folder containing script files that are used by the linkage.nf file
 <br /><br />
+
 ## HOW TO RUN
 
 
-### If error message
+### From local using local files
 
-If an error message appears, like:
-```
-Unknown error accessing project `gmillot/linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/linkage
-```
-Purge using:
-```
-rm -rf /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot*
+1) Mount a server if required:
+
+```bash
+DRIVE="C"
+sudo mkdir /mnt/share
+sudo mount -t drvfs $DRIVE: /mnt/share
 ```
 
+Warning: if no mounting, it is possible that nextflow does nothing, or displays a message like
+```
+Launching `linkage.nf` [loving_morse] - revision: d5aabe528b
+/mnt/share/Users
+```
 
-### From local using the committed version on a public gitlab repository
+2) Run the following command from where the linkage.nf and linkage.config files are (example: \\wsl$\Ubuntu-20.04\home\gael):
+
+```bash
+nextflow run linkage.nf -c linkage.config
+```
+
+with -c to specify the name of the config file used.
+
+
+### From local using the committed version of a public gitlab repository
 
 1) run the following command:
 
@@ -72,7 +86,7 @@ WARN: Cannot read project manifest -- Cause: Remote resource not found: https://
 	In settings/General/Visibility, project features, permissions, check that every item is "on" with "Everyone With Access" and then save the changes.
 
 
-### From local using the committed version on a private gitlab repository
+### From local using the committed version of a private gitlab repository
 
 1) Create the scm file:
 
@@ -106,38 +120,11 @@ Launching `linkage.nf` [loving_morse] - revision: d5aabe528b
 ```
 
 
-3) Then run the following command from here \\wsl$\Ubuntu-20.04\home\gael:
+3) Then run the following command (example: from here \\wsl$\Ubuntu-20.04\home\gael):
 
 ```bash
 nextflow run -hub pasteur gmillot/linkage -r v1.0.0
 ```
-
-
-4) If an error message appears, like:
-```
-WARN: Cannot read project manifest -- Cause: Remote resource not found: https://gitlab.pasteur.fr/api/v4/projects/gmillot%2Flinkage
-```
-Make the distant repo public
-
-
-5) If an error message appears, like:
-
-```
-permission denied
-```
-
-Use chmod to change the user rights.
-
-
-### From local using local file
-
-Like above but then run the following command from here \\wsl$\Ubuntu-20.04\home\gael:
-
-```bash
-nextflow run linkage.nf -c linkage.config
-```
-
-with -c to specify the name of the config file used.
 
 
 ### From a cluster using a committed version on gitlab
@@ -172,7 +159,10 @@ HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES}
 HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES} linkage.nf -c linkage.config ; HOME="/pasteur/appa/homes/gmillot/" ; trap SIGINT
 ```
 
-If an error message appears, like:
+
+### Error messages
+
+1) Like:
 ```
 Unknown error accessing project `gmillot/linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/linkage
 ```
@@ -181,18 +171,51 @@ Purge using:
 rm -rf /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot*
 ```
 
+2) Like:
+```
+WARN: Cannot read project manifest -- Cause: Remote resource not found: https://gitlab.pasteur.fr/api/v4/projects/gmillot%2Flinkage
+```
+Make the distant repo public
+
+
+3) Like:
+
+```
+permission denied
+```
+
+Use chmod to change the user rights.
+
+
 <br /><br />
 ## OUTPUT
 
 
-**reports**: Folder containing the classical reports of nextflow including the *linkage.config* file used.
+**reports**: Folder containing the classical reports of nextflow including the *linkage.config* file used
 <br /><br />
-**merlin_reports**: Folder containing all the reports of the different processes.
-<br /><br />
-**.pdf**: Phylogenic tree provided by BuildTrees.py and alakazam::readIgphyml.
+**merlin_reports**: Folder containing all the reports of the different processes
 <br /><br />
 
 
+
+
+
+**pedstats.markerinfo_c\***: Marker genotype statistics (one file per chromosome)
+<br /><br />
+**pedstats_c\*.pdf**: Summary of family structure (one file per chromosome)
+<br /><br />
+**raw_snp.freq.absent.in.map.txt**: raw snp in the freq file but absent in the map file
+<br /><br />
+**raw_snp.genotype.absent.in.freq.txt**: raw snp in the genotype file but absent in the freq file
+<br /><br />
+**raw_snp.genotype.absent.in.map.txt**: raw snp in the genotype file but absent in the map file
+<br /><br />
+**raw_snp.map.absent.in.freq.txt**: raw snp in the map file but absent in the freq file
+<br /><br />
+**raw_snp.not.geno.atall.in.genotype**: raw snp not genotyped in any of the indiv in the genotype file
+<br /><br />
+**txt**: 
+<br /><br />
 
 
 <br /><br />
@@ -236,9 +259,14 @@ Gitlab developers
 ## WHAT'S NEW IN
 
 
+### v2.0
+
+Pipeline ok. The checking process output has to be debugged (a few error messages) but not critical for the analysis
+
+
 ### v1.0
 
-Pipeline ok but lack the information coputing and the checking part has to be debugged
+Pipeline ok but lack the information assembly and the checking part has to be debugged
 
 
 

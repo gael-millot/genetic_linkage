@@ -22,44 +22,32 @@
 
 ################ INITIALIZATION
 
-
-
-FULL_LOD_FILE_NAME=${1}
-r_custom_graph_lod_gael_conf=${2}
-r_main_functions_conf_ch=${3}
-MERLIN_ANALYSE_OPTION_CONF=${4}
-MERLIN_PARAM_CONF=${5}
-MERLIN_DISPLAY_CHROMO_CONF=${6}
-MERLIN_LOD_CUTOFF_CONF=${7}
-
+r_info_files_assembly_conf=${1}
+r_main_functions_conf_ch=${2}
+info_files=${3}
+map_file=${4}
+nb_of_groups=${5}
 
 
 ################ SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
 
 OUTPUT_DIR_PATH="."
-# JOB_ID="1" # probably remove all the JOB_ID in the code
-R_OPT_TXT_CONF="notxt"
 
-
-
+alias r_362_conf='module load R ; Rscript'
 
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
 
-
-
 ################ STARTING
 
-echo -e "\n----CUSTOM GRAPH PROCESS----\n"
-echo -e "FULL_LOD_FILE_NAME: ${FULL_LOD_FILE_NAME}\n"
-echo -e "r_custom_graph_lod_gael_conf: ${r_custom_graph_lod_gael_conf}\n"
+echo -e "\n----LOD FILE ASSEMBLY PROCESS----\n"
+echo -e "r_info_files_assembly_conf: ${r_info_files_assembly_conf}\n"
 echo -e "r_main_functions_conf_ch: ${r_main_functions_conf_ch}\n"
-echo -e "MERLIN_ANALYSE_OPTION_CONF: ${MERLIN_ANALYSE_OPTION_CONF}\n"
-echo -e "MERLIN_PARAM_CONF: ${MERLIN_PARAM_CONF}\n"
-echo -e "MERLIN_DISPLAY_CHROMO_CONF: ${MERLIN_DISPLAY_CHROMO_CONF}\n"
-echo -e "MERLIN_LOD_CUTOFF_CONF: ${MERLIN_LOD_CUTOFF_CONF}\n"
+echo -e "info_files: ${info_files}\n"
+echo -e "map_file: ${map_file}\n"
+echo -e "nb_of_groups: ${nb_of_groups}\n"
 echo -e "\n\n"
 
 
@@ -67,39 +55,35 @@ echo -e "\n\n"
 
 ################ MAIN CODE
 
-echo -e "\n\n################ CUSTOM GRAPH\n\n"
-
+echo -e "\n\n################ INFO FILE ASSEMBLY\n\n"
+CHROMO_NB="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23"
 
 if [[ $MERLIN_ANALYSE_OPTION_CONF == "--best" ]] ; then
     echo -e "HAPLOTYPE INFERENCE (ANALYSE IS: $MERLIN_ANALYSE_OPTION_CONF)\n"
 else
-    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--model" ]] ; then
-        MODEL_PRINT="MODEL: ${MERLIN_ANALYSE_OPTION_CONF} | $(echo $MERLIN_PARAM_CONF | sed 's/\t/ /g')"
-    elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]]; then
-        MODEL_PRINT="MODEL: ${MERLIN_ANALYSE_OPTION_CONF}"
-        echo -e "IN THE merlin.lod FILE, ALL THE TRAIT [ALL] HAVE BEEN REPLACED BY TRAIT[ALL]\n"
-    else
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl\n"
-        exit 1
-    fi
+    for i in $CHROMO_NB ; do # I left "" to set the numbers as character strings
+        for ((j=1; j<=$nb_of_groups; j++)); do
+            if [[ ! -f "$OUTPUT_DIR_PATH/info_Group${j}_c${i}.tsv" ]] ; then
+                echo -e "\n======== ERROR: THE info_Group${j}_c${i}.tsv LODSCORE FILE IS MISSING\n"
+                exit 1
+            fi
+        done
+    done
 
-    MODEL_PRINT="$MODEL_PRINT | $MERLIN_DISPLAY_CHROMO_CONF | $MERLIN_LOD_CUTOFF_CONF"
-
-    R_PROC="Rscript \
-        ${r_custom_graph_lod_gael_conf} \
-        ${r_main_functions_conf} \
-        '${FULL_LOD_FILE_NAME}' \
-        '${MERLIN_DISPLAY_CHROMO_CONF}' \
-        '${MERLIN_LOD_CUTOFF_CONF}' \
+    R_PROC="r_362_conf \
+        ${r_info_files_assembly_conf} \
+        ${r_main_functions_conf_ch} \
+        '$info_files' \
+        '$map_file' \
+        $nb_of_groups \
         '$OUTPUT_DIR_PATH' \
-        '$MODEL_PRINT' \
     "
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
     eval "$R_PROC" # remove "" to allow regex translation
 fi
 
-echo -e "\n\n################ END OF CUSTOM GRAPH\n\n"
+echo -e "\n\n################ END OF LOD FILE ASSEMBLY\n\n"
 
 ################ END MAIN CODE
 

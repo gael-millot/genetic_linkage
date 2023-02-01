@@ -27,10 +27,11 @@
 FULL_LOD_FILE_NAME=${1}
 r_custom_graph_lod_gael_conf=${2}
 r_main_functions_conf_ch=${3}
-MERLIN_ANALYSE_OPTION_CONF=${4}
-MERLIN_PARAM_CONF=${5}
-MERLIN_DISPLAY_CHROMO_CONF=${6}
-MERLIN_LOD_CUTOFF_CONF=${7}
+human_chr_info_ch=${4}
+MERLIN_ANALYSE_OPTION_CONF=${5}
+MERLIN_PARAM_CONF=${6}
+MERLIN_DISPLAY_CHROMO_CONF=${7}
+MERLIN_LOD_CUTOFF_CONF=${8}
 
 
 
@@ -56,6 +57,7 @@ echo -e "\n----CUSTOM GRAPH PROCESS----\n"
 echo -e "FULL_LOD_FILE_NAME: ${FULL_LOD_FILE_NAME}\n"
 echo -e "r_custom_graph_lod_gael_conf: ${r_custom_graph_lod_gael_conf}\n"
 echo -e "r_main_functions_conf_ch: ${r_main_functions_conf_ch}\n"
+echo -e "human_chr_info_ch: ${human_chr_info_ch}\n"
 echo -e "MERLIN_ANALYSE_OPTION_CONF: ${MERLIN_ANALYSE_OPTION_CONF}\n"
 echo -e "MERLIN_PARAM_CONF: ${MERLIN_PARAM_CONF}\n"
 echo -e "MERLIN_DISPLAY_CHROMO_CONF: ${MERLIN_DISPLAY_CHROMO_CONF}\n"
@@ -88,6 +90,7 @@ else
     R_PROC="Rscript \
         ${r_custom_graph_lod_gael_conf} \
         ${r_main_functions_conf} \
+        ${human_chr_info_ch} \
         '${FULL_LOD_FILE_NAME}' \
         '${MERLIN_DISPLAY_CHROMO_CONF}' \
         '${MERLIN_LOD_CUTOFF_CONF}' \
