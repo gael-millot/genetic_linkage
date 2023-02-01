@@ -554,6 +554,13 @@ workflow {
 
     //////// Options of nextflow run
 
+    print("\n\nINITIATION TIME: ${workflow.start}")
+
+    //////// end Options of nextflow run
+
+
+    //////// Options of nextflow run
+
     // --modules (it is just for the process workflowParam)
     params.modules = "" // if --module is used, this default value will be overridden
     // end --modules (it is just for the process workflowParam)
@@ -795,6 +802,12 @@ workflow {
         config_file, 
         log_file
     )
+
+    //////// Options of nextflow run
+
+    print("\n\nEND TIME: ${workflow.start}")
+
+    //////// end Options of nextflow run
 }
 
     //////// end Main

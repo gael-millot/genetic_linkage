@@ -43,7 +43,7 @@
 
 ## HOW TO RUN
 
-
+<br /><br />
 ### From local using local files
 
 1) Mount a server if required:
@@ -68,7 +68,7 @@ nextflow run linkage.nf -c linkage.config
 
 with -c to specify the name of the config file used.
 
-
+<br /><br />
 ### From local using the committed version of a public gitlab repository
 
 1) run the following command:
@@ -85,7 +85,7 @@ WARN: Cannot read project manifest -- Cause: Remote resource not found: https://
 	Make the distant repo public.
 	In settings/General/Visibility, project features, permissions, check that every item is "on" with "Everyone With Access" and then save the changes.
 
-
+<br /><br />
 ### From local using the committed version of a private gitlab repository
 
 1) Create the scm file:
@@ -126,7 +126,7 @@ Launching `linkage.nf` [loving_morse] - revision: d5aabe528b
 nextflow run -hub pasteur gmillot/linkage -r v1.0.0
 ```
 
-
+<br /><br />
 ### From a cluster using a committed version on gitlab
 
 Start with:
@@ -159,7 +159,7 @@ HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES}
 HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES} linkage.nf -c linkage.config ; HOME="/pasteur/appa/homes/gmillot/" ; trap SIGINT
 ```
 
-
+<br /><br />
 ### Error messages
 
 1) Like:
@@ -249,11 +249,13 @@ Not yet published
 ## ACKNOWLEDGEMENTS
 
 
+Alexandre Mathieu, GHFC team, Institut Pasteur, Paris
+
 Eric Deveaud, HPC Core Facility, Institut Pasteur, Paris
 
 The mentioned softwares and packages developers & maintainers
 
-Gitlab developers
+Gitlab developers & maintainers
 
 <br /><br />
 ## WHAT'S NEW IN
