@@ -39,8 +39,9 @@
 **dataset**: Folder containing some datasets (batch of fasta files) than can be used as examples
 <br /><br />
 **bin**: Folder containing script files that are used by the linkage.nf file
-<br /><br />
 
+
+<br /><br />
 ## HOW TO RUN
 
 <br /><br />
@@ -195,11 +196,14 @@ Use chmod to change the user rights.
 <br /><br />
 **merlin_reports**: Folder containing all the reports of the different processes
 <br /><br />
-
-
-
-
-
+**complete_lodscore.tsv**: Whole Genome Lodscore
+<br /><br />
+**cutoff\*complete_lodscore.tsv**: Lines of the complete_lodscore.tsv file above a Lodscore threshold defined in the linkage.config file
+<br /><br />
+**lodscore_whole_genome.pdf**: Plot of the Lodscore, whole genome and per chromosome
+<br /><br />
+**lodscore_settings.pdf**: Plot of the cutoff\*complete_lodscore.tsv files
+<br /><br />
 **pedstats.markerinfo_c\***: Marker genotype statistics (one file per chromosome)
 <br /><br />
 **pedstats_c\*.pdf**: Summary of family structure (one file per chromosome)

@@ -545,6 +545,7 @@ process backup {
 
     script:
     """
+    #!/bin/bash -ue
     echo -e "full .nextflow.log is in: ${launchDir}\nThe one in the result folder is not complete (miss the end)" > Log_info.txt
     """
 }
@@ -802,16 +803,16 @@ workflow {
         config_file, 
         log_file
     )
-
-    //////// Options of nextflow run
-
-    print("\n\nEND TIME: ${workflow.start}")
-
-    //////// end Options of nextflow run
 }
 
     //////// end Main
 
+    //////// completion time
 
+workflow.onComplete {
+    print("\n\nCOMPLETION TIME: ${workflow.start}")
+}
+
+    //////// end completion time
 
 //////// end Processes
