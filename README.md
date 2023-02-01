@@ -44,7 +44,7 @@
 <br /><br />
 ## HOW TO RUN
 
-<br /><br />
+
 ### From local using local files
 
 1) Mount a server if required:
@@ -163,7 +163,7 @@ HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES}
 <br /><br />
 ### Error messages
 
-1) Like:
+1)
 ```
 Unknown error accessing project `gmillot/linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/linkage
 ```
@@ -172,14 +172,14 @@ Purge using:
 rm -rf /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot*
 ```
 
-2) Like:
+2)
 ```
 WARN: Cannot read project manifest -- Cause: Remote resource not found: https://gitlab.pasteur.fr/api/v4/projects/gmillot%2Flinkage
 ```
-Make the distant repo public
+Make the distant repo public.
 
 
-3) Like:
+3)
 
 ```
 permission denied
@@ -217,9 +217,6 @@ Use chmod to change the user rights.
 **raw_snp.map.absent.in.freq.txt**: raw snp in the map file but absent in the freq file
 <br /><br />
 **raw_snp.not.geno.atall.in.genotype**: raw snp not genotyped in any of the indiv in the genotype file
-<br /><br />
-**txt**: 
-<br /><br />
 
 
 <br /><br />
