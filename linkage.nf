@@ -790,7 +790,7 @@ workflow {
 
     custom_info_graph(
         info_files_assembly.out.full_info_ch,
-        r_custom_lod_graph_gael_conf,
+        r_custom_info_graph_gael_conf,
         r_main_functions_conf_ch,
         human_chr_info_ch, 
         MERLIN_ANALYSE_OPTION_CONF,
@@ -807,12 +807,5 @@ workflow {
 
     //////// end Main
 
-    //////// completion time
-
-workflow.onComplete {
-    print("\n\nCOMPLETION TIME: ${workflow.start}")
-}
-
-    //////// end completion time
 
 //////// end Processes

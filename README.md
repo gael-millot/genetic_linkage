@@ -204,6 +204,8 @@ Use chmod to change the user rights.
 <br /><br />
 **lodscore_settings.pdf**: Plot of the cutoff\*complete_lodscore.tsv files
 <br /><br />
+**lodscore_settings.pdf**: Plot of the cutoff\*complete_lodscore.tsv files
+<br /><br />
 **pedstats.markerinfo_c\***: Marker genotype statistics (one file per chromosome)
 <br /><br />
 **pedstats_c\*.pdf**: Summary of family structure (one file per chromosome)
@@ -260,6 +262,11 @@ Gitlab developers & maintainers
 
 <br /><br />
 ## WHAT'S NEW IN
+
+
+### v2.1
+
+Small improve of linkage.nf file + README file
 
 
 ### v2.0
