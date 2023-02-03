@@ -26,6 +26,7 @@
 CHROMO_NB=${1}
 MERLIN_ANALYSE_OPTION_CONF=${2}
 MERLIN_PARAM_CONF=${3}
+bit_nb=${4}
 # MERLIN_CHROMO_CONF=${4}
 # MERLIN_LOD_CUTOFF_CONF=${5}
 
@@ -56,6 +57,7 @@ echo -e "SCRIPT LOCAL LANGUAGE USED: $LANG\n"
 echo -e "CHROMO_NB: ${CHROMO_NB}\n"
 echo -e "MERLIN_ANALYSE_OPTION_CONF: ${MERLIN_ANALYSE_OPTION_CONF}\n"
 echo -e "MERLIN_PARAM_CONF: ${MERLIN_PARAM_CONF}\n"
+echo -e "bit_nb: ${bit_nb}\n"
 echo -e "\n\n"
 
 
@@ -87,7 +89,7 @@ if [[ ${CHROMO_NB} == 23 ]] ; then
         echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl OR --best\n"
         exit 1
     fi
-    EXEC1="minx_112_conf -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:35 --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
+    EXEC1="minx_112_conf -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
     echo -e "\nBEWARE: MENDELIAN ERRORS NOT WIPED OUT IN CHROMO 23 (CHROMO X)\n"
     echo -e "\nPROCESS 1/1: $EXEC1\n"
     eval "$EXEC1"
@@ -105,7 +107,7 @@ else
         echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl OR --best\n"
         exit 1
     fi
-    EXEC1="merlin_112_conf -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.dat -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.ped -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:35 --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET # > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
+    EXEC1="merlin_112_conf -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.dat -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.ped -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET # > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
     # Merlin using clean data and pedigree to generate the lodscore
     # --pdf:
     # --markerNames:

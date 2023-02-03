@@ -75,7 +75,7 @@ with -c to specify the name of the config file used.
 1) run the following command:
 
 ```bash
-nextflow run -hub pasteur gmillot/linkage -r v1.0.0
+nextflow run -hub pasteur gmillot/genetic_linkage -r v1.0.0
 ```
 
 
@@ -124,7 +124,7 @@ Launching `linkage.nf` [loving_morse] - revision: d5aabe528b
 3) Then run the following command (example: from here \\wsl$\Ubuntu-20.04\home\gael):
 
 ```bash
-nextflow run -hub pasteur gmillot/linkage -r v1.0.0
+nextflow run -hub pasteur gmillot/genetic_linkage -r v1.0.0
 ```
 
 <br /><br />
@@ -133,12 +133,12 @@ nextflow run -hub pasteur gmillot/linkage -r v1.0.0
 Start with:
 
 ```bash
-EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/linkage" # where the bin folder of the linkage.nf script is located
+EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/genetic_linkage" # where the bin folder of the linkage.nf script is located
 export CONF_BEFORE=/opt/gensoft/exe # on maestro
 
 export JAVA_CONF=java/13.0.2
 export JAVA_CONF_AFTER=bin/java # on maestro
-export SINGU_CONF=singularity/3.8.3
+export SINGU_CONF=apptainer/1.1.5
 export SINGU_CONF_AFTER=bin/singularity # on maestro
 export GIT_CONF=git/2.25.0
 export GIT_CONF_AFTER=bin/git # on maestro
@@ -154,10 +154,10 @@ Then run:
 
 ```bash
 # distant linkage.nf file
-HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES} -hub pasteur gmillot/linkage -r v1.0 -c $HOME/linkage.config ; HOME="/pasteur/appa/homes/gmillot/"  ; trap SIGINT
+HOME="${ZEUSHOME}/genetic_linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES} -hub pasteur gmillot/genetic_linkage -r v1.0 -c $HOME/linkage.config ; HOME="/pasteur/appa/homes/gmillot/"  ; trap SIGINT
 
-# local linkage.nf file ($HOME changed to allow the creation of .nextflow into /$ZEUSHOME/linkage/. See NFX_HOME in the nextflow soft script)
-HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES} linkage.nf -c linkage.config ; HOME="/pasteur/appa/homes/gmillot/" ; trap SIGINT
+# local linkage.nf file ($HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/. See NFX_HOME in the nextflow soft script)
+HOME="${ZEUSHOME}/genetic_linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES} linkage.nf -c linkage.config ; HOME="/pasteur/appa/homes/gmillot/" ; trap SIGINT
 ```
 
 <br /><br />
@@ -165,7 +165,7 @@ HOME="${ZEUSHOME}/linkage/" ; trap '' SIGINT ; nextflow run --modules ${MODULES}
 
 1)
 ```
-Unknown error accessing project `gmillot/linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/linkage
+Unknown error accessing project `gmillot/genetic_linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/genetic_linkage
 ```
 Purge using:
 ```
@@ -225,7 +225,7 @@ Use chmod to change the user rights.
 ## VERSIONS
 
 
-The different releases are tagged [here](https://gitlab.pasteur.fr/gmillot/linkage/-/tags)
+The different releases are tagged [here](https://gitlab.pasteur.fr/gmillot/genetic_linkage/-/tags)
 
 <br /><br />
 ## LICENCE

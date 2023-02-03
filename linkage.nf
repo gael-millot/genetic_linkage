@@ -80,12 +80,6 @@ process checking {
     path BASH_FUNCTIONS_CONF_ch
     path r_main_functions_conf_ch
     path r_check_lod_gael_conf_ch
-    // variables
-    val REPLACE_SPACE_CONF
-    val GROUP_CONF
-    val IID_IN_GROUP_CONF
-    val MERLIN_ANALYSE_OPTION_CONF
-    val MERLIN_PARAM_CONF
 
     output:
     path "r_raw_checking*"
@@ -104,11 +98,6 @@ ${RAW_PEDIGREE_FILE_NAME_CONF_ch} \
 ${BASH_FUNCTIONS_CONF_ch} \
 ${r_main_functions_conf_ch} \
 ${r_check_lod_gael_conf_ch} \
-"${REPLACE_SPACE_CONF}" \
-"${GROUP_CONF}" \
-"${IID_IN_GROUP_CONF}" \
-"${MERLIN_ANALYSE_OPTION_CONF}" \
-"${MERLIN_PARAM_CONF}" \
 |& tee -a checking_report.log
     """
 }
@@ -176,7 +165,6 @@ process splitting {
     path map_ch
     path pedigree_ch
     // variables
-    val GROUP_CONF
     val IID_IN_GROUP_CONF
 
     output:
@@ -192,7 +180,6 @@ ${genotype_ch} \
 ${freq_ch} \
 ${map_ch} \
 ${pedigree_ch} \
-"${GROUP_CONF}" \
 "${IID_IN_GROUP_CONF}" \
 |& tee -a splitting_report.log
     """
@@ -259,6 +246,7 @@ process pre_merlin {
     // channel
     tuple val(group_name), path(chr_dir_ch) // 23 * 3 = 69 parallelization expected
     //path chr_dir_ch // parallelization expected
+    val bit_nb
 
     output:
     //tuple val(TEMPO), path("c*"), emit: chr_dir_ch2
@@ -285,6 +273,7 @@ process pre_merlin {
     CHR_NAME="\${CHR_NAME}b"
     pre_merlin.sh \
 "\${CHR_NAME}" \
+${bit_nb} \
 |& tee -a pre_merlin_report_${group_name}_\${TEMPO}.log
     if [[ -f ./\${CHR_NAME}/pedstats.markerinfo ]] ; then
         cp ./\${CHR_NAME}/pedstats.markerinfo "pedstats.markerinfo_\${TEMPO}"
@@ -309,6 +298,7 @@ process merlin {
     // variable
     val MERLIN_ANALYSE_OPTION_CONF
     val MERLIN_PARAM_CONF
+    val bit_nb
 
     output:
     path "Group*"
@@ -340,6 +330,7 @@ process merlin {
 "\${CHROMO_NB}" \
 "${MERLIN_ANALYSE_OPTION_CONF}" \
 "${MERLIN_PARAM_CONF}" \
+${bit_nb} \
 |& tee -a merlin_report_${group_name}_\${CHROMO_NB}.log
     mkdir ${group_name}_c\${CHROMO_NB}_merlin
     cp -r merlin* ${group_name}_c\${CHROMO_NB}_merlin/
@@ -587,9 +578,6 @@ workflow {
 
     //////// Checks
 
-    if( ! REPLACE_SPACE_CONF in String){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID REPLACE_SPACE_CONF PARAMETER IN linkage.config FILE:\n${REPLACE_SPACE_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
-    }
     if( ! file(RAW_INPUT_DIR_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_INPUT_DIR_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_INPUT_DIR_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }
@@ -618,9 +606,6 @@ workflow {
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID human_chr_info PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${human_chr_info}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         human_chr_info_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${human_chr_info}", checkIfExists: false)
-    }
-    if( ! GROUP_CONF in String){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID GROUP_CONF PARAMETER IN linkage.config FILE:\n${GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
     }
     if( ! IID_IN_GROUP_CONF in String){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID IID_IN_GROUP_CONF PARAMETER IN linkage.config FILE:\n${IID_IN_GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
@@ -708,12 +693,7 @@ workflow {
         RAW_PEDIGREE_FILE_NAME_CONF_ch, 
         BASH_FUNCTIONS_CONF_ch,
         r_main_functions_conf_ch,
-        r_check_lod_gael_conf_ch,
-        REPLACE_SPACE_CONF,
-        GROUP_CONF,
-        IID_IN_GROUP_CONF,
-        MERLIN_ANALYSE_OPTION_CONF,
-        MERLIN_PARAM_CONF
+        r_check_lod_gael_conf_ch
     )
 
     cleaning(
@@ -731,7 +711,6 @@ workflow {
         cleaning.out.freq_ch, 
         cleaning.out.map_ch, 
         cleaning.out.pedigree_ch,  
-        GROUP_CONF,
         IID_IN_GROUP_CONF
     )
 
@@ -747,7 +726,8 @@ workflow {
 //alohomora.out.chr_dir_ch.transpose().view()
 
     pre_merlin(
-        alohomora.out.chr_dir_ch.transpose() // transpose is used because chr_dir_ch is a single group_name associated with 23 path, three times (3 groups). Thus, transpose makes one group_name associated with 23 path, three times -> 69 channes
+        alohomora.out.chr_dir_ch.transpose(),
+        bit_nb // transpose is used because chr_dir_ch is a single group_name associated with 23 path, three times (3 groups). Thus, transpose makes one group_name associated with 23 path, three times -> 69 channes
     )
 
 //pre_merlin.out.chr_dir_ch2.view()
@@ -756,6 +736,7 @@ workflow {
         pre_merlin.out.chr_dir_ch2, // 
         MERLIN_ANALYSE_OPTION_CONF,
         MERLIN_PARAM_CONF,
+        bit_nb
     )
 
 //merlin.out.group_name_ch.merge(merlin.out.lod_ch).view() // merge do [Group2, /mnt/c/Users/Gael/Documents/Git_projects/linkage_analysis/work/33/001c85880ea771d44900f6f094d64b/lod_Group2_c13_merlin-parametric.tbl]

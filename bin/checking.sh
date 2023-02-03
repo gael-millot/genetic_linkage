@@ -30,13 +30,6 @@ RAW_PEDIGREE_FILE_NAME_CONF=${4} # {pedigree_ch}
 BASH_FUNCTIONS_CONF=${5} # {BASH_FUNCTIONS_CONF_ch}
 r_main_functions_conf=${6} # {r_main_functions_conf_ch}
 r_check_lod_gael_conf=${7} # {r_check_lod_gael_conf_ch}
-REPLACE_SPACE_CONF=${8}
-SPLIT_OUTPUT_GROUP_NAME_CONF=${9}
-SPLIT_IND_CONF=${10}
-MERLIN_ANALYSE_OPTION_CONF=${11}
-MERLIN_PARAM_CONF=${12}
-# MERLIN_CHROMO_CONF=${17}
-# MERLIN_LOD_CUTOFF_CONF=${18}
 
 
 ################ END INITIALIZATION
@@ -51,13 +44,6 @@ OUTPUT_DIR_PATH="."
 # JOB_ID="1" # probably remove all the JOB_ID in the code
 R_OPT_TXT_CONF="notxt"
 alias r_362_conf='module load R ; Rscript'
-
-SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF="genotyping genotyping genotyping"
-SPLIT_OUTPUT_FREQ_FILE_NAME_CONF="freq freq freq"
-SPLIT_OUTPUT_MAP_FILE_NAME_CONF="map map map"
-SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF="pedfile.pro pedfile.pro pedfile.pro"
-
-
 
 FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_NAME")
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
@@ -83,7 +69,6 @@ echo -e "PEDIGREE_FILE_NAME: ${RAW_PEDIGREE_FILE_NAME_CONF}\n"
 echo -e "BASH_FUNCTIONS_CONF: ${BASH_FUNCTIONS_CONF}\n"
 echo -e "r_main_functions_conf: ${r_main_functions_conf}\n"
 echo -e "r_check_lod_gael_conf: ${r_check_lod_gael_conf}\n"
-echo -e "REPLACE_SPACE_CONF: ${REPLACE_SPACE_CONF}\n"
 echo -e "\n\n"
 
 source "${BASH_FUNCTIONS_CONF}"
@@ -96,47 +81,6 @@ source "${BASH_FUNCTIONS_CONF}"
 
 
 
-
-if [[ $RUNNING_OP =~ splitting|postsplitting_check|alohomora|merlin ]]; then
-    SPLIT_OUTPUT_GROUP_NAME_CONF=($SPLIT_OUTPUT_GROUP_NAME_CONF)
-    SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF=($SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF)
-    SPLIT_OUTPUT_FREQ_FILE_NAME_CONF=($SPLIT_OUTPUT_FREQ_FILE_NAME_CONF)
-    SPLIT_OUTPUT_MAP_FILE_NAME_CONF=($SPLIT_OUTPUT_MAP_FILE_NAME_CONF)
-    SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF=($SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF)
-    SPLIT_IND_CONF=($SPLIT_IND_CONF)
-    conf_split_output_group_name_Num=$(( ${#SPLIT_OUTPUT_GROUP_NAME_CONF[@]} - 1 )) # total number of elements in the array
-    if [[ $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_FREQ_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_MAP_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_IND_CONF[@]} - 1 )) ]] ; then
-         echo -e "THE VARIABLES FOR SPLITTING IN THE linkage.config FILE HAVE ALL THE SAME NUMBER OF ELEMENTS: $(($conf_split_output_group_name_Num + 1))\n"
-    else
-        echo -e "\n### ERROR ###  THE VARIABLES FOR SPLITTING IN THE linkage.config FILE HAVE DIFFERENT NUMBER OF ELEMENTS:\n"
-        echo -e "SPLIT_OUTPUT_GROUP_NAME_CONF: $(( ${#SPLIT_OUTPUT_GROUP_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF: $(( ${#SPLIT_GENOTYPE_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_FREQ_FILE_NAME_CONF: $(( ${#SPLIT_FREQ_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_MAP_FILE_NAME_CONF: $(( ${#SPLIT_MAP_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF: $(( ${#SPLIT_PEDIGREE_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_IND_CONF: $(( ${#SSPLIT_IND_CONF[@]} - 1 ))\n"
-        echo -e "\n\n"
-        exit 1
-    fi
-
-# verif that MERLIN_PARAM_CONF is correctly written
-    MERLIN_PARAM_CONF_CHECK2=$(echo ${MERLIN_PARAM_CONF} | sed 's/\\t/ /g ; s/\,/ /g') # as an array
-    MERLIN_PARAM_CONF_CHECK=($MERLIN_PARAM_CONF_CHECK2)
-    conf_merlin_param_check_Num=$(( ${#MERLIN_PARAM_CONF_CHECK[@]})) # total number of elements in the array
-    if [[ $conf_merlin_param_check_Num != 6 ]] ; then
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_PARAM_CONF PARAMETER IN THE linkage.config FILE: SHOULD HAVE 6 ELEMENTS SEPARATED BY TABS AND COMMAS (AS THIS TRAIT\\t0.01\\t0.01,0.90,0.90\\tPARAM_MODEL)\nHERE THE PARAMETER IS: ${MERLIN_PARAM_CONF_CHECK[@]}\nAND THE NUMBER IS: $$conf_merlin_param_check_Num\n"
-        exit 1
-    else
-        echo -e "MERLIN_PARAM_CONF PARAMETER IN THE linkage.config FILE HAS 6 ELEMENTS SEPARATED BY TABS AND COMMAS: ${MERLIN_PARAM_CONF_CHECK[@]}"
-    fi
-# verif that MERLIN_ANALYSE_OPTION_CONF is correctly written
-    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--model" || $MERLIN_ANALYSE_OPTION_CONF == "--npl" || $MERLIN_ANALYSE_OPTION_CONF == "--best" ]] ; then
-        echo -e "MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE IS: $MERLIN_ANALYSE_OPTION_CONF"
-    else
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR -npl OR --best\n"
-        exit 1
-    fi
-fi
 
 
 
@@ -254,7 +198,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
             if [[ $KEPT_FILE == "pedfile${JOB_NB}.pro" ]] ; then
                 REPLACE_CHAR="\t"
             else
-                REPLACE_CHAR=$REPLACE_SPACE_CONF
+                REPLACE_CHAR="_._"
             fi
             
             space_replacement_in_file_fun -i $INPUT -o $OUTPUT_2 -r $REPLACE_CHAR # space replacement by _._

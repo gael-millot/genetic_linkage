@@ -24,6 +24,7 @@
 
 
 DIR_NAME=${1}
+bit_nb=${2}
 
 
 
@@ -50,6 +51,7 @@ alias pedstats_112_conf='module load pedstats/0.6.12 merlin/1.1.2 ; pedstats' # 
 echo -e "\n\n################ PRE MERLIN PROCESS\n\n"
 echo -e "SCRIPT LOCAL LANGUAGE USED: $LANG\n"
 echo -e "DIR_NAME: ${DIR_NAME}\n"
+echo -e "bit_nb: ${bit_nb}\n"
 echo -e "\n\n"
 
 
@@ -71,7 +73,7 @@ if [[ ${CHROMO_NB} == 23 ]] ; then
     eval "$EXEC1"
 else
     EXEC1="pedstats_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --pdf"
-    EXEC2="merlin_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/merlin_map.${CHROMO_NB} --error --quiet --bit:35 --minutes:3600 --smallSwap --megabytes:9999"
+    EXEC2="merlin_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/merlin_map.${CHROMO_NB} --error --quiet --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999"
     # EXEC1: Merlin preanalyse to detect errors 
     # see http://csg.sph.umich.edu/abecasis/MERLIN/reference.html fro the description of the options
     # -d: data (file present in )

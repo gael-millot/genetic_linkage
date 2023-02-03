@@ -25,8 +25,7 @@ GENOTYPE_FILE_NAME=${1} # {genotype_ch}
 FREQ_FILE_NAME=${2} # {freq_ch}
 MAP_FILE_NAME=${3} # {map_ch}
 PEDIGREE_FILE_NAME=${4} # {pedigree_ch}
-SPLIT_OUTPUT_GROUP_NAME_CONF=${5}
-SPLIT_IND_CONF=${6}
+SPLIT_IND_CONF=${5}
 
 
 
@@ -38,10 +37,11 @@ INPUT_DIR_PATH="."
 JOB_NB=1
 OUTPUT_DIR_PATH="."
 
-SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF="genotyping genotyping genotyping"
-SPLIT_OUTPUT_FREQ_FILE_NAME_CONF="freq freq freq"
-SPLIT_OUTPUT_MAP_FILE_NAME_CONF="map map map"
-SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF="pedfile.pro pedfile.pro pedfile.pro"
+SPLIT_OUTPUT_GROUP_NAME_CONF="Group_"
+SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF="genotyping"
+SPLIT_OUTPUT_FREQ_FILE_NAME_CONF="freq"
+SPLIT_OUTPUT_MAP_FILE_NAME_CONF="map"
+SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF="pedfile.pro"
 
 FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_NAME")
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
@@ -64,10 +64,6 @@ echo -e "FREQ_FILE_NAME: ${FREQ_FILE_NAME}\n"
 echo -e "MAP_FILE_NAME: ${MAP_FILE_NAME}\n"
 echo -e "PEDIGREE_FILE_NAME: ${PEDIGREE_FILE_NAME}\n"
 echo -e "SPLIT_OUTPUT_GROUP_NAME_CONF: ${SPLIT_OUTPUT_GROUP_NAME_CONF}\n"
-echo -e "SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF: ${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF}\n"
-echo -e "SPLIT_OUTPUT_FREQ_FILE_NAME_CONF: ${SPLIT_OUTPUT_FREQ_FILE_NAME_CONF}\n"
-echo -e "SPLIT_OUTPUT_MAP_FILE_NAME_CONF: ${SPLIT_OUTPUT_MAP_FILE_NAME_CONF}\n"
-echo -e "SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF: ${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF}\n"
 echo -e "SPLIT_IND_CONF: ${SPLIT_IND_CONF}\n"
 echo -e "\n\n"
 
@@ -79,31 +75,6 @@ echo -e "\n\n"
 
 
 ################ CHECK
-
-
-
-
-if [[ $RUNNING_OP =~ splitting|postsplitting_check|alohomora|merlin ]]; then
-    SPLIT_OUTPUT_GROUP_NAME_CONF=($SPLIT_OUTPUT_GROUP_NAME_CONF)
-    SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF=($SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF)
-    SPLIT_OUTPUT_FREQ_FILE_NAME_CONF=($SPLIT_OUTPUT_FREQ_FILE_NAME_CONF)
-    SPLIT_OUTPUT_MAP_FILE_NAME_CONF=($SPLIT_OUTPUT_MAP_FILE_NAME_CONF)
-    SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF=($SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF)
-    SPLIT_IND_CONF=($SPLIT_IND_CONF)
-    conf_split_output_group_name_Num=$(( ${#SPLIT_OUTPUT_GROUP_NAME_CONF[@]} - 1 )) # total number of elements in the array
-    if [[ $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_FREQ_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_MAP_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF[@]} - 1 )) && $conf_split_output_group_name_Num == $(( ${#SPLIT_IND_CONF[@]} - 1 )) ]] ; then
-         echo -e "THE VARIABLES FOR SPLITTING IN THE linkage.config FILE HAVE ALL THE SAME NUMBER OF ELEMENTS: $(($conf_split_output_group_name_Num + 1))\n"
-    else
-        echo -e "\n### ERROR ###  THE VARIABLES FOR SPLITTING IN THE linkage.config FILE HAVE DIFFERENT NUMBER OF ELEMENTS:\n"
-        echo -e "SPLIT_OUTPUT_GROUP_NAME_CONF: $(( ${#SPLIT_OUTPUT_GROUP_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF: $(( ${#SPLIT_GENOTYPE_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_FREQ_FILE_NAME_CONF: $(( ${#SPLIT_FREQ_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_MAP_FILE_NAME_CONF: $(( ${#SPLIT_MAP_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF: $(( ${#SPLIT_PEDIGREE_FILE_NAME_CONF[@]} - 1 ))"
-        echo -e "SPLIT_IND_CONF: $(( ${#SSPLIT_IND_CONF[@]} - 1 ))\n"
-        exit 1
-    fi
-fi
 
 
 
@@ -158,22 +129,23 @@ if [[ $RUNNING_OP =~ splitting ]] ; then
     echo -e "MAP_FILE_NAME: $MAP_FILE_NAME\n"
     echo -e "PEDIGREE_FILE_NAME: $PEDIGREE_FILE_NAME\n"
 
-    conf_split_output_group_name_Num=$(( ${#SPLIT_OUTPUT_GROUP_NAME_CONF[@]} - 1 )) # total number of elements in the array
+
     for ((i=0; i<=$conf_split_output_group_name_Num; i++)); do
-        mkdir $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}
+        NUMBER=$((i + 1))
+        mkdir $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}
         # recovering the patient numbers -> TEMPO_IND
         TEMPO_IND=$(echo ${SPLIT_IND_CONF[$i]} | sed 's/,/\|/g') # comma replacement by |
         # echo "$TEMPO_IND"
         # cat $TEMPO_IND > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/tempo # save the initial file
         # awk -F "\t" 'FNR==NR{a[$1] ; next} $2 in a' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/tempo $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF[$i]}# see protocol 44
         # splitting the pedigree file
-        awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="\t" ; ORS="\n"}{if ( $2 ~ "^(" var1 ")$" ) print $0 }' $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF[$i]} # see protocol 44
+        awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="\t" ; ORS="\n"}{if ( $2 ~ "^(" var1 ")$" ) print $0 }' $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF} # see protocol 44
         # splitting the genotype file
-        awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="" ; ORS=""}{if(NR==1){for (j=1; j<=NF; j++){if ($j ~ "^(" var1 ")_Call$" || $j ~ "SNP_ID") {col_nb[j] = j ; print $j"\t" }} print "\n" }} {if(NR>1){for (j=1; j<=NF; j++){if (j==col_nb[j]) {print $j"\t"}} print "\n" }}' $INPUT_DIR_PATH/$GENOTYPE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF[$i]} # see https://superuser.com/questions/929010/match-the-column-heading-and-print-the-values-of-the-column-using-awk
-        sed -i 's/\t$//g' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF[$i]} # remove the tab just before end of line
+        awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="" ; ORS=""}{if(NR==1){for (j=1; j<=NF; j++){if ($j ~ "^(" var1 ")_Call$" || $j ~ "SNP_ID") {col_nb[j] = j ; print $j"\t" }} print "\n" }} {if(NR>1){for (j=1; j<=NF; j++){if (j==col_nb[j]) {print $j"\t"}} print "\n" }}' $INPUT_DIR_PATH/$GENOTYPE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF} # see https://superuser.com/questions/929010/match-the-column-heading-and-print-the-values-of-the-column-using-awk
+        sed -i 's/\t$//g' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF} # remove the tab just before end of line
         # adding the freq and map files
-        cat $INPUT_DIR_PATH/$FREQ_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_FREQ_FILE_NAME_CONF[$i]}
-        cat $INPUT_DIR_PATH/$MAP_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_MAP_FILE_NAME_CONF[$i]}
+        cat $INPUT_DIR_PATH/$FREQ_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_FREQ_FILE_NAME_CONF}
+        cat $INPUT_DIR_PATH/$MAP_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_MAP_FILE_NAME_CONF}
     done
 else
     echo -e "NO RAW DATA SPLITTING PERFORMED\n"
