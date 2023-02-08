@@ -32,12 +32,12 @@ SPLIT_IND_CONF=${5}
 ################ SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
 
-RUNNING_OP="rawfile_check,cleaning,postcleaning_check,splitting,postsplitting_check,alohomora,merlin"
+
 INPUT_DIR_PATH="."
 JOB_NB=1
 OUTPUT_DIR_PATH="."
 
-SPLIT_OUTPUT_GROUP_NAME_CONF="Group_"
+SPLIT_OUTPUT_GROUP_NAME_CONF="Group"
 SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF="genotyping"
 SPLIT_OUTPUT_FREQ_FILE_NAME_CONF="freq"
 SPLIT_OUTPUT_MAP_FILE_NAME_CONF="map"
@@ -46,6 +46,11 @@ SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF="pedfile.pro"
 FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_NAME")
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
 file_name_Num=$(( ${#FILE_NAME[@]} - 1 )) # total number of elements in the array
+
+SPLIT_IND_CONF=($SPLIT_IND_CONF)
+conf_split_output_group_name_Num=$(( ${#SPLIT_IND_CONF[@]} - 1 )) # total number of elements in the array
+
+
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
@@ -99,57 +104,42 @@ echo -e "\n\n"
 ######## DATA SPLITTING
 
 echo -e "\n\n################ DATA SPLITTING\n\n"
-if [[ $RUNNING_OP =~ splitting ]] ; then
-    # loop to recover the files from the config file
-    if [[ ! $RUNNING_OP =~ rawfile_check|cleaning|postcleaning_check ]] ; then # if rawfile_check, then FILE_NAME IS ALREADY SET BY THE CODE ABOVE, OTHERWISE SET  FILE_NAME
-        for i in `seq 0  $file_name_Num` ; do
-            # shopt -s extglob # -s unable global extention, ie the recognition of special global pattern in path, like [[:digit:]]
-            # echo ${FILE_NAME[$i]}
-            TEMPO1=$(echo ${FILE_NAME[$i]})
-            # echo $TEMPO1
-            TEMPO2="${TEMPO1}"
-            # echo $TEMPO2
-            TEMPO3=$(echo ${!TEMPO2[ $(( $JOB_NB - 1 )) ]}) # -1 because arrays start at 0
-            # echo $TEMPO3
-            export $(echo $TEMPO1)=$TEMPO3 # -1 because arrays start at 0
-            # export $(echo FILE_NAME[$i])="$RAW_$(echo FILE_NAME[$i])_CONF[ $(( $JOB_NB - 1 )) ]" # -1 because arrays start at 0
-            # shopt -u extglob # -u disable global extention
-        done
-        # the above loop is equivalent to the 4 following lines
-        # GENOTYPE_FILE_NAME=${RAW_GENOTYPE_FILE_NAME_CONF[ $(( $JOB_NB - 1 )) ]} # -1 because arrays start at 0
-        # FREQ_FILE_NAME=${RAW_FREQ_FILE_NAME_CONF[ $(( $JOB_NB - 1 )) ]} # -1 because arrays start at 0
-        # MAP_FILE_NAME=${RAW_MAP_FILE_NAME_CONF[ $(( $JOB_NB - 1 )) ]} # -1 because arrays start at 0
-        # PEDIGREE_FILE_NAME=${RAW_PEDIGREE_FILE_NAME_CONF[ $(( $JOB_NB - 1 )) ]} # -1 because arrays start at 0
-        echo -e "\nTHE FOLLOWING VARIABLES ARE IMPORTED FROM THE linkage.config FILE:\n"
-    else
-        echo -e "\nTHE FOLLOWING VARIABLES ARE COMING FROM A PREVIOUS STEP:\n"
-    fi
-    echo -e "GENOTYPE_FILE_NAME: $GENOTYPE_FILE_NAME\n"
-    echo -e "FREQ_FILE_NAME: $FREQ_FILE_NAME\n"
-    echo -e "MAP_FILE_NAME: $MAP_FILE_NAME\n"
-    echo -e "PEDIGREE_FILE_NAME: $PEDIGREE_FILE_NAME\n"
+
+for i in `seq 0  $file_name_Num` ; do
+    # shopt -s extglob # -s unable global extention, ie the recognition of special global pattern in path, like [[:digit:]]
+    # echo ${FILE_NAME[$i]}
+    TEMPO1=$(echo ${FILE_NAME[$i]})
+    # echo $TEMPO1
+    TEMPO2="${TEMPO1}"
+    # echo $TEMPO2
+    TEMPO3=$(echo ${!TEMPO2[ $(( $JOB_NB - 1 )) ]}) # -1 because arrays start at 0
+    # echo $TEMPO3
+    export $(echo $TEMPO1)=$TEMPO3 # -1 because arrays start at 0
+    # export $(echo FILE_NAME[$i])="$RAW_$(echo FILE_NAME[$i])_CONF[ $(( $JOB_NB - 1 )) ]" # -1 because arrays start at 0
+    # shopt -u extglob # -u disable global extention
+done
 
 
-    for ((i=0; i<=$conf_split_output_group_name_Num; i++)); do
-        NUMBER=$((i + 1))
-        mkdir $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}
-        # recovering the patient numbers -> TEMPO_IND
-        TEMPO_IND=$(echo ${SPLIT_IND_CONF[$i]} | sed 's/,/\|/g') # comma replacement by |
-        # echo "$TEMPO_IND"
-        # cat $TEMPO_IND > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/tempo # save the initial file
-        # awk -F "\t" 'FNR==NR{a[$1] ; next} $2 in a' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/tempo $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF[$i]}# see protocol 44
-        # splitting the pedigree file
-        awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="\t" ; ORS="\n"}{if ( $2 ~ "^(" var1 ")$" ) print $0 }' $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF} # see protocol 44
-        # splitting the genotype file
-        awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="" ; ORS=""}{if(NR==1){for (j=1; j<=NF; j++){if ($j ~ "^(" var1 ")_Call$" || $j ~ "SNP_ID") {col_nb[j] = j ; print $j"\t" }} print "\n" }} {if(NR>1){for (j=1; j<=NF; j++){if (j==col_nb[j]) {print $j"\t"}} print "\n" }}' $INPUT_DIR_PATH/$GENOTYPE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF} # see https://superuser.com/questions/929010/match-the-column-heading-and-print-the-values-of-the-column-using-awk
-        sed -i 's/\t$//g' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF} # remove the tab just before end of line
-        # adding the freq and map files
-        cat $INPUT_DIR_PATH/$FREQ_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_FREQ_FILE_NAME_CONF}
-        cat $INPUT_DIR_PATH/$MAP_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_MAP_FILE_NAME_CONF}
-    done
-else
-    echo -e "NO RAW DATA SPLITTING PERFORMED\n"
-fi
+
+
+for ((i=0; i<=$conf_split_output_group_name_Num; i++)); do
+    NUMBER=$((i + 1))
+    mkdir $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}
+    # recovering the patient numbers -> TEMPO_IND
+    TEMPO_IND=$(echo ${SPLIT_IND_CONF[$i]} | sed 's/,/\|/g') # comma replacement by |
+    # echo "$TEMPO_IND"
+    # cat $TEMPO_IND > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/tempo # save the initial file
+    # awk -F "\t" 'FNR==NR{a[$1] ; next} $2 in a' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/tempo $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF[$i]}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF[$i]}# see protocol 44
+    # splitting the pedigree file
+    awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="\t" ; ORS="\n"}{if ( $2 ~ "^(" var1 ")$" ) print $0 }' $INPUT_DIR_PATH/$PEDIGREE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_PEDIGREE_FILE_NAME_CONF} # see protocol 44
+    # splitting the genotype file
+    awk -v var1=$TEMPO_IND 'BEGIN{FS="\t" ; OFS="" ; ORS=""}{if(NR==1){for (j=1; j<=NF; j++){if ($j ~ "^(" var1 ")_Call$" || $j ~ "SNP_ID") {col_nb[j] = j ; print $j"\t" }} print "\n" }} {if(NR>1){for (j=1; j<=NF; j++){if (j==col_nb[j]) {print $j"\t"}} print "\n" }}' $INPUT_DIR_PATH/$GENOTYPE_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF} # see https://superuser.com/questions/929010/match-the-column-heading-and-print-the-values-of-the-column-using-awk
+    sed -i 's/\t$//g' $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_GENOTYPE_FILE_NAME_CONF} # remove the tab just before end of line
+    # adding the freq and map files
+    cat $INPUT_DIR_PATH/$FREQ_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_FREQ_FILE_NAME_CONF}
+    cat $INPUT_DIR_PATH/$MAP_FILE_NAME > $OUTPUT_DIR_PATH/${SPLIT_OUTPUT_GROUP_NAME_CONF}${NUMBER}/${SPLIT_OUTPUT_MAP_FILE_NAME_CONF}
+done
+
 
 ######## END RAW DATA SPLITTING
 

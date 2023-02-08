@@ -402,6 +402,7 @@ process custom_lod_graph {
     publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{custom_lod_graph_*}", overwrite: false
     publishDir path: "${out_path}", mode: 'copy', pattern: "lodscore*.pdf", overwrite: false
     publishDir path: "${out_path}", mode: 'copy', pattern: "cutoff*", overwrite: false
+    publishDir path: "${out_path}", mode: 'copy', pattern: "*.RData", overwrite: false
     cache 'true'
 
     input:
@@ -420,6 +421,7 @@ process custom_lod_graph {
     path "custom_lod_graph_*"
     path "lodscore*.pdf", optional: true
     path "cutoff*", optional: true
+    path "*.RData", optional: true
 
     script:
     """
@@ -479,6 +481,7 @@ process custom_info_graph {
     publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{custom_info_graph_*}", overwrite: false
     publishDir path: "${out_path}", mode: 'copy', pattern: "info*.pdf", overwrite: false
     publishDir path: "${out_path}", mode: 'copy', pattern: "cutoff*", overwrite: false
+    publishDir path: "${out_path}", mode: 'copy', pattern: "*.RData", overwrite: false
     cache 'true'
 
     input:
@@ -497,6 +500,7 @@ process custom_info_graph {
     path "custom_info_graph_*"
     path "info*.pdf", optional: true
     path "cutoff*", optional: true
+    path "*.RData", optional: true
 
     script:
     """

@@ -264,6 +264,11 @@ Gitlab developers & maintainers
 ## WHAT'S NEW IN
 
 
+### v2.2
+
+pdf debugged and .Rdata returned, for making nice graphs thenafter
+
+
 ### v2.1
 
 Small improve of linkage.nf file + README file

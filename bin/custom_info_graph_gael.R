@@ -201,7 +201,7 @@ if(all(is.na(output.data$Information))){
     }
 }
 
-
+save(list = ls(), file = paste0(path.out, "/info_data.RData"))
 
 
 graphics.off()

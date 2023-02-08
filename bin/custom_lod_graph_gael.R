@@ -244,9 +244,10 @@ if(all(is.na(output.data$Lodscore))){
 
             for(loop.chromo.nb.set in 1:length(chromo.nb.set)){
                 if(any(output.data$Lodscore >= lod.cutoff[i])){
-                    if(any(get(paste0("output.data.cut", lod.cutoff[i]))$Chr == chromo.nb.set[loop.chromo.nb.set])){
+                    tempo <- get(paste0("output.data.cut", lod.cutoff[i]))
+                    if(any(tempo$Chr == chromo.nb.set[loop.chromo.nb.set])){
                         manhattan(
-                            subset(get(paste0("output.data.cut", lod.cutoff[i])), Chr == chromo.nb.set[loop.chromo.nb.set]), 
+                            subset(tempo, Chr == chromo.nb.set[loop.chromo.nb.set]), 
                             chr = "Chr", 
                             snp = "SNP", 
                             bp = "Physical.position", 
@@ -256,17 +257,18 @@ if(all(is.na(output.data$Lodscore))){
                             genomewideline = 3, 
                             suggestiveline = FALSE, 
                             main = paste0("CHROMOSOME ", chromo.nb.set[loop.chromo.nb.set] , " | LOD SCORE CUT-OFF ", lod.cutoff[i], "\n\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb.set]]), 
+                            xlim = range(c(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb.set[loop.chromo.nb.set]])),
                             ylim = c(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE)), 
                             cex = 0.6, 
                             cex.main = 0.5
                         )
-                        a <- ggplot(data = tempo.output.data, mapping = aes(x= Physical.position, y = Lodscore))
+                        a <- ggplot(data = subset(tempo, Chr == chromo.nb.set[loop.chromo.nb.set]), mapping = aes(x= Physical.position, y = Lodscore))
                         b <- geom_line(size=1)
                         # b <- geom_point(size=1)
                         d <- theme_classic(base_size = 14)
                         e <- xlab(paste0("Physical Position on chromosome ", chromo.nb.set[loop.chromo.nb.set]))
                         f <- geom_hline(yintercept = 3, color = "red", alpha = 1, size = 1)
-                        g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb.set]])
+                        g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb.set[loop.chromo.nb.set]])
                         h <- ylim(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE))
                         i <- labs(title = paste0("CHROMOSOME ", chromo.nb.set[loop.chromo.nb.set]))
                         print(a + b + d + e + f + g + h + i)
@@ -282,7 +284,7 @@ if(all(is.na(output.data$Lodscore))){
 
 }
 
-
+save(list = ls(), file = paste0(path.out, "/lod_data.RData"))
 
 
 graphics.off()
