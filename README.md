@@ -37,8 +37,6 @@
 <br /><br />
 **linkage.config**: Parameter settings for the linkage.nf file. Users have to open this file, set the desired settings and save these modifications before execution.
 <br /><br />
-**dataset**: Folder containing some datasets (batch of fasta files) than can be used as examples.
-<br /><br />
 **bin**: Folder containing script files that are used by the linkage.nf file.
 
 
