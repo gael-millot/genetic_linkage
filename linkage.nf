@@ -746,6 +746,9 @@ workflow {
 //merlin.out.group_name_ch.merge(merlin.out.lod_ch).view() // merge do [Group2, /mnt/c/Users/Gael/Documents/Git_projects/linkage_analysis/work/33/001c85880ea771d44900f6f094d64b/lod_Group2_c13_merlin-parametric.tbl]
 //merlin.out.lod_ch.collect().view() //
 
+    merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 LODSCORE FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+    merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 MAP FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+
     lod_files_assembly(
         merlin.out.lod_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
         merlin.out.map_ch.collect(),
@@ -764,6 +767,8 @@ workflow {
         MERLIN_DISPLAY_CHROMO_CONF,
         MERLIN_LOD_CUTOFF_CONF
     )
+
+    merlin.out.info_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 INFO FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
 
     info_files_assembly(
         merlin.out.info_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
