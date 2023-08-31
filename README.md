@@ -61,7 +61,7 @@ Installation of:<br />
 [Graphviz](https://www.graphviz.org/download/), `sudo apt install graphviz` for Linux ubuntu<br />
 [Singularity/apptainer](https://github.com/apptainer/apptainer)<br />
 
-
+<br /><br />
 ### 2. Local running (personal computer)
 
 
@@ -69,44 +69,44 @@ Installation of:<br />
 
 - Mount a server if required:
 
-```bash
-DRIVE="C"
-sudo mkdir /mnt/share
-sudo mount -t drvfs $DRIVE: /mnt/share
-```
+<pre>
+DRIVE="Z"
+sudo mkdir /mnt/z
+sudo mount -t drvfs $DRIVE: /mnt/z
+</pre>
 
-Warning: if no mounting, it is possible that nextflow does nothing, or displays a message like
-```bash
+Warning: if no mounting, it is possible that nextflow does nothing, or displays a message like:
+<pre>
 Launching `linkage.nf` [loving_morse] - revision: d5aabe528b
 /mnt/share/Users
-```
+</pre>
 
 - Run the following command from where the linkage.nf and linkage.config files are (example: \\wsl$\Ubuntu-20.04\home\gael):
 
-```bash
+<pre>
 nextflow run linkage.nf -c linkage.config
-```
+</pre>
 
 with -c to specify the name of the config file used.
 
-
+<br /><br />
 #### 2.3. linkage.nf file in the public gitlab repository
 
 Run the following command from where you want the results:
 
-```bash
+<pre>
 nextflow run -hub pasteur gmillot/genetic_linkage -r v1.0.0
-```
+</pre>
 
-
+<br /><br />
 ### 3. Distant running (example with the Pasteur cluster)
 
 #### 3.1. Pre-execution
 
 Copy-paste this after having modified the EXEC_PATH variable:
 
-```bash
-EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/linkage" # where the bin folder of the linkage.nf script is located
+<pre>
+EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/genetic_linkage" # where the bin folder of the linkage.nf script is located
 export CONF_BEFORE=/opt/gensoft/exe # on maestro
 
 export JAVA_CONF=java/13.0.2
@@ -115,33 +115,35 @@ export SINGU_CONF=apptainer/1.1.5
 export SINGU_CONF_AFTER=bin/singularity # on maestro
 export GIT_CONF=git/2.39.1
 export GIT_CONF_AFTER=bin/git # on maestro
+export GRAPHVIZ_CONF=graphviz/2.42.3
+export GRAPHVIZ_CONF_AFTER=bin/graphviz # on maestro
 
-MODULES="${CONF_BEFORE}/${JAVA_CONF}/${JAVA_CONF_AFTER},${CONF_BEFORE}/${SINGU_CONF}/${SINGU_CONF_AFTER},${CONF_BEFORE}/${GIT_CONF}/${GIT_CONF_AFTER}"
+MODULES="${CONF_BEFORE}/${JAVA_CONF}/${JAVA_CONF_AFTER},${CONF_BEFORE}/${SINGU_CONF}/${SINGU_CONF_AFTER},${CONF_BEFORE}/${GIT_CONF}/${GIT_CONF_AFTER}/${GRAPHVIZ_CONF}/${GRAPHVIZ_CONF_AFTER}"
 cd ${EXEC_PATH}
-chmod 755 ${EXEC_PATH}/bin/*.* # not required if no bin folder
-module load ${JAVA_CONF} ${SINGU_CONF} ${GIT_CONF}
-```
+chmod 755 ${EXEC_PATH}/bin/*.*
+module load ${JAVA_CONF} ${SINGU_CONF} ${GIT_CONF} ${GRAPHVIZ_CONF}
+</pre>
 
-
+<br /><br />
 #### 3.2. linkage.nf file in a cluster folder
 
 Modify the second line of the code below, and run from where the linkage.nf and linkage.config files are (which has been set thanks to the EXEC_PATH variable above):
 
-```bash
+<pre>
 HOME_INI=$HOME
 HOME="${ZEUSHOME}/genetic_linkage/" # $HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/, for instance. See NFX_HOME in the nextflow software script
 trap '' SIGINT
 nextflow run --modules ${MODULES} linkage.nf -c linkage.config
 HOME=$HOME_INI
 trap SIGINT
-```
+</pre>
 
-
+<br /><br />
 #### 3.3. linkage.nf file in the public gitlab repository
 
 Modify the first and third lines of the code below, and run (results will be where the EXEC_PATH variable has been set above):
 
-```bash
+<pre>
 VERSION="v1.0"
 HOME_INI=$HOME
 HOME="${ZEUSHOME}/genetic_linkage/" # $HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/, for instance. See NFX_HOME in the nextflow software script
@@ -149,31 +151,31 @@ trap '' SIGINT
 nextflow run --modules ${MODULES} -hub pasteur gmillot/genetic_linkage -r $VERSION -c $HOME/linkage.config
 HOME=$HOME_INI
 trap SIGINT
-```
+</pre>
 
-
-
+<br /><br />
 ### 4. Error messages and solutions
 
-1)
-```bash
+#### Message 1
+```
 Unknown error accessing project `gmillot/genetic_linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/genetic_linkage
 ```
 
 Purge using:
-```bash
+<pre>
 rm -rf /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot*
-```
+</pre>
 
-2)
-```bash
+#### Message 2
+```
 WARN: Cannot read project manifest -- Cause: Remote resource not found: https://gitlab.pasteur.fr/api/v4/projects/gmillot%2Fgenetic_linkage
 ```
+
 Contact Gael Millot (distant repository is not public).
 
-3)
+#### Message 3
 
-```bash
+```
 permission denied
 ```
 
@@ -262,6 +264,11 @@ The developers & maintainers of the mentioned softwares and packages, including:
 
 <br /><br />
 ## WHAT'S NEW IN
+
+#### v2.4
+
+Bug solved in the R_main_functions_gael_20180123.R file
+
 
 #### v2.3
 
