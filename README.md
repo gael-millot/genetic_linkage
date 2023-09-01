@@ -265,6 +265,11 @@ The developers & maintainers of the mentioned softwares and packages, including:
 <br /><br />
 ## WHAT'S NEW IN
 
+#### v2.5
+
+code improved and debugged (error not anymore piped into tee notably)
+
+
 #### v2.4
 
 Bug solved in the R_main_functions_gael_20180123.R file

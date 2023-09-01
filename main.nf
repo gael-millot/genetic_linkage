@@ -84,7 +84,7 @@ process checking {
     output:
     path "r_raw_checking*"
     path "raw_snp*"
-    path "checking_report.log"
+    path "checking_report.log", emit: wait_ch
 
     script:
     """
@@ -98,7 +98,7 @@ ${RAW_PEDIGREE_FILE_NAME_CONF_ch} \
 ${BASH_FUNCTIONS_CONF_ch} \
 ${r_main_functions_conf_ch} \
 ${r_check_lod_gael_conf_ch} \
-|& tee -a checking_report.log
+ &> >(tee -a checking_report.log) &
     """
 }
 
@@ -118,6 +118,7 @@ process cleaning {
     path r_main_functions_conf_ch
     path r_check_lod_gael_conf_ch
     path r_clean_lod_gael_conf_ch
+    path wait_ch
 
     output:
     path "genotype.txt", emit: genotype_ch
@@ -148,7 +149,7 @@ process cleaning {
 "${r_main_functions_conf_ch}" \
 "${r_check_lod_gael_conf_ch}" \
 "${r_clean_lod_gael_conf_ch}" \
-|& tee -a cleaning_report.log
+| tee -a cleaning_report.log
     """
 }
 
@@ -181,7 +182,7 @@ ${freq_ch} \
 ${map_ch} \
 ${pedigree_ch} \
 "${IID_IN_GROUP_CONF}" \
-|& tee -a splitting_report.log
+| tee -a splitting_report.log
     """
 }
 
@@ -231,7 +232,7 @@ process alohomora {
 ${r_main_functions_conf} \
 ${r_check_lod_gael_conf} \
 ${alohomora_bch_conf} \
-|& tee -a alohomora_report_\${GROUP_NAME}.log
+| tee -a alohomora_report_\${GROUP_NAME}.log
     """
 }
 
@@ -274,7 +275,7 @@ process pre_merlin {
     pre_merlin.sh \
 "\${CHR_NAME}" \
 ${bit_nb} \
-|& tee -a pre_merlin_report_${group_name}_\${TEMPO}.log
+| tee -a pre_merlin_report_${group_name}_\${TEMPO}.log
     if [[ -f ./\${CHR_NAME}/pedstats.markerinfo ]] ; then
         cp ./\${CHR_NAME}/pedstats.markerinfo "pedstats.markerinfo_\${TEMPO}"
         cp ./\${CHR_NAME}/pedstats.pdf "pedstats_\${TEMPO}.pdf"
@@ -331,7 +332,7 @@ process merlin {
 "${MERLIN_ANALYSE_OPTION_CONF}" \
 "${MERLIN_PARAM_CONF}" \
 ${bit_nb} \
-|& tee -a merlin_report_${group_name}_\${CHROMO_NB}.log
+| tee -a merlin_report_${group_name}_\${CHROMO_NB}.log
     mkdir ${group_name}_c\${CHROMO_NB}_merlin
     cp -r merlin* ${group_name}_c\${CHROMO_NB}_merlin/
     cp -r \${TEMPO}/map* ${group_name}_c\${CHROMO_NB}_merlin/map_${group_name}_c\${CHROMO_NB}.txt # required for plotting
@@ -392,7 +393,7 @@ ${r_main_functions_conf_ch} \
 "${lod_files}" \
 "${map_files}" \
 ${nb_of_groups} \
-|& tee -a lod_files_assembly_report.log
+| tee -a lod_files_assembly_report.log
     """
 }
 
@@ -438,7 +439,7 @@ ${human_chr_info_ch} \
 "${MERLIN_PARAM_CONF}" \
 "\${MERLIN_DISPLAY_CHROMO_CONF}" \
 "\$MERLIN_LOD_CUTOFF_CONF" \
-|& tee -a custom_lod_graph_report.log
+| tee -a custom_lod_graph_report.log
     """
 }
 
@@ -471,7 +472,7 @@ ${r_main_functions_conf_ch} \
 "${info_files}" \
 "${map_files}" \
 ${nb_of_groups} \
-|& tee -a info_files_assembly_report.log
+| tee -a info_files_assembly_report.log
     """
 }
 
@@ -518,7 +519,7 @@ ${human_chr_info_ch} \
 "${MERLIN_PARAM_CONF}" \
 "\${MERLIN_DISPLAY_CHROMO_CONF}" \
 "\$MERLIN_LOD_CUTOFF_CONF" \
-|& tee -a custom_info_graph_report.log
+| tee -a custom_info_graph_report.log
     """
 }
 
@@ -707,7 +708,8 @@ workflow {
         RAW_PEDIGREE_FILE_NAME_CONF_ch, 
         r_main_functions_conf_ch,
         r_check_lod_gael_conf_ch,
-        r_clean_lod_gael_conf_ch
+        r_clean_lod_gael_conf_ch,
+        checking.out.wait_ch
     )
 
     splitting(

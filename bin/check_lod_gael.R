@@ -52,7 +52,7 @@ erase.graphs = TRUE # write TRUE to erase all the graphic windows in R before st
 args <- commandArgs(trailingOnly = TRUE)  # recover arguments written after the call of the Rscript, ie after r_341_conf $check_lod_gael_conf 
 tempo.arg.names <- c("path.out", "output_file_name", "output_error_file_name", "genotype", "freq", "map", "pedfile", "r_main_functions", "kind", "optional.text") # objects names exactly in the same order as in the bash code and recovered in args
 if(length(args) != length(tempo.arg.names)){
-  tempo.cat <- paste0("======== ERROR: THE NUMBER OF ELEMENTS IN args (", length(args),") IS DIFFERENT FROM THE NUMBER OF ELEMENTS IN tempo.arg.names (", length(tempo.arg.names),")\nargs:", paste0(args, collapse = ","), "\ntempo.arg.names:", paste0(tempo.arg.names, collapse = ","))
+  tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: THE NUMBER OF ELEMENTS IN args (", length(args),") IS DIFFERENT FROM THE NUMBER OF ELEMENTS IN tempo.arg.names (", length(tempo.arg.names),")\nargs:", paste0(args, collapse = ","), "\ntempo.arg.names:", paste0(tempo.arg.names, collapse = ","))
   stop(tempo.cat)
 }
 for(i in 1:length(tempo.arg.names)){
@@ -65,7 +65,7 @@ if(optional.text == "notxt"){
   optional.text <- ""
 }
 if( ! (kind %in% c("raw", "postclean", "postsplit") & length(kind) == 1) ){
-    tempo.cat <- paste0("======== ERROR: THE kind ARGUMENT IN args (", kind,") MUST BE A SINGLE CHARACTER VALUE, EITHER raw, postclean OR postsplit")
+    tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: THE kind ARGUMENT IN args (", kind,") MUST BE A SINGLE CHARACTER VALUE, EITHER raw, postclean OR postsplit\n\n================\n\n")
     stop(tempo.cat)
 }
 
@@ -171,7 +171,7 @@ fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = outpu
 fun.export.data(path = path.out, data = paste0("INITIAL COLUMN NAMES:"), output = output_file_name, sep = 1)
 fun.export.data(path = path.out, data = names(freq), output = output_file_name, sep=1)
 if(is.null(names(freq)) | identical(names(freq), paste0("X", 1:ncol(freq))) | identical(names(freq), paste0("V", 1:ncol(freq)))){
-    tempo <- paste0("### raw_check_lod_gael ERROR ### MANDATORY COLUMN NAMES NOT DETECTED IN FREQ FILE")
+    tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: MANDATORY COLUMN NAMES NOT DETECTED IN FREQ FILE\n\n================\n\n")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
     stop(tempo)
@@ -237,7 +237,7 @@ fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = outpu
 fun.export.data(path = path.out, data = paste0("INITIAL COLUMN NAMES:"), output = output_file_name, sep = 1)
 fun.export.data(path = path.out, data = names(map), output = output_file_name, sep=1)
 if(is.null(names(map)) | identical(names(map), paste0("X", 1:ncol(map))) | identical(names(map), paste0("V", 1:ncol(map)))){
-    tempo <- paste0("### raw_check_lod_gael ERROR ### MANDATORY COLUMN NAMES NOT DETECTED IN MAP FILE")
+    tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: MANDATORY COLUMN NAMES NOT DETECTED IN MAP FILE\n\n================\n\n")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
     stop(tempo)
@@ -285,7 +285,7 @@ for (i in 1:length(map)){
             fun.export.data(path = path.out, data = paste0(tempo$text, "\nCOLUMN ", i, " MADE OF DECIMAL NUMBERS"), output = output_file_name, sep = 2)
         }
     } else{
-        tempo <- paste0("### raw_check_lod_gael ERROR ### IMPROPER COLUMN NAME IN MAP FILE: ", paste(names(map), collapse = " "))
+        tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: IMPROPER COLUMN NAME IN MAP FILE: ", paste(names(map), collapse = " "), "\n\n================\n\n")
         fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
         fun.export.data(path = path.out, data = tempo$text, output = output_error_file_name, sep = 2)
         stop(tempo)
@@ -323,9 +323,9 @@ freq.snp.coord <- freq$Pos[freq[, "Name"] %in% map[, "Name"]]
 if(identical(sort(map.snp), sort(freq.snp))){
  	if( ! all(map.snp.coord[order(map.snp)] == freq.snp.coord[order(freq.snp)])){
  		snp.name.problem <- sort(map.snp)[which( ! map.snp.coord[order(map.snp)] == freq.snp.coord[order(freq.snp)])] # this should give the  same sort(freq.snp)[which( ! map.snp.coord[order(map.snp)] == freq.snp.coord[order(freq.snp)])]
- 		tempo <- "PROBLEM: SOME OF THE freq AND map COMMON SNP DO NOT HAVE THE SAME COORDINATES"
- 		fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
-		fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
+ 		tempo1 <- "PROBLEM: SOME OF THE freq AND map COMMON SNP DO NOT HAVE THE SAME COORDINATES"
+ 		fun.export.data(path = path.out, data = tempo1, output = output_file_name, sep = 1)
+		fun.export.data(path = path.out, data = tempo1, output = output_error_file_name, sep = 1)
 		tempo <- "THE PROBLEMATIC SNP IN freq ARE:"
  		fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
 		fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
@@ -336,14 +336,16 @@ if(identical(sort(map.snp), sort(freq.snp))){
 		fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
 		fun.export.data(path = path.out, data = map[map$Name %in% snp.name.problem, ], output = output_file_name, sep = 2)
 		fun.export.data(path = path.out, data = map[map$Name %in% snp.name.problem, ], output = output_error_file_name, sep = 2)
+        stop(tempo1)
  	}else{
 		tempo <- "ALL THE SNP FROM freq AND map HAVE THE SAME CHROMO COORDINATES"
  		fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
  	}
  }else{
- 	tempo <- "### raw_check_lod_gael ERROR ### map.snp AND freq.snp SHOULD HAVE IDENTICAL SNP NAMES"
+ 	tempo <- "\n\n================\n\nERROR IN check_lod_gael: map.snp AND freq.snp SHOULD HAVE IDENTICAL SNP NAMES\n\n================\n\n"
  	fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
 	fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 2)
+    stop(tempo)
  }
 
 
@@ -357,7 +359,7 @@ fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = outpu
 fun.export.data(path = path.out, data = paste0("INITIAL COLUMN NAMES:"), output = output_file_name, sep = 1)
 fun.export.data(path = path.out, data = names(genotype), output = output_file_name, sep=1)
 if(is.null(names(genotype)) | identical(names(genotype), paste0("X", 1:ncol(genotype))) | identical(names(genotype), paste0("V", 1:ncol(genotype)))){
-    tempo <- paste0("### raw_check_lod_gael ERROR ### MANDATORY COLUMN NAMES NOT DETECTED IN GENOTYPE FILE")
+    tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: MANDATORY COLUMN NAMES NOT DETECTED IN GENOTYPE FILE\n\n================\n\n")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
     stop(tempo)
@@ -421,10 +423,11 @@ snp_name_in_two_files_fun(snp_data = tempo2, data1 = data1, file_name1 = tempo.n
 
 tempo.common.snp <- Reduce(intersect, list(genotype$SNP_ID, freq$Name, map$Name))
 if(length(tempo.common.snp) != length(unique(tempo.common.snp))){
-    tempo <- "### raw_check_lod_gael ERROR ### DUPLICATED SNP NAMES AMONG THE genotype, freq, map COMMON SNP"
+    tempo <- "\n\n================\n\nERROR IN check_lod_gael: DUPLICATED SNP NAMES AMONG THE genotype, freq, map COMMON SNP\n\n================\n\n"
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo.common.snp[duplicated(tempo.common.snp)], output = output_error_file_name, sep = 2)
+    stop(tempo)
 }
 
 fun.export.data(path = path.out, data = paste0("NUMBER OF SNP THAT ARE COMMON AMONG THE genotype, freq AND map FILES:", length(tempo.common.snp)), output = output_file_name, sep = 1)
@@ -440,6 +443,7 @@ if( ! all(genotype[, -1] == "AA" | genotype[, -1] == "AB" | genotype[, -1] == "B
   fun.export.data(path = path.out, data = genotype[which( ! (genotype[, -1] == "AA" | genotype[, -1] == "AB" | genotype[, -1] == "BB" | genotype[, -1] == empty.geno), arr.ind = TRUE)[, 1],], output = output_file_name, sep = 2) # 
   fun.export.data(path = path.out, data = paste0("PROBLEM: GENOTYPE DIFFERENT FROM AA, AB, BB OR -- IN LINES:"), output = output_error_file_name, sep = 1)
   fun.export.data(path = path.out, data = genotype[which( ! (genotype[, -1] == "AA" | genotype[, -1] == "AB" | genotype[, -1] == "BB" | genotype[, -1] == empty.geno), arr.ind = TRUE)[, 1],], output = output_error_file_name, sep = 2) # 
+  stop("PROBLEM: GENOTYPE DIFFERENT FROM AA, AB, BB OR --")
 }else{
   fun.export.data(path = path.out, data = paste0("GENOTYPES AA, AB, BB OR -- IN ALL LINES"), output = output_file_name, sep = 2)
 }
@@ -558,6 +562,7 @@ for(i in 3:4){
   if( ! all(tempo)){
     fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, 3], collapse = " "), "IN COLUMN ", i, ") NOT IN COLUM 2"), output = output_file_name, sep = 2)
     fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, 3], collapse = " "), "IN COLUMN ", i, ") NOT IN COLUM 2"), output = output_error_file_name, sep = 2)
+    stop("FATHER OR MOTHER NOT PRESENT AS INDIV IN PEDFILE")
   }else{
     fun.export.data(path = path.out, data = paste0("ALL ", tempo.name," ID (COLUMN ", i, ") PRESENT IN COLUM 2"), output = output_file_name, sep = 2)
   }
@@ -566,6 +571,7 @@ if(nrow(pedfile) != (ncol(genotype) - 1)){
     tempo <- paste0("BEWARE: THE NUMBER OF INDIVIDUALS IS NOT THE SAME IN THE GENOTYPE (", (ncol(genotype) - 1), ") AND PEDIGREE (", nrow(pedfile), ") FILES")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
+    stop(tempo)
 }else{
     fun.export.data(path = path.out, data = paste0("THE NUMBER OF INDIVIDUALS IS THE SAME IN THE GENOTYPE AND PEDIGREE FILES: ", nrow(pedfile)), output = output_file_name, sep = 1)
 }
@@ -576,7 +582,7 @@ if(kind == "postclean" | kind == "postsplit"){
 }else {
     # geno.file.nb <- substr(geno.names, nchar(geno.names) - 2, nchar(geno.names))
     geno.file.nb <- geno.names
-    tempo <- paste0("BEWARE: THE CODE CANNOT WORK IF THE COLUMN NAME OF THE GENOTYPE FILE ARE NOT: \"3 LAST CHARACTERS CORRESPONDING TO THE ID INDIVIDUAL NUMBER IN THE pedfile.pro FILE (WITH LEADING ZERO, LIKE FINISHING BY 001 FOR INDIVIDUAL 1, etc.)\"")
+    tempo <- paste0("REMINDER: THE CODE CANNOT WORK IF THE COLUMN NAME OF THE GENOTYPE FILE ARE NOT: \"3 LAST CHARACTERS CORRESPONDING TO THE ID INDIVIDUAL NUMBER IN THE pedfile.pro FILE (WITH LEADING ZERO, LIKE FINISHING BY 001 FOR INDIVIDUAL 1, etc.)\"")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
     geno.file.nb <- sub(x = geno.file.nb, pattern = "^0+", replacement = "") # remove the leading zeros
@@ -592,10 +598,11 @@ if( ! (all(geno.file.nb %in% pedfile$ind_ID) & all(pedfile$ind_ID %in% geno.file
         fun.export.data(path = path.out, data = tempo2, output = output_error_file_name, sep = 1)
     }
     if( ! all(pedfile$ind_ID %in% geno.file.nb)){
-        tempo2 <- paste0("ID OF PEDIGREE FILE NOT PRESENT IN GENOTYPE ", paste0(pedfile[ ! pedfile$ind_ID %in% geno.file.nb], collapse = " "))
-        fun.export.data(path = path.out, data = tempo2, output = output_file_name, sep = 1)
-        fun.export.data(path = path.out, data = tempo2, output = output_error_file_name, sep = 1)
+        tempo3 <- paste0("ID OF PEDIGREE FILE NOT PRESENT IN GENOTYPE ", paste0(pedfile[ ! pedfile$ind_ID %in% geno.file.nb], collapse = " "))
+        fun.export.data(path = path.out, data = tempo3, output = output_file_name, sep = 1)
+        fun.export.data(path = path.out, data = tempo3, output = output_error_file_name, sep = 1)
     }
+    stop(paste0(tempo, "\n", tempo2, "\n", tempo3, "\n"))
 }else{
     tempo <- paste0("THE INDIVIDUALS ID ARE THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
