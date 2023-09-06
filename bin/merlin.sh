@@ -36,8 +36,9 @@ bit_nb=${4}
 
 
 OUTPUT_DIR_PATH="."
-alias merlin_112_conf='module load pedstats/0.6.12 merlin/1.1.2 ; merlin' # import also minx and pedwipe. This does not work MERLIN_112_CONF=$(module purge && module load Merlin/1.1.2 && Merlin)
-alias minx_112_conf='module load pedstats/0.6.12 merlin/1.1.2 ; minx' # activated by merlin download: dedicated to X chromo
+# module can be used because it is a specific docker
+module load pedstats/0.6.12 merlin/1.1.2 # import also minx and pedwipe. This does not work MERLIN_112_CONF=$(module purge && module load Merlin/1.1.2 && Merlin)
+# activated by merlin download: dedicated to X chromo
 
 
 
@@ -89,10 +90,10 @@ if [[ ${CHROMO_NB} == 23 ]] ; then
         echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl OR --best\n"
         exit 1
     fi
-    EXEC1="minx_112_conf -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
+    EXEC1="minx -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
     echo -e "\nBEWARE: MENDELIAN ERRORS NOT WIPED OUT IN CHROMO 23 (CHROMO X)\n"
     echo -e "\nPROCESS 1/1: $EXEC1\n"
-    eval "$EXEC1"
+    $EXEC1
     if [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]] ; then
         sed -i -r "s/TRAIT\ \[ALL\]/TRAIT\[ALL\]/g" ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin.lod
     fi
@@ -107,13 +108,13 @@ else
         echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl OR --best\n"
         exit 1
     fi
-    EXEC1="merlin_112_conf -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.dat -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.ped -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET # > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
+    EXEC1="merlin -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.dat -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.ped -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET # > ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_log"
     # Merlin using clean data and pedigree to generate the lodscore
     # --pdf:
     # --markerNames:
     # --model: parametric model uses these values, non parametric models do not use them
     echo -e "\nPROCESS 1/1: $EXEC1\n"
-    eval "$EXEC1"
+    $EXEC1
     if [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]] ; then
         sed -i -r "s/TRAIT\ \[ALL\]/TRAIT\[ALL\]/g" ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin.lod
     fi

@@ -32,9 +32,10 @@ bit_nb=${2}
 
 
 OUTPUT_DIR_PATH="."
-alias merlin_112_conf='module load pedstats/0.6.12 merlin/1.1.2 ; merlin' # import also minx and pedwipe. This does not work MERLIN_112_CONF=$(module purge && module load Merlin/1.1.2 && Merlin)
-alias pedwipe_112_conf='module load pedstats/0.6.12 merlin/1.1.2 ; pedwipe' # activated by merlin download: pedwipe remove things in the genotype file. Do not work for X chromo
-alias pedstats_112_conf='module load pedstats/0.6.12 merlin/1.1.2 ; pedstats' # activated by merlin download: pedstats provide stats
+# module can be used because it is a specific docker
+module load pedstats/0.6.12 merlin/1.1.2 # import also minx and pedwipe. This does not work MERLIN_112_CONF=$(module purge && module load Merlin/1.1.2 && Merlin)
+# activated by merlin download: pedwipe remove things in the genotype file. Do not work for X chromo
+# activated by merlin download: pedstats provide stats
 
 
 
@@ -68,12 +69,12 @@ shopt -s expand_aliases # to be sure that alias are expended to the different en
 
 cd c${CHROMO_NB}b # to add all the outputs in the ${CHROMO_NB} folder, which can then be channeled into the merlin process
 if [[ ${CHROMO_NB} == 23 ]] ; then 
-    EXEC1="pedstats_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --chromosomeX --pdf"
+    EXEC1="pedstats -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --chromosomeX --pdf"
     echo -e "\nPROCESS 1/1: $EXEC1\n"
-    eval "$EXEC1"
+    $EXEC1
 else
-    EXEC1="pedstats_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --pdf"
-    EXEC2="merlin_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/merlin_map.${CHROMO_NB} --error --quiet --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999"
+    EXEC1="pedstats -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --pdf"
+    EXEC2="merlin -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/merlin_map.${CHROMO_NB} --error --quiet --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999"
     # EXEC1: Merlin preanalyse to detect errors 
     # see http://csg.sph.umich.edu/abecasis/MERLIN/reference.html fro the description of the options
     # -d: data (file present in )
@@ -84,18 +85,18 @@ else
     # --minutes: time limit. Over it, the job crashes 
     # -- swap
     # -- megabytes: RAM
-    EXEC3="pedwipe_112_conf -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB}"
+    EXEC3="pedwipe -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB}"
     # EXEC2: remove the mendelian errors (which results in a smoother lod score)
     # Merlin using clean data and pedigree to generate the lodscore
     # --pdf:
     # --markerNames:
     # --model: parametric model uses these values, non parametric models do not use them
     echo -e "\nPROCESS 1/3: $EXEC1\n"
-    eval "$EXEC1"
+    $EXEC1
     echo -e "\nPROCESS 2/3: $EXEC2\n"
-    eval "$EXEC2"
+    $EXEC2
     echo -e "\nPROCESS 3/3: $EXEC2\n"
-    eval "$EXEC3"
+    $EXEC3
 fi
 
 echo -e "\n\n################ END OF PRE MERLIN PROCESS\n\n"

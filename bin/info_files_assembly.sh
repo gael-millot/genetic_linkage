@@ -34,7 +34,7 @@ nb_of_groups=${5}
 
 OUTPUT_DIR_PATH="."
 
-alias r_362_conf='module load R ; Rscript'
+module load R # module can be used because it is a specific docker
 
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
@@ -69,18 +69,12 @@ else
             fi
         done
     done
-
-    R_PROC="r_362_conf \
-        ${r_info_files_assembly_conf} \
-        ${r_main_functions_conf_ch} \
-        '$info_files' \
-        '$map_file' \
-        $nb_of_groups \
-        '$OUTPUT_DIR_PATH' \
-    "
+    info_files2=$(echo "$info_files" | sed -e 's/ /,/g')
+    map_file2=$(echo "$map_file" | sed -e 's/ /,/g')
+    R_PROC="Rscript ${r_info_files_assembly_conf} ${r_main_functions_conf_ch} ${info_files2} ${map_file2} $nb_of_groups $OUTPUT_DIR_PATH"
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
-    eval "$R_PROC" # remove "" to allow regex translation
+    $R_PROC
 fi
 
 echo -e "\n\n################ END OF LOD FILE ASSEMBLY\n\n"

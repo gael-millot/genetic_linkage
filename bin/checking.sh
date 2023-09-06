@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -uel
 # BEWARE: this code only works with the following file names: freq, map, genotyping[$i].txt and pedfile[$i].pro
 # set -e # stop the workflow if a command return something different from 0 in $?. Use set -ex to have the blocking line. It is important to know that each instruction executed send a result in $? Either 0 (true) or something else (different from 0)
 
@@ -43,7 +43,7 @@ JOB_NB=1
 OUTPUT_DIR_PATH="."
 # JOB_ID="1" # probably remove all the JOB_ID in the code
 R_OPT_TXT_CONF="notxt"
-alias r_362_conf='module load R ; Rscript'
+module load R # module can be used because it is a specific docker
 
 FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_NAME")
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
@@ -126,7 +126,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
         echo -e "\nPROBLEM: RUNNING_OP PARAMETER WITH rawfile_check BUT ${OUTPUT_R FILE} OR ${OUTPUT_ERROR_R} FILE ALREADY EXIST IN ${INPUT_DIR_NAME}\n"
         exit 1
     fi
-    R_PROC="r_362_conf ${r_check_lod_gael_conf} $OUTPUT_DIR_PATH $OUTPUT_R $OUTPUT_ERROR_R" # for R analysis after the loop
+    R_PROC="Rscript ${r_check_lod_gael_conf} $OUTPUT_DIR_PATH $OUTPUT_R $OUTPUT_ERROR_R" # for R analysis after the loop
     # loop to recover the files from the config file
     for i in `seq 0  $file_name_Num` ; do
         # shopt -s extglob # -s unable global extention, ie the recognition of special global pattern in path, like [[:digit:]]
@@ -168,7 +168,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
         OUTPUT_4=${OUTPUT_DIR_PATH}/${KEPT_FILE}_wo_pattern.txt
         PATTERN="(^#)|(^[[:space:]]*$)" # any line starting by #or any empty line or fill with only spaces and tabs
         file_pattern_detection_fun -i $INPUT -o $OUTPUT_3 -c $OUTPUT_4 -d $PATTERN # removal of lines starting by # or empty lines
-        TEMPO_RETURN_4=$(echo $?) # test pattern
+        TEMPO_RETURN_4=$file_pattern_detection_fun_RETURN # test pattern
         if [[ $TEMPO_RETURN_4 == 1 ]] ; then
             echo -e "\nPROBLEM USING file_pattern_detection_fun ON $INPUT: FUNCTION RETURNS ${TEMPO_RETURN_4}\n"
             exit 1
@@ -189,7 +189,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
 
         OUTPUT_2=${OUTPUT_DIR_PATH}/${KEPT_FILE}_spacereplace.txt
         test_space_in_file_fun $INPUT
-        TEMPO_RETURN_1=$(echo $?) # test space
+        TEMPO_RETURN_1=$test_space_in_file_fun_RETURN # test space
         # echo "TEMPO_RETURN_1 $TEMPO_RETURN_1\n"
         if [[ $TEMPO_RETURN_1 == 1 ]] ; then
             echo -e "\nPROBLEM USING test_space_in_file_fun ON $INPUT: FUNCTION RETURNS ${TEMPO_RETURN_1}\n"
@@ -202,7 +202,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
             fi
             
             space_replacement_in_file_fun -i $INPUT -o $OUTPUT_2 -r $REPLACE_CHAR # space replacement by _._
-            TEMPO_RETURN_2=$(echo $?)
+            TEMPO_RETURN_2=$space_replacement_in_file_fun_RETURN
             if [[ $TEMPO_RETURN_2 == 1 ]] ; then # error
                 echo -e "\nPROBLEM USING space_replacement_in_file_fun ON $INPUT: FUNCTION RETURNS ${TEMPO_RETURN_2}\n"
                 exit 1
@@ -224,7 +224,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
         # R_PROC="${R_PROC} ${OUTPUT_2}"
 
         test_tab_in_file_fun $INPUT
-        TEMPO_RETURN_3=$(echo $?) # test tabulation
+        TEMPO_RETURN_3=$test_tab_in_file_fun_RETURN # test tabulation
         if [[ $TEMPO_RETURN_3 != 0 ]] ; then
             echo -e "\nPROBLEM USING test_tab_in_file_fun ON $INPUT: FUNCTION RETURNS ${TEMPO_RETURN_3}\n"
             exit 1
@@ -233,7 +233,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
         OUTPUT_5=${OUTPUT_DIR_PATH}/${KEPT_FILE}_line_error.txt
         OUTPUT_6=${OUTPUT_DIR_PATH}/${KEPT_FILE}_wo_error_line.txt
         test_column_nb_perline_in_file_fun -i $INPUT -o $OUTPUT_5 -c $OUTPUT_6 -d "\t"
-        TEMPO_RETURN_5=$(echo $?) # test number of columns. If =5, remove lines for R analysis
+        TEMPO_RETURN_5=$test_column_nb_perline_in_file_fun_RETURN # test number of columns. If =5, remove lines for R analysis
         if [[ $TEMPO_RETURN_5 =~ [1-3] ]] ; then # idem $TEMPO_RETURN_4 == 1 || $TEMPO_RETURN_4 == 2 || $TEMPO_RETURN_4 == 3
             echo -e "\nPROBLEM USING test_column_nb_perline_in_file_fun ON $INPUT: FUNCTION RETURNS ${TEMPO_RETURN_4}\n"
             exit 1
@@ -261,7 +261,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
     R_PROC="${R_PROC} $r_main_functions_conf raw $R_OPT_TXT_CONF" # raw to specify that the check is at the raw step
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
-    eval "$R_PROC" # remove "" to allow regex translation
+    $R_PROC
 else
     echo -e "NO RAW DATA CHECKING PERFORMED\n"
 fi

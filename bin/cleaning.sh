@@ -43,7 +43,7 @@ JOB_NB=1
 OUTPUT_DIR_PATH="."
 
 R_OPT_TXT_CONF="notxt"
-alias r_362_conf='module load R ; Rscript'
+module load R # module can be used because it is a specific docker
 
 FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_NAME")
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
@@ -121,7 +121,7 @@ if [[ $RUNNING_OP =~ cleaning ]] ; then
         echo -e "\nPROBLEM: RUNNING_OP PARAMETER WITH cleaning BUT ${OUTPUT_R FILE} FILE ALREADY EXIST IN ${INPUT_DIR_NAME}\n"
         exit 1
     fi
-    R_PROC="r_362_conf ${r_clean_lod_gael_conf} '$OUTPUT_DIR_PATH' $OUTPUT_R"
+    R_PROC="Rscript ${r_clean_lod_gael_conf} $OUTPUT_DIR_PATH $OUTPUT_R"
     for i in `seq 0  $file_name_Num` ; do # "$INPUT_DIR_NAME" is equivalent to genotyping[$i]
         INPUT=$(echo ${FILE_NAME_PATH[$i]})/$(echo ${!FILE_NAME[$i]})
         R_PROC="${R_PROC} ${INPUT}"
@@ -129,7 +129,7 @@ if [[ $RUNNING_OP =~ cleaning ]] ; then
     R_PROC="${R_PROC} $r_main_functions_conf $R_OPT_TXT_CONF" # for R analysis after the loop
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
-    eval "$R_PROC" # remove "" to allow regex translation
+    $R_PROC
 else
     echo -e "NO RAW DATA CLEANING PERFORMED\n"
 fi
@@ -176,7 +176,7 @@ if [[ $RUNNING_OP =~ postcleaning_check ]] ; then
         echo -e "\nPROBLEM: RUNNING_OP PARAMETER WITH postcleaning_check BUT ${OUTPUT_R FILE} OR ${OUTPUT_ERROR_R} FILE ALREADY EXIST IN ${INPUT_DIR_NAME}\n"
         exit 1
     fi
-    R_PROC="r_362_conf ${r_check_lod_gael_conf} '$OUTPUT_DIR_PATH' $OUTPUT_R $OUTPUT_ERROR_R" # for R analysis after the loop
+    R_PROC="Rscript ${r_check_lod_gael_conf} $OUTPUT_DIR_PATH $OUTPUT_R $OUTPUT_ERROR_R" # for R analysis after the loop
     for i in `seq 0  $file_name_Num` ; do # "$INPUT_DIR_NAME" is equivalent to genotyping[$i]
         INPUT=$(echo ${FILE_NAME_PATH[$i]})/$(echo ${!FILE_NAME[$i]})
         R_PROC="${R_PROC} ${INPUT}"
@@ -184,7 +184,7 @@ if [[ $RUNNING_OP =~ postcleaning_check ]] ; then
     R_PROC="${R_PROC} $r_main_functions_conf postclean $R_OPT_TXT_CONF" # for R analysis after the loop
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
-    eval "$R_PROC" # remove "" to allow regex translation
+    $R_PROC
 else
     echo -e "NO FILE CHECKING AFTER CLEANING PERFORMED\n"
 fi

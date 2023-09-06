@@ -38,8 +38,8 @@ alohomora_bch_conf=${8} # {alohomora_bch_conf_ch}
 RUNNING_OP="rawfile_check,cleaning,postcleaning_check,splitting,postsplitting_check,alohomora,merlin"
 OUTPUT_DIR_PATH="."
 # alias alohomora_036_conf='module load genehunter/1.3 pedstats/0.6.12 merlin/1.1.2 plink/1.90a pedcheck/1.1 gnuplot simwalk2 alohomora/v0.36 ; alohomora'
-alias r_362_conf='module load R ; Rscript'
-alias alohomora_036_conf='module load genehunter/2.1_r2 pedstats/0.6.12 merlin/1.1.2 plink/1.90b6.16 pedcheck/1.1 gnuplot/5.2.8 simwalk2/2.91 alohomora/v0.36 ; alohomora'
+module load R # module can be used because it is a specific docker
+module load genehunter/2.1_r2 pedstats/0.6.12 merlin/1.1.2 plink/1.90b6.16 pedcheck/1.1 gnuplot/5.2.8 simwalk2/2.91 alohomora/v0.36 # module can be used because it is a specific docker
 R_OPT_TXT_CONF="notxt"
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
@@ -78,11 +78,11 @@ if [[ $RUNNING_OP =~ postsplitting_check ]] ; then
 
         OUTPUT_R="r_postsplitting_check_report_${GROUP_NAME}.txt" ;
         OUTPUT_ERROR_R="r_postsplitting_check_error_${GROUP_NAME}.txt" ;
-        R_PROC="r_362_conf ${r_check_lod_gael_conf} '.' $OUTPUT_R $OUTPUT_ERROR_R ${GROUP_NAME}/${GENOTYPE_FILE_NAME} ${GROUP_NAME}/${FREQ_FILE_NAME} ${GROUP_NAME}/${MAP_FILE_NAME} ${GROUP_NAME}/${PEDIGREE_FILE_NAME}" # for R analysis after the loop
-        R_PROC="${R_PROC} $r_main_functions_conf 'postsplit' $R_OPT_TXT_CONF" # for R analysis after the loop
+        R_PROC="Rscript ${r_check_lod_gael_conf} $OUTPUT_DIR_PATH $OUTPUT_R $OUTPUT_ERROR_R ${GROUP_NAME}/${GENOTYPE_FILE_NAME} ${GROUP_NAME}/${FREQ_FILE_NAME} ${GROUP_NAME}/${MAP_FILE_NAME} ${GROUP_NAME}/${PEDIGREE_FILE_NAME}" # for R analysis after the loop
+        R_PROC="${R_PROC} $r_main_functions_conf postsplit $R_OPT_TXT_CONF" # for R analysis after the loop
         echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
         shopt -s expand_aliases # to be sure that alias are expended to the different environments
-        eval "$R_PROC" # remove "" to allow regex translation
+        $R_PROC
 else
     echo -e "NO FILE CHECKING AFTER CLEANING PERFORMED\n"
 fi
@@ -96,10 +96,10 @@ echo -e "\n\n################ ALOHOMORA\n\n"
 if [[ $RUNNING_OP =~ alohomora ]] ; then
     TEMPO_OUTPUT_PATH=${PWD}/${GROUP_NAME} # PWD because alohomora needs absolute path
     echo -e "\n######## GROUP ${GROUP_NAME}\n"
-    ALOHOMORA_PROC="alohomora_036_conf --nogui -b "${alohomora_bch_conf}" -p ${TEMPO_OUTPUT_PATH}/${PEDIGREE_FILE_NAME} -g ${TEMPO_OUTPUT_PATH}/${GENOTYPE_FILE_NAME}"
+    ALOHOMORA_PROC="alohomora --nogui -b "${alohomora_bch_conf}" -p ${TEMPO_OUTPUT_PATH}/${PEDIGREE_FILE_NAME} -g ${TEMPO_OUTPUT_PATH}/${GENOTYPE_FILE_NAME}"
     echo -e "\nTHE COMMAND USED FOR ALOHOMORA ANALYSIS IS:\n${ALOHOMORA_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
-    eval "$ALOHOMORA_PROC" # remove "" to allow regex translation
+    $ALOHOMORA_PROC
 
 
 

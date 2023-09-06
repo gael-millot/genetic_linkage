@@ -73,7 +73,7 @@ if( ! (is.character(files) & length(files) == 1)){
     tempo.cat <- paste0("======== ERROR: THE files ARGUMENT IN args (", files,") MUST BE A SINGLE CHARACTER STRING")
     stop(tempo.cat)
 }else{
-    files <- unlist(strsplit(files, " "))
+    files <- unlist(strsplit(files, ","))
 }
 nb_of_groups <- as.numeric(nb_of_groups)
 if( ! is.numeric(nb_of_groups)){

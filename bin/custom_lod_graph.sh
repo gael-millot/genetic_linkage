@@ -87,6 +87,7 @@ else
 
     MODEL_PRINT="$MODEL_PRINT | $MERLIN_DISPLAY_CHROMO_CONF | $MERLIN_LOD_CUTOFF_CONF"
 
+# R_PROC="Rscript" because the docker is r_ext, not bash. With bash, we would have to use "module load R ; Rscript"
     R_PROC="Rscript \
         ${r_custom_graph_lod_gael_conf} \
         ${r_main_functions_conf} \
@@ -99,7 +100,7 @@ else
     "
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
-    eval "$R_PROC" # remove "" to allow regex translation
+    $R_PROC
 fi
 
 echo -e "\n\n################ END OF CUSTOM GRAPH\n\n"

@@ -98,7 +98,7 @@ ${RAW_PEDIGREE_FILE_NAME_CONF_ch} \
 ${BASH_FUNCTIONS_CONF_ch} \
 ${r_main_functions_conf_ch} \
 ${r_check_lod_gael_conf_ch} \
- &> >(tee -a checking_report.log) &
+| tee -a checking_report.log
     """
 }
 
@@ -229,9 +229,9 @@ process alohomora {
 \${FREQ_FILE_NAME} \
 \${MAP_FILE_NAME} \
 \${PEDIGREE_FILE_NAME} \
-${r_main_functions_conf} \
-${r_check_lod_gael_conf} \
-${alohomora_bch_conf} \
+${r_main_functions_conf_ch} \
+${r_check_lod_gael_conf_ch} \
+${alohomora_bch_conf_ch} \
 | tee -a alohomora_report_\${GROUP_NAME}.log
     """
 }
@@ -377,7 +377,7 @@ process lod_files_assembly {
     path map_files // no parallelization but 69 files
     val nb_of_groups
     path r_main_functions_conf_ch
-    path r_lod_files_assembly_conf
+    path r_lod_files_assembly_conf_ch
 
     output:
     path "lod_files_assembly_report*"
@@ -388,7 +388,7 @@ process lod_files_assembly {
     #!/bin/bash -uel
     # -l is required for the module command
     lod_files_assembly.sh \
-${r_lod_files_assembly_conf} \
+${r_lod_files_assembly_conf_ch} \
 ${r_main_functions_conf_ch} \
 "${lod_files}" \
 "${map_files}" \
@@ -409,7 +409,7 @@ process custom_lod_graph {
     input:
     // channel
     path full_ch // no parallelization
-    path r_custom_lod_graph_gael_conf
+    path r_custom_lod_graph_gael_conf_ch
     path r_main_functions_conf_ch
     path human_chr_info_ch
     // variable
@@ -432,7 +432,7 @@ process custom_lod_graph {
     MERLIN_LOD_CUTOFF_CONF=\$(eval $MERLIN_LOD_CUTOFF_CONF)
     custom_lod_graph.sh \
 "${full_ch}" \
-${r_custom_lod_graph_gael_conf} \
+${r_custom_lod_graph_gael_conf_ch} \
 ${r_main_functions_conf_ch} \
 ${human_chr_info_ch} \
 "${MERLIN_ANALYSE_OPTION_CONF}" \
@@ -456,7 +456,7 @@ process info_files_assembly {
     path map_files // no parallelization but 69 files
     val nb_of_groups
     path r_main_functions_conf_ch
-    path r_info_files_assembly_conf
+    path r_info_files_assembly_conf_ch
 
     output:
     path "info_files_assembly_report*"
@@ -467,7 +467,7 @@ process info_files_assembly {
     #!/bin/bash -uel
     # -l is required for the module command
     info_files_assembly.sh \
-${r_info_files_assembly_conf} \
+${r_info_files_assembly_conf_ch} \
 ${r_main_functions_conf_ch} \
 "${info_files}" \
 "${map_files}" \
@@ -488,7 +488,7 @@ process custom_info_graph {
     input:
     // channel
     path full_info_ch // no parallelization
-    path r_custom_info_graph_gael_conf
+    path r_custom_info_graph_gael_conf_ch
     path r_main_functions_conf_ch
     path human_chr_info_ch
     // variable
@@ -512,7 +512,7 @@ process custom_info_graph {
     MERLIN_LOD_CUTOFF_CONF=\$(eval $MERLIN_LOD_CUTOFF_CONF)
     custom_lod_graph.sh \
 "${full_info_ch}" \
-${r_custom_info_graph_gael_conf} \
+${r_custom_info_graph_gael_conf_ch} \
 ${r_main_functions_conf_ch} \
 ${human_chr_info_ch} \
 "${MERLIN_ANALYSE_OPTION_CONF}" \
@@ -582,7 +582,26 @@ workflow {
 
 
     //////// Checks
-
+    if( ! (RAW_GENOTYPE_FILE_NAME_CONF in String) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_GENOTYPE_FILE_NAME_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
+    }else if(RAW_GENOTYPE_FILE_NAME_CONF == "genotype.txt"){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_GENOTYPE_FILE_NAME_CONF}\nFILE CANNOT BE NAMED genotype.txt FOR THIS CODE\n\n========\n\n"
+    }
+    if( ! (RAW_FREQ_FILE_NAME_CONF in String) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_FREQ_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_FREQ_FILE_NAME_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
+    }else if(RAW_FREQ_FILE_NAME_CONF == "freq.txt"){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_FREQ_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_FREQ_FILE_NAME_CONF}\nFILE CANNOT BE NAMED freq.txt FOR THIS CODE\n\n========\n\n"
+    }
+    if( ! (RAW_MAP_FILE_NAME_CONF in String) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_MAP_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_MAP_FILE_NAME_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
+    }else if(RAW_MAP_FILE_NAME_CONF == "map.txt"){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_MAP_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_MAP_FILE_NAME_CONF}\nFILE CANNOT BE NAMED map.txt FOR THIS CODE\n\n========\n\n"
+    }
+    if( ! (RAW_PEDIGREE_FILE_NAME_CONF in String) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_PEDIGREE_FILE_NAME_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
+    }else if(RAW_PEDIGREE_FILE_NAME_CONF == "pedigree.pro"){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_PEDIGREE_FILE_NAME_CONF}\nFILE CANNOT BE NAMED pedigree.pro FOR THIS CODE\n\n========\n\n"
+    }
     if( ! file(RAW_INPUT_DIR_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_INPUT_DIR_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_INPUT_DIR_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }
@@ -749,19 +768,19 @@ workflow {
 //merlin.out.lod_ch.collect().view() //
 
     merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 LODSCORE FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
-    merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 MAP FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+    merlin.out.map_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 MAP FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
 
     lod_files_assembly(
         merlin.out.lod_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
         merlin.out.map_ch.collect(),
         splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
         r_main_functions_conf_ch,
-        r_lod_files_assembly_conf
+        r_lod_files_assembly_conf_ch
     )
 
     custom_lod_graph(
         lod_files_assembly.out.full_ch,
-        r_custom_lod_graph_gael_conf,
+        r_custom_lod_graph_gael_conf_ch,
         r_main_functions_conf_ch,
         human_chr_info_ch, 
         MERLIN_ANALYSE_OPTION_CONF,
@@ -770,19 +789,19 @@ workflow {
         MERLIN_LOD_CUTOFF_CONF
     )
 
-    merlin.out.info_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 INFO FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+    merlin.out.info_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 GENETIC INFO FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
 
     info_files_assembly(
         merlin.out.info_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
         merlin.out.map_ch.collect(),
         splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
         r_main_functions_conf_ch,
-        r_info_files_assembly_conf
+        r_info_files_assembly_conf_ch
     )
 
     custom_info_graph(
         info_files_assembly.out.full_info_ch,
-        r_custom_info_graph_gael_conf,
+        r_custom_info_graph_gael_conf_ch,
         r_main_functions_conf_ch,
         human_chr_info_ch, 
         MERLIN_ANALYSE_OPTION_CONF,

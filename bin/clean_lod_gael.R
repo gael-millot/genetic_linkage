@@ -222,7 +222,15 @@ if(all(geno.names %in% pedfile.names) & all(pedfile.names %in% geno.names)){
     fun.export.data(path = path.out, data = paste0("THE IND NUMBERS OF pedfile ARE ALL IN THE genotype COLUMN NAMES, AND VICE-VERSA"), output = output_file_name, sep = 2)
 }else{
     fun.export.data(path = path.out, data = paste0("### PROBLEM: THE IND NUMBERS OF pedfile ARE NOT ALL IN THE genotype COLUMN NAMES, OR VICE-VERSA"), output = output_file_name, sep = 1)
-    fun.export.data(path = path.out, data = data.frame(GENOTYPE_NAME = sort(geno.names), PEDIGREE_NAME = sort(pedfile.names)), output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = data.frame(GENOTYPE_NAME = sort(as.numeric(geno.names)), PEDIGREE_NAME = sort(as.numeric(pedfile.names))), output = output_file_name, sep = 2)
+    if(any( ! geno.names %in% pedfile.names)){
+        fun.export.data(path = path.out, data = paste0("COLUMNS REMOVED FROM THE GENOTYPE FILE:", paste(geno.names[ ! geno.names %in% pedfile.names], collapse = ", ")), output = output_file_name)
+        genotype <- genotype[ , c(1, which(geno.names %in% pedfile.names) + 1)]
+    }
+    if(any( ! pedfile.names %in% geno.names)){
+        fun.export.data(path = path.out, data = paste0("ROWS REMOVED FROM THE PEDIGREE FILE:", paste(pedfile.names[ ! pedfile.names %in% geno.names], collapse = ", ")), output = output_file_name)
+        pedfile <- pedfile[which(pedfile.names %in% geno.names), ]
+    }
 }
 
 ####### factor actualization
@@ -236,10 +244,11 @@ fun.export.data(path = path.out, data = paste0("THE FINAL NUMBER OF map ROWS IS:
 
 ####### saving files
 
-fun.export.data(path = path.out, data = paste0("BEWARE: THE genotype, freq AND map FILES ARE REPLACED BY THE MODIFIED FILES"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("BEWARE: THE genotype, freq, map and ped FILES ARE REPLACED BY THE MODIFIED FILES"), output = output_file_name, sep = 2)
 write.table(genotype, file = paste0(args[tempo.arg.names == "genotype"]), append = FALSE, quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(freq, file = paste0(args[tempo.arg.names == "freq"]), append = FALSE, quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
 write.table(map, file = paste0(args[tempo.arg.names == "map"]), append = FALSE, quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(pedfile, file = paste0(args[tempo.arg.names == "pedfile"]), append = FALSE, quote = FALSE, sep = "\t", row.names = FALSE, col.names = FALSE)
 
 fun.export.data(path = path.out, data = paste0("################ END OF PROCESS"), output = output_file_name, sep = 2)
 
