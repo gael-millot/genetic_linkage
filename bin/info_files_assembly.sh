@@ -71,7 +71,7 @@ else
     done
     info_files2=$(echo "$info_files" | sed -e 's/ /,/g')
     map_file2=$(echo "$map_file" | sed -e 's/ /,/g')
-    R_PROC="Rscript ${r_info_files_assembly_conf} ${r_main_functions_conf_ch} ${info_files2} ${map_file2} $nb_of_groups $OUTPUT_DIR_PATH"
+    R_PROC="Rscript ${r_info_files_assembly_conf} ${r_main_functions_conf_ch} $info_files2 $map_file2 $nb_of_groups $OUTPUT_DIR_PATH"
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
     $R_PROC

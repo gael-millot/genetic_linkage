@@ -265,6 +265,11 @@ The developers & maintainers of the mentioned softwares and packages, including:
 <br /><br />
 ## WHAT'S NEW IN
 
+#### v2.6
+
+code improved so that any error in R subprocess should stop nextflow execution
+
+
 #### v2.5
 
 code improved and debugged (error not anymore piped into tee notably)

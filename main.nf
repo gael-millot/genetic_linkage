@@ -366,9 +366,8 @@ ${bit_nb} \
 
 process lod_files_assembly {
     label 'bash'
-    publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{lod_files_assembly_report*}", overwrite: false
+    publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{*lod_files_assembly*.log}", overwrite: false
     publishDir path: "${out_path}", mode: 'copy', pattern: "complete_lodscore.tsv", overwrite: false
-
     cache 'true'
 
     input:
@@ -380,7 +379,7 @@ process lod_files_assembly {
     path r_lod_files_assembly_conf_ch
 
     output:
-    path "lod_files_assembly_report*"
+    path "*lod_files_assembly*.log"
     path "complete_lodscore.tsv", emit: full_ch
 
     script:
@@ -393,7 +392,7 @@ ${r_main_functions_conf_ch} \
 "${lod_files}" \
 "${map_files}" \
 ${nb_of_groups} \
-| tee -a lod_files_assembly_report.log
+> >(tee -a lod_files_assembly_report.log)
     """
 }
 
@@ -430,7 +429,7 @@ process custom_lod_graph {
     # -l is required for the module command
     MERLIN_DISPLAY_CHROMO_CONF=\$(eval $MERLIN_DISPLAY_CHROMO_CONF)
     MERLIN_LOD_CUTOFF_CONF=\$(eval $MERLIN_LOD_CUTOFF_CONF)
-    custom_lod_graph.sh \
+    custom_graph.sh \
 "${full_ch}" \
 ${r_custom_lod_graph_gael_conf_ch} \
 ${r_main_functions_conf_ch} \
@@ -439,13 +438,13 @@ ${human_chr_info_ch} \
 "${MERLIN_PARAM_CONF}" \
 "\${MERLIN_DISPLAY_CHROMO_CONF}" \
 "\$MERLIN_LOD_CUTOFF_CONF" \
-| tee -a custom_lod_graph_report.log
+> >(tee -a custom_lod_graph_report.log)
     """
 }
 
 process info_files_assembly {
     label 'bash'
-    publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{info_files_assembly_report*}", overwrite: false
+    publishDir path: "${out_path}/merlin_reports", mode: 'copy', pattern: "{*info_files_assembly*.log}", overwrite: false
     publishDir path: "${out_path}", mode: 'copy', pattern: "complete_information*.tsv", overwrite: false
 
     cache 'true'
@@ -459,7 +458,7 @@ process info_files_assembly {
     path r_info_files_assembly_conf_ch
 
     output:
-    path "info_files_assembly_report*"
+    path "*info_files_assembly*.log"
     path "complete_information*.tsv", emit: full_info_ch // a single file
 
     script:
@@ -472,7 +471,7 @@ ${r_main_functions_conf_ch} \
 "${info_files}" \
 "${map_files}" \
 ${nb_of_groups} \
-| tee -a info_files_assembly_report.log
+> >(tee -a info_files_assembly_report.log)
     """
 }
 
@@ -510,7 +509,7 @@ process custom_info_graph {
     # WARNING : lod_files_assembly.sh reused here because no need to change anything
     MERLIN_DISPLAY_CHROMO_CONF=\$(eval $MERLIN_DISPLAY_CHROMO_CONF)
     MERLIN_LOD_CUTOFF_CONF=\$(eval $MERLIN_LOD_CUTOFF_CONF)
-    custom_lod_graph.sh \
+    custom_graph.sh \
 "${full_info_ch}" \
 ${r_custom_info_graph_gael_conf_ch} \
 ${r_main_functions_conf_ch} \
@@ -519,7 +518,7 @@ ${human_chr_info_ch} \
 "${MERLIN_PARAM_CONF}" \
 "\${MERLIN_DISPLAY_CHROMO_CONF}" \
 "\$MERLIN_LOD_CUTOFF_CONF" \
-| tee -a custom_info_graph_report.log
+> >(tee -a custom_info_graph_report.log)
     """
 }
 

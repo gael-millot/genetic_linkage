@@ -99,10 +99,14 @@ if( ! is.character(chr_info)){
 if( ! is.character(chromo.nb.set)){
     tempo.cat <- paste0("======== ERROR: THE chromo.nb.set ARGUMENT IN args (", chromo.nb.set,") MUST BE A SINGLE CHARACTER STRING")
     stop(tempo.cat)
+}else{
+    chromo.nb.set <- as.numeric(sort(unlist(strsplit(chromo.nb.set, "_;_"))))
 }
 if( ! is.character(lod.cutoff)){
     tempo.cat <- paste0("======== ERROR: THE lod.cutoff ARGUMENT IN args (", lod.cutoff,") MUST BE A SINGLE CHARACTER STRING")
     stop(tempo.cat)
+}else{
+    lod.cutoff <- as.numeric(sort(unlist(strsplit(lod.cutoff, "_;_"))))
 }
 if( ! is.character(path.out)){
     tempo.cat <- paste0("======== ERROR: THE path.out ARGUMENT IN args (", path.out,") MUST BE A SINGLE CHARACTER STRING")
@@ -111,13 +115,10 @@ if( ! is.character(path.out)){
 if( ! is.character(model)){
     tempo.cat <- paste0("======== ERROR: THE model ARGUMENT IN args (", model,") MUST BE A SINGLE CHARACTER STRING")
     stop(tempo.cat)
-}
+}else{
+    model <- gsub(model, "_;_", " ")
+} # here replace _;_ by space
 
-
-
-lod.cutoff <- as.numeric(sort(unlist(strsplit(lod.cutoff, " "))))
-# cat(lod.cutoff, "\n\n")
-chromo.nb.set <- as.numeric(sort(unlist(strsplit(chromo.nb.set, " "))))
 
 
 
@@ -159,8 +160,8 @@ if(erase.graphs == TRUE){
   graphics.off()
 }
 
-error_file_name <- "custom_graph_error.log" # error file
-tempo.cat <- "################ CUSTOM GRAPH PROCESS"
+error_file_name <- "custom_lod_graph_error.log" # error file
+tempo.cat <- "################ CUSTOM LOD GRAPH PROCESS"
 cat("\n\n", tempo.cat, "\n\n", sep ="")
 fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
 

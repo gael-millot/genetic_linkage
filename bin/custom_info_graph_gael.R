@@ -158,8 +158,8 @@ if(erase.graphs == TRUE){
   graphics.off()
 }
 
-error_file_name <- "custom_graph_error.log" # error file
-tempo.cat <- "################ CUSTOM GRAPH PROCESS"
+error_file_name <- "custom_info_graph_error.log" # error file
+tempo.cat <- "################ CUSTOM iNFO GRAPH PROCESS"
 cat("\n\n", tempo.cat, "\n\n", sep ="")
 fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
 

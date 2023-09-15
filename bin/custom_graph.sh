@@ -87,16 +87,19 @@ else
 
     MODEL_PRINT="$MODEL_PRINT | $MERLIN_DISPLAY_CHROMO_CONF | $MERLIN_LOD_CUTOFF_CONF"
 
-# R_PROC="Rscript" because the docker is r_ext, not bash. With bash, we would have to use "module load R ; Rscript"
+    # R_PROC="Rscript" because the docker is r_ext, not bash. With bash, we would have to use "module load R ; Rscript"
+    MERLIN_DISPLAY_CHROMO_CONF=$(echo $MERLIN_DISPLAY_CHROMO_CONF | sed -e 's/ /_;_/g')
+    MODEL_PRINT=$(echo $MODEL_PRINT | sed -e 's/ /_;_/g')
+    MERLIN_LOD_CUTOFF_CONF=$(echo $MERLIN_LOD_CUTOFF_CONF | sed -e 's/ /_;_/g')
     R_PROC="Rscript \
         ${r_custom_graph_lod_gael_conf} \
         ${r_main_functions_conf} \
         ${human_chr_info_ch} \
-        '${FULL_LOD_FILE_NAME}' \
-        '${MERLIN_DISPLAY_CHROMO_CONF}' \
-        '${MERLIN_LOD_CUTOFF_CONF}' \
-        '$OUTPUT_DIR_PATH' \
-        '$MODEL_PRINT' \
+        ${FULL_LOD_FILE_NAME} \
+        ${MERLIN_DISPLAY_CHROMO_CONF} \
+        ${MERLIN_LOD_CUTOFF_CONF} \
+        $OUTPUT_DIR_PATH \
+        $MODEL_PRINT
     "
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments

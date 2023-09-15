@@ -128,7 +128,7 @@ if(erase.graphs == TRUE){
   graphics.off()
 }
 
-error_file_name <- paste0("R_info_files_assembly.log") # error file
+error_file_name <- paste0("r_info_files_assembly.log") # error file
 tempo.cat <- "################ INFO FILE ASSEMBLY PROCESS"
 cat("\n\n", tempo.cat, "\n\n", sep ="")
 fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
