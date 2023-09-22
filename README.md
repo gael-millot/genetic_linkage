@@ -266,6 +266,11 @@ The developers & maintainers of the mentioned softwares and packages, including:
 <br /><br />
 ## WHAT'S NEW IN
 
+#### v2.7
+
+code improved so that chr can be missing
+
+
 #### v2.6
 
 code improved so that any error in R subprocess should stop nextflow execution

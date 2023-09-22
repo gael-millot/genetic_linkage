@@ -1,9 +1,9 @@
-work/
-singularity/
-results/
 .nextflow/
-.nextflow*
-old_working/
 dataset/
 dev/
 example_of_results/
+results/
+work/
+old_working/
+singularity/
+.nextflow*

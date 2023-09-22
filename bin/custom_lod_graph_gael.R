@@ -207,32 +207,38 @@ if(all(is.na(output.data$Lodscore))){
     # col = hsv(h = c(4,7)/8, s = 0.4, v = 0.8)
     for(loop.chromo.nb in 1:length(chromo.nb)){
         tempo.output.data <- output.data[output.data$Chr == chromo.nb[loop.chromo.nb], ]
-        manhattan(
-            tempo.output.data, 
-            chr = "Chr", 
-            snp = "SNP", 
-            bp = "Physical.position", 
-            p = "Lodscore", 
-            logp = FALSE, 
-            ylab = "LODSCORE", 
-            genomewideline = 3, 
-            suggestiveline = FALSE, 
-            main = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb], "\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]]), 
-            xlim = range(c(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])), 
-            ylim = c(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE)), 
-            cex = 0.6, 
-            cex.main = 0.5
-        )
-        a <- ggplot(data = tempo.output.data, mapping = aes(x= Physical.position, y = Lodscore))
-        b <- geom_line(size=1)
-        # b <- geom_point(size=1)
-        d <- theme_classic(base_size = 14)
-        e <- xlab(paste0("Physical Position on chromosome ", chromo.nb[loop.chromo.nb]))
-        f <- geom_hline(yintercept = 3, color = "red", alpha = 1, size = 1)
-        g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])
-        h <- ylim(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE))
-        i <- labs(title = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb]))
-        print(a + b + d + e + f + g + h + i)
+        if(nrow(tempo.output.data) == 0){
+            tempo.cat <- paste0("\nWARNING: THE ", chromo.nb[loop.chromo.nb], " CHR IS MISSING")
+            cat("\n\n", tempo.cat, "\n\n", sep ="")
+            fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+        }else{
+            manhattan(
+                tempo.output.data, 
+                chr = "Chr", 
+                snp = "SNP", 
+                bp = "Physical.position", 
+                p = "Lodscore", 
+                logp = FALSE, 
+                ylab = "LODSCORE", 
+                genomewideline = 3, 
+                suggestiveline = FALSE, 
+                main = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb], "\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]]), 
+                xlim = range(c(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])), 
+                ylim = c(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE)), 
+                cex = 0.6, 
+                cex.main = 0.5
+            )
+            a <- ggplot(data = tempo.output.data, mapping = aes(x= Physical.position, y = Lodscore))
+            b <- geom_line(size=1)
+            # b <- geom_point(size=1)
+            d <- theme_classic(base_size = 14)
+            e <- xlab(paste0("Physical Position on chromosome ", chromo.nb[loop.chromo.nb]))
+            f <- geom_hline(yintercept = 3, color = "red", alpha = 1, size = 1)
+            g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])
+            h <- ylim(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE))
+            i <- labs(title = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb]))
+            print(a + b + d + e + f + g + h + i)
+        }
     }
 
     fun.open.window(pdf.disp = TRUE, path.fun = path.out, pdf.name.file = "lodscore_settings", width.fun = 7, height.fun = 7, return.output = FALSE)

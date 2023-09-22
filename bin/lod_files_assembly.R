@@ -135,33 +135,44 @@ for(loop.chromo.nb in 1:length(chromo.nb)){ #big loop
 
 
 ################ Data import
-
-
+    test.log <- rep(FALSE, nb_of_groups)
     for(i in 1:nb_of_groups){
-        tempo.lod.file <- paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv")
-        # cat(tempo.lod.file, "\n\n")
-        assign(paste0("lod", i), read.table(tempo.lod.file, header = TRUE, na.strings = "NA", row.names = NULL, dec = decimal.symbol, stringsAsFactors = FALSE))
-        if(any(names(get(paste0("lod", i))) %in% c("LABEL"))){
-            assign(paste0("lod", i), {x <- get(paste0("lod", i)) ; names(x)[names(x) == "LABEL"] <- "SNP" ; x })
-        } else if(any(names(get(paste0("lod", i))) %in% c("LOCATION"))){
-            assign(paste0("lod", i), {x <- get(paste0("lod", i)) ; names(x)[names(x) == "LOCATION"] <- "SNP" ; x })
-        } else{
-            tempo.cat <- paste0("======== ERROR: PROBLEM WITH NAMES OF ", paste0("lod", i), ": ", tempo.lod.file, "\nSHOULD CONTAIN: \"LABEL\" OR \"LOCATION\" AND \"LOD\"")
+        tempo.name <- paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv")
+        if( ! file.exists(tempo.name)){
+            tempo.cat <- paste0("\nWARNING: THE ", tempo.name, " LODSCORE FILE IS MISSING")
             cat("\n\n", tempo.cat, "\n\n", sep ="")
             fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+            test.log[i] <- TRUE
+        }else{
+            tempo.lod.file <- paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv")
+            # cat(tempo.lod.file, "\n\n")
+            assign(paste0("lod", i), read.table(tempo.lod.file, header = TRUE, na.strings = "NA", row.names = NULL, dec = decimal.symbol, stringsAsFactors = FALSE))
+            if(any(names(get(paste0("lod", i))) %in% c("LABEL"))){
+                assign(paste0("lod", i), {x <- get(paste0("lod", i)) ; names(x)[names(x) == "LABEL"] <- "SNP" ; x })
+            } else if(any(names(get(paste0("lod", i))) %in% c("LOCATION"))){
+                assign(paste0("lod", i), {x <- get(paste0("lod", i)) ; names(x)[names(x) == "LOCATION"] <- "SNP" ; x })
+            } else{
+                tempo.cat <- paste0("======== ERROR: PROBLEM WITH NAMES OF ", paste0("lod", i), ": ", tempo.lod.file, "\nSHOULD CONTAIN: \"LABEL\" OR \"LOCATION\" AND \"LOD\"")
+                cat("\n\n", tempo.cat, "\n\n", sep ="")
+                fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+            }
+            if( ! all(c("SNP", "LOD") %in% names(get(paste0("lod", i))))){
+                tempo.cat <- paste0("======== ERROR: PROBLEM WITH NAMES OF ", paste0("lod", i), ": ", tempo.lod.file, "\nSHOULD CONTAIN \"SNP\" AND \"LOD\"")
+                cat("\n\n", tempo.cat, "\n\n", sep ="")
+                fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+            }
+            tempo.map.file <- paste0(path.out, "/map_Group", i, "_c", chromo.nb[loop.chromo.nb], ".txt")
+            assign(paste0("map", i), read.table(tempo.map.file, header = TRUE, na.strings = "NA", dec = decimal.symbol, row.names = NULL, comment.char = "", stringsAsFactors = FALSE))
+            if( ! all(names(get(paste0("map", i))) %in% c("X.Chr", "Genpos", "Marker", "Physpos", "Nr", "GROUP"))){
+                tempo.cat <- paste0("======== ERROR: PROBLEM WITH NAMES OF map: ", tempo.map.file, "\nSHOULD BE: \"X.Chr\", \"Genpos\", \"Marker\", \"Physpos\", \"Nr\", \"GROUP\"")
+                cat("\n\n", tempo.cat, "\n\n", sep ="")
+                fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+            }
         }
-        if( ! all(c("SNP", "LOD") %in% names(get(paste0("lod", i))))){
-            tempo.cat <- paste0("======== ERROR: PROBLEM WITH NAMES OF ", paste0("lod", i), ": ", tempo.lod.file, "\nSHOULD CONTAIN \"SNP\" AND \"LOD\"")
-            cat("\n\n", tempo.cat, "\n\n", sep ="")
-            fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
-        }
-        tempo.map.file <- paste0(path.out, "/map_Group", i, "_c", chromo.nb[loop.chromo.nb], ".txt")
-        assign(paste0("map", i), read.table(tempo.map.file, header = TRUE, na.strings = "NA", dec = decimal.symbol, row.names = NULL, comment.char = "", stringsAsFactors = FALSE))
-        if( ! all(names(get(paste0("map", i))) %in% c("X.Chr", "Genpos", "Marker", "Physpos", "Nr", "GROUP"))){
-            tempo.cat <- paste0("======== ERROR: PROBLEM WITH NAMES OF map: ", tempo.map.file, "\nSHOULD BE: \"X.Chr\", \"Genpos\", \"Marker\", \"Physpos\", \"Nr\", \"GROUP\"")
-            cat("\n\n", tempo.cat, "\n\n", sep ="")
-            fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
-        }
+    }
+    if( ! (sum(test.log) == 0 | sum(test.log) == nb_of_groups)){
+        tempo.cat <- paste0("======== ERROR: IN THE ", paste0(path.out, "/lodscore_GroupX_c", chromo.nb[loop.chromo.nb], ".tsv"), "\nALL GROUPS MUST BE PRESENT OR ABSENT.\nHERE, GROUPS PRESENT ARE:\n", paste(path.out, "/lodscore_Group", c(1:nb_of_groups)[test.log == FALSE], "_c", chromo.nb[loop.chromo.nb], ".tsv", collapse = "\n"), "GROUPS ABSENT ARE:\n", paste(path.out, "/lodscore_Group", c(1:nb_of_groups)[test.log == TRUE], "_c", chromo.nb[loop.chromo.nb], ".tsv", collapse = "\n"))
+        stop(tempo.cat)
     }
 
 ################ Processing

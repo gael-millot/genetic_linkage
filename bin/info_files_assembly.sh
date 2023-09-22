@@ -42,7 +42,7 @@ module load R # module can be used because it is a specific docker
 
 ################ STARTING
 
-echo -e "\n----LOD FILE ASSEMBLY PROCESS----\n"
+echo -e "\n----INFO FILE ASSEMBLY PROCESS----\n"
 echo -e "r_info_files_assembly_conf: ${r_info_files_assembly_conf}\n"
 echo -e "r_main_functions_conf_ch: ${r_main_functions_conf_ch}\n"
 echo -e "info_files: ${info_files}\n"
@@ -64,8 +64,8 @@ else
     for i in $CHROMO_NB ; do # I left "" to set the numbers as character strings
         for ((j=1; j<=$nb_of_groups; j++)); do
             if [[ ! -f "$OUTPUT_DIR_PATH/info_Group${j}_c${i}.tsv" ]] ; then
-                echo -e "\n======== ERROR: THE info_Group${j}_c${i}.tsv LODSCORE FILE IS MISSING\n"
-                exit 1
+                echo -e "\nWARNING: THE info_Group${j}_c${i}.tsv LODSCORE FILE IS MISSING\n"
+                # exit 1
             fi
         done
     done
@@ -77,7 +77,7 @@ else
     $R_PROC
 fi
 
-echo -e "\n\n################ END OF LOD FILE ASSEMBLY\n\n"
+echo -e "\n\n################ END OF INFO FILE ASSEMBLY\n\n"
 
 ################ END MAIN CODE
 

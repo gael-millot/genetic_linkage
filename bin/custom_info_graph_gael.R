@@ -43,8 +43,8 @@ args <- commandArgs(trailingOnly = TRUE)  # recover arguments written after the 
 tempo.arg.names <- c("r_main_functions", "chr_info", "file", "chromo.nb.set", "lod.cutoff", "path.out", "model")
 
 if(length(args) != length(tempo.arg.names)){
-  tempo.cat <- paste0("======== ERROR: THE NUMBER OF ELEMENTS IN args (", length(args),") IS DIFFERENT FROM THE NUMBER OF ELEMENTS IN tempo.arg.names (", length(tempo.arg.names),")\nargs:", paste0(args, collapse = ","), "\ntempo.arg.names:", paste0(tempo.arg.names, collapse = ","))
-  stop(tempo.cat)
+    tempo.cat <- paste0("======== ERROR: THE NUMBER OF ELEMENTS IN args (", length(args),") IS DIFFERENT FROM THE NUMBER OF ELEMENTS IN tempo.arg.names (", length(tempo.arg.names),")\nargs:", paste0(args, collapse = ","), "\ntempo.arg.names:", paste0(tempo.arg.names, collapse = ","))
+    stop(tempo.cat)
 }
 for(i in 1:length(tempo.arg.names)){
     assign(tempo.arg.names[i], args[i])
@@ -189,15 +189,21 @@ if(all(is.na(output.data$Information))){
     # col = hsv(h = c(4,7)/8, s = 0.4, v = 0.8)
     for(loop.chromo.nb in 1:length(chromo.nb)){
         tempo.output.data <- output.data[output.data$Chr == chromo.nb[loop.chromo.nb], ]
-        a <- ggplot(data = tempo.output.data, mapping = aes(x= Physical.position, y = Information, color = Group))
-        b <- geom_point(size=1)
-        # b <- geom_point(size=1)
-        d <- theme_classic(base_size = 14)
-        e <- xlab(paste0("Physical Position on chromosome ", chromo.nb[loop.chromo.nb]))
-        g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])
-        h <- ylim(min(output.data$Information, na.rm = TRUE), max(output.data$Information, na.rm = TRUE))
-        i <- labs(title = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb], "\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]]))
-        print(a + b + d + e + g + h + i)
+        if(nrow(tempo.output.data) == 0){
+            tempo.cat <- paste0("\nWARNING: THE ", chromo.nb[loop.chromo.nb], " CHR IS MISSING")
+            cat("\n\n", tempo.cat, "\n\n", sep ="")
+            fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+        }else{
+            a <- ggplot(data = tempo.output.data, mapping = aes(x= Physical.position, y = Information, color = Group))
+            b <- geom_point(size=1)
+            # b <- geom_point(size=1)
+            d <- theme_classic(base_size = 14)
+            e <- xlab(paste0("Physical Position on chromosome ", chromo.nb[loop.chromo.nb]))
+            g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])
+            h <- ylim(min(output.data$Information, na.rm = TRUE), max(output.data$Information, na.rm = TRUE))
+            i <- labs(title = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb], "\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]]))
+            print(a + b + d + e + g + h + i)
+        }
     }
 }
 

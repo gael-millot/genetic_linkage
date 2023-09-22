@@ -64,8 +64,8 @@ else
     for i in $CHROMO_NB ; do # I left "" to set the numbers as character strings
         for ((j=1; j<=$nb_of_groups; j++)); do
             if [[ ! -f "$OUTPUT_DIR_PATH/lodscore_Group${j}_c${i}.tsv" ]] ; then
-                echo -e "\n======== ERROR: THE lodscore_Group${j}_c${i}.tsv LODSCORE FILE IS MISSING\n"
-                exit 1
+                echo -e "\nWARNING: THE lodscore_Group${j}_c${i}.tsv LODSCORE FILE IS MISSING\n"
+                # exit 1
             fi
         done
     done
