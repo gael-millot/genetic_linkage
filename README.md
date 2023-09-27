@@ -34,11 +34,11 @@
 <br /><br />
 ## CONTENT
 
-**linkage.nf**: File that can be executed using a linux terminal, a MacOS terminal or Windows 10 WSL2.
+**main.nf**: File that can be executed using a linux terminal, a MacOS terminal or Windows 10 WSL2.
 <br /><br />
-**linkage.config**: Parameter settings for the linkage.nf file. Users have to open this file, set the desired settings and save these modifications before execution.
+**nextflow.config**: Parameter settings for the main.nf file. Users have to open this file, set the desired settings and save these modifications before execution.
 <br /><br />
-**bin**: Folder containing script files that are used by the linkage.nf file.
+**bin**: Folder containing script files that are used by the main.nf file.
 
 
 <br /><br />
@@ -66,7 +66,7 @@ Installation of:<br />
 ### 2. Local running (personal computer)
 
 
-#### 2.1. linkage.nf file in the personal computer
+#### 2.1. main.nf file in the personal computer
 
 - Mount a server if required:
 
@@ -78,20 +78,20 @@ sudo mount -t drvfs $DRIVE: /mnt/z
 
 Warning: if no mounting, it is possible that nextflow does nothing, or displays a message like:
 <pre>
-Launching `linkage.nf` [loving_morse] - revision: d5aabe528b
+Launching `main.nf` [loving_morse] - revision: d5aabe528b
 /mnt/share/Users
 </pre>
 
-- Run the following command from where the linkage.nf and linkage.config files are (example: \\wsl$\Ubuntu-20.04\home\gael):
+- Run the following command from where the main.nf and nextflow.config files are (example: \\wsl$\Ubuntu-20.04\home\gael):
 
 <pre>
-nextflow run linkage.nf -c linkage.config
+nextflow run main.nf -c nextflow.config
 </pre>
 
 with -c to specify the name of the config file used.
 
 <br /><br />
-#### 2.3. linkage.nf file in the public gitlab repository
+#### 2.3. main.nf file in the public gitlab repository
 
 Run the following command from where you want the results:
 
@@ -107,7 +107,7 @@ nextflow run -hub pasteur gmillot/genetic_linkage -r v1.0.0
 Copy-paste this after having modified the EXEC_PATH variable:
 
 <pre>
-EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/genetic_linkage" # where the bin folder of the linkage.nf script is located
+EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/genetic_linkage" # where the bin folder of the main.nf script is located
 export CONF_BEFORE=/opt/gensoft/exe # on maestro
 
 export JAVA_CONF=java/13.0.2
@@ -126,21 +126,21 @@ module load ${JAVA_CONF} ${SINGU_CONF} ${GIT_CONF} ${GRAPHVIZ_CONF}
 </pre>
 
 <br /><br />
-#### 3.2. linkage.nf file in a cluster folder
+#### 3.2. main.nf file in a cluster folder
 
-Modify the second line of the code below, and run from where the linkage.nf and linkage.config files are (which has been set thanks to the EXEC_PATH variable above):
+Modify the second line of the code below, and run from where the main.nf and nextflow.config files are (which has been set thanks to the EXEC_PATH variable above):
 
 <pre>
 HOME_INI=$HOME
 HOME="${ZEUSHOME}/genetic_linkage/" # $HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/, for instance. See NFX_HOME in the nextflow software script
 trap '' SIGINT
-nextflow run --modules ${MODULES} linkage.nf -c linkage.config
+nextflow run --modules ${MODULES} main.nf -c nextflow.config
 HOME=$HOME_INI
 trap SIGINT
 </pre>
 
 <br /><br />
-#### 3.3. linkage.nf file in the public gitlab repository
+#### 3.3. main.nf file in the public gitlab repository
 
 Modify the first and third lines of the code below, and run (results will be where the EXEC_PATH variable has been set above):
 
@@ -149,7 +149,7 @@ VERSION="v1.0"
 HOME_INI=$HOME
 HOME="${ZEUSHOME}/genetic_linkage/" # $HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/, for instance. See NFX_HOME in the nextflow software script
 trap '' SIGINT
-nextflow run --modules ${MODULES} -hub pasteur gmillot/genetic_linkage -r $VERSION -c $HOME/linkage.config
+nextflow run --modules ${MODULES} -hub pasteur gmillot/genetic_linkage -r $VERSION -c $HOME/nextflow.config
 HOME=$HOME_INI
 trap SIGINT
 </pre>
@@ -187,13 +187,13 @@ Use chmod to change the user rights.
 ## OUTPUT
 
 
-**reports**: Folder containing the classical reports of nextflow including the *linkage.config* file used
+**reports**: Folder containing the classical reports of nextflow including the *nextflow.config* file used
 <br /><br />
 **merlin_reports**: Folder containing all the reports of the different processes
 <br /><br />
 **complete_lodscore.tsv**: Whole Genome Lodscore
 <br /><br />
-**cutoff\*complete_lodscore.tsv**: Lines of the complete_lodscore.tsv file above a Lodscore threshold defined in the linkage.config file
+**cutoff\*complete_lodscore.tsv**: Lines of the complete_lodscore.tsv file above a Lodscore threshold defined in the nextflow.config file
 <br /><br />
 **lodscore_whole_genome.pdf**: Plot of the Lodscore, whole genome and per chromosome
 <br /><br />
@@ -298,7 +298,7 @@ pdf debugged and .Rdata returned, for making nice graphs thenafter
 
 ### v2.1
 
-Small improve of linkage.nf file + README file
+Small improve of main.nf file + README file
 
 
 ### v2.0
