@@ -191,15 +191,19 @@ Use chmod to change the user rights.
 <br /><br />
 **merlin_reports**: Folder containing all the reports of the different processes
 <br /><br />
+**Group\*c\*\*_merlin**: Folder containing the information provided by Merlin for each group of patients and for each chromosome
+<br /><br />
 **complete_lodscore.tsv**: Whole Genome Lodscore
 <br /><br />
-**cutoff\*complete_lodscore.tsv**: Lines of the complete_lodscore.tsv file above a Lodscore threshold defined in the nextflow.config file
+**cutoff\*complete_lodscore.tsv**: Lines of the *complete_lodscore.tsv* file above a Lodscore threshold defined in the nextflow.config file
 <br /><br />
-**lodscore_whole_genome.pdf**: Plot of the Lodscore, whole genome and per chromosome
+**lodscore_whole_genome.pdf**: Plot of the Lodscores (both whole genome and per chromosome). Model used is indicated in the title, as well as some user settings (chr nb and lodscore cut-offs, separated by pipes)
 <br /><br />
-**lodscore_settings.pdf**: Plot of the cutoff\*complete_lodscore.tsv files
+**lodscore_settings.pdf**: Plot of the *cutoff\*complete_lodscore.tsv* files
 <br /><br />
-**lodscore_settings.pdf**: Plot of the cutoff\*complete_lodscore.tsv files
+**complete_information.tsv**: Information of each SNP for each group of patients
+<br /><br />
+**infor_whole_genome.pdf**: Plot of the *complete_information.tsv* files
 <br /><br />
 **pedstats.markerinfo_c\***: Marker genotype statistics (one file per chromosome)
 <br /><br />
@@ -214,6 +218,10 @@ Use chmod to change the user rights.
 **raw_snp.map.absent.in.freq.txt**: raw snp in the map file but absent in the freq file
 <br /><br />
 **raw_snp.not.geno.atall.in.genotype**: raw snp not genotyped in any of the indiv in the genotype file
+<br /><br />
+**lod_data.RData**: R file of the data used to generate the *lodscore_whole_genome.pdf* file
+<br /><br />
+**info_data.RData**: R file of the data used to generate the *infor_whole_genome.pdf* file
 
 
 <br /><br />
@@ -265,6 +273,11 @@ The developers & maintainers of the mentioned softwares and packages, including:
 
 <br /><br />
 ## WHAT'S NEW IN
+
+#### v2.8
+
+code much improved so that controls are reinforced. Non parametric analysis is back again
+
 
 #### v2.7
 

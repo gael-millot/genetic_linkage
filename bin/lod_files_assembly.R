@@ -181,15 +181,22 @@ for(loop.chromo.nb in 1:length(chromo.nb)){ #big loop
     for(i in 1:(nb_of_groups - 1)){
         for(j in i:nb_of_groups){
             if( ! identical(get(paste0("lod", i))$SNP, get(paste0("lod", j))$SNP)){
+                test.log <- FALSE
                 tempo.cat <- paste0("\nPROBLEM WITH SNP ORDER IN lod" , i, " AND lod" , j, " IN CHROMO ", chromo.nb[loop.chromo.nb], "\nTHE FILES CONCERNED ARE:\nlod" , i, ": ", paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv"), "\nlod" , j, ": ", paste0(path.out, "/lodscore_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv"))
-                if(nrow(get(paste0("lod", i))) == 0){
-                    tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN lod" , i, " WHICH IS ", paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv\nBEWARE: THE LODSCORE ADDITION WILL NOT TAKE THIS FILE INTO ACCOUNT (LODSCORE DECREASED FOR CHROMO ", chromo.nb[loop.chromo.nb], " COMPARED TO THE OTHER CHROMOSOMES)"))
+                if(nrow(get(paste0("lod", i))) == 0 & nrow(get(paste0("lod", j))) != 0){
+                    test.log <- TRUE
+                    tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN lod" , i, " WHICH IS ", paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv\nBEWARE: THE LODSCORE ADDITION WILL NOT TAKE THIS FILE INTO ACCOUNT (LODSCORE DECREASED FOR CHROMO ", chromo.nb[loop.chromo.nb], " COMPARED TO THE OTHER CHROMOSOMES)\nIF ON Chr23 (ChrX), NO ROWS COULD MEAN \"NO INFORMATIVE FAMILY\" BECAUSE ONLY MALES IN THE PEDIGREE"))
                 }
-                if(nrow(get(paste0("lod", j))) == 0){
-                    tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN lod" , j, " WHICH IS ", paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv\nBEWARE: THE LODSCORE ADDITION WILL NOT TAKE THIS FILE INTO ACCOUNT (LODSCORE DECREASED FOR CHROMO ", chromo.nb[loop.chromo.nb], " COMPARED TO THE OTHER CHROMOSOMES)"))
+                if(nrow(get(paste0("lod", i))) != 0 & nrow(get(paste0("lod", j))) == 0){
+                    test.log <- TRUE
+                    tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN lod" , j, " WHICH IS ", paste0(path.out, "/lodscore_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv\nBEWARE: THE LODSCORE ADDITION WILL NOT TAKE THIS FILE INTO ACCOUNT (LODSCORE DECREASED FOR CHROMO ", chromo.nb[loop.chromo.nb], " COMPARED TO THE OTHER CHROMOSOMES)\nIF ON Chr23 (ChrX), NO ROWS COULD MEAN \"NO INFORMATIVE FAMILY\" BECAUSE ONLY MALES IN THE PEDIGREE"))
                 }
                 fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
-                stop(paste0("\n\n", tempo.cat, "\n\n", sep =""))
+                if(test.log == TRUE){
+                    cat(paste0("\n\n", tempo.cat, "\n\n", sep =""))
+                }else{
+                    cat(paste0("\n\n", tempo.cat, "\n\n", sep =""))
+                }
             }
             if( ! identical(get(paste0("map", i))$Marker, get(paste0("map", j))$Marker)){
                 tempo.cat <- paste0("\nPROBLEM WITH Marker ORDER IN map" , i, " AND map" , j, " IN CHROMO ", chromo.nb[loop.chromo.nb], "\nTHE FILES CONCERNED ARE:\nmap" , i, ": ", paste0(path.out, "/map_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv"), "\nmap" , j, ": ", paste0(path.out, "/map_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv"))
@@ -235,7 +242,7 @@ for(loop.chromo.nb in 1:length(chromo.nb)){ #big loop
                 phys.pos <- get("map1")$Physpos[ !  get("map1")$Marker %in% snp.rm]
                 chr <- get("map1")$X.Chr[ !  get("map1")$Marker %in% snp.rm]
                 lodscore <- lodsum[ !  lod1$SNP %in% snp.rm]
-                tempo.cat <- paste0("THE REMOVED SNP ARE:", paste0(snp.rm, collapse = " "))
+                tempo.cat <- paste0("THE REMOVED SNP ARE:",  if(length(snp.rm) > 200){" see r_lod_files_assembly.log"}else{paste0(snp.rm, collapse = " ")})
                 cat("\n\n", tempo.cat, "\n\n", sep ="")
                 fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
             }else{

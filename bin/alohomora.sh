@@ -26,6 +26,7 @@ PEDIGREE_FILE_NAME=${5} # {pedigree_ch}
 r_main_functions_conf=${6} # {r_main_functions_conf_ch}
 r_check_lod_gael_conf=${7} # {r_check_lod_gael_conf_ch}
 alohomora_bch_conf=${8} # {alohomora_bch_conf_ch}
+SPLIT_IND_CONF=${9} # IID_IN_GROUP_CONF
 
 
 # echo -e "\nJOB COMMAND EXECUTED:\n$0\n" # to get the line that executes the job but does not work (gives /bioinfo/guests/gmillot/Gael_code/workflow_fastq_gael.sh)
@@ -41,6 +42,9 @@ OUTPUT_DIR_PATH="."
 module load R # module can be used because it is a specific docker
 module load genehunter/2.1_r2 pedstats/0.6.12 merlin/1.1.2 plink/1.90b6.16 pedcheck/1.1 gnuplot/5.2.8 simwalk2/2.91 alohomora/v0.36 # module can be used because it is a specific docker
 R_OPT_TXT_CONF="notxt"
+
+TEMPO_IND=$(echo ${SPLIT_IND_CONF} | sed 's/ /,/g') # space replacement by comma
+
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
@@ -74,12 +78,13 @@ if [[ $RUNNING_OP =~ postsplitting_check ]] ; then
         echo -e "r_main_functions_conf: ${r_main_functions_conf}\n"
         echo -e "r_check_lod_gael_conf: ${r_check_lod_gael_conf}\n"
         echo -e "alohomora_bch_conf: ${alohomora_bch_conf}\n"
+        echo -e "SPLIT_IND_CONF: ${SPLIT_IND_CONF}\n"
         echo -e "\n\n"
 
         OUTPUT_R="r_postsplitting_check_report_${GROUP_NAME}.txt" ;
         OUTPUT_ERROR_R="r_postsplitting_check_error_${GROUP_NAME}.txt" ;
         R_PROC="Rscript ${r_check_lod_gael_conf} $OUTPUT_DIR_PATH $OUTPUT_R $OUTPUT_ERROR_R ${GROUP_NAME}/${GENOTYPE_FILE_NAME} ${GROUP_NAME}/${FREQ_FILE_NAME} ${GROUP_NAME}/${MAP_FILE_NAME} ${GROUP_NAME}/${PEDIGREE_FILE_NAME}" # for R analysis after the loop
-        R_PROC="${R_PROC} $r_main_functions_conf postsplit $R_OPT_TXT_CONF" # for R analysis after the loop
+        R_PROC="${R_PROC} $r_main_functions_conf postsplit $TEMPO_IND $R_OPT_TXT_CONF" # for R analysis after the loop
         echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
         shopt -s expand_aliases # to be sure that alias are expended to the different environments
         $R_PROC

@@ -116,7 +116,7 @@ if( ! is.character(model)){
     tempo.cat <- paste0("======== ERROR: THE model ARGUMENT IN args (", model,") MUST BE A SINGLE CHARACTER STRING")
     stop(tempo.cat)
 }else{
-    model <- gsub(model, "_;_", " ")
+    model <- gsub(x = model, pattern = "_;_", replacement = " ")
 } # here replace _;_ by space
 
 
@@ -185,6 +185,8 @@ if(all(is.na(output.data$Lodscore))){
 
     ####### printing files
 
+    tempo.ylim <- c(min(output.data$Lodscore, na.rm = TRUE), ifelse(max(output.data$Lodscore, na.rm = TRUE) < 3.1, 3.1, max(output.data$Lodscore, na.rm = TRUE)))
+
     library(ggplot2)
     library(qqman)
     fun.open.window(pdf.disp = TRUE, path.fun = path.out, pdf.name.file = "lodscore_whole_genome", width.fun = 7, height.fun = 7, return.output = FALSE)
@@ -200,7 +202,7 @@ if(all(is.na(output.data$Lodscore))){
         suggestiveline = FALSE, 
         main = paste0("WHOLE GENOME\nMODEL: ", model, "\nX-AXIS RANGE: ", min(chr.info$LENGTH_CUMUL_TO_ADD), "-", max(chr.info$LENGTH_CUMUL)), 
         xlim = c(min(chr.info$LENGTH_CUMUL_TO_ADD), max(chr.info$LENGTH_CUMUL)), 
-        ylim = range(output.data$Lodscore, na.rm = TRUE), 
+        ylim = tempo.ylim, 
         cex = 0.6, 
         cex.main = 0.5
     )
@@ -224,7 +226,7 @@ if(all(is.na(output.data$Lodscore))){
                 suggestiveline = FALSE, 
                 main = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb], "\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]]), 
                 xlim = range(c(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])), 
-                ylim = c(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE)), 
+                ylim = tempo.ylim, 
                 cex = 0.6, 
                 cex.main = 0.5
             )
@@ -235,7 +237,7 @@ if(all(is.na(output.data$Lodscore))){
             e <- xlab(paste0("Physical Position on chromosome ", chromo.nb[loop.chromo.nb]))
             f <- geom_hline(yintercept = 3, color = "red", alpha = 1, size = 1)
             g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb]])
-            h <- ylim(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE))
+            h <- ylim(tempo.ylim)
             i <- labs(title = paste0("CHROMOSOME ", chromo.nb[loop.chromo.nb]))
             print(a + b + d + e + f + g + h + i)
         }
@@ -263,9 +265,9 @@ if(all(is.na(output.data$Lodscore))){
                             ylab = "LODSCORE", 
                             genomewideline = 3, 
                             suggestiveline = FALSE, 
-                            main = paste0("CHROMOSOME ", chromo.nb.set[loop.chromo.nb.set] , " | LOD SCORE CUT-OFF ", lod.cutoff[i], "\n\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb.set]]), 
+                            main = paste0("MODEL: ", model, "\nCHROMOSOME ", chromo.nb.set[loop.chromo.nb.set] , " | LOD SCORE CUT-OFF ", lod.cutoff[i], "\n\nX-AXIS RANGE: 0-", chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb[loop.chromo.nb.set]]), 
                             xlim = range(c(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb.set[loop.chromo.nb.set]])),
-                            ylim = c(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE)), 
+                            ylim = tempo.ylim, 
                             cex = 0.6, 
                             cex.main = 0.5
                         )
@@ -276,7 +278,7 @@ if(all(is.na(output.data$Lodscore))){
                         e <- xlab(paste0("Physical Position on chromosome ", chromo.nb.set[loop.chromo.nb.set]))
                         f <- geom_hline(yintercept = 3, color = "red", alpha = 1, size = 1)
                         g <- xlim(0, chr.info$BP_LENGTH[chr.info$CHR_NB == chromo.nb.set[loop.chromo.nb.set]])
-                        h <- ylim(min(output.data$Lodscore, na.rm = TRUE), max(output.data$Lodscore, na.rm = TRUE))
+                        h <- ylim(tempo.ylim)
                         i <- labs(title = paste0("CHROMOSOME ", chromo.nb.set[loop.chromo.nb.set]))
                         print(a + b + d + e + f + g + h + i)
                     }

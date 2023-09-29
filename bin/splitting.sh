@@ -25,7 +25,7 @@ GENOTYPE_FILE_NAME=${1} # {genotype_ch}
 FREQ_FILE_NAME=${2} # {freq_ch}
 MAP_FILE_NAME=${3} # {map_ch}
 PEDIGREE_FILE_NAME=${4} # {pedigree_ch}
-SPLIT_IND_CONF=${5}
+SPLIT_IND_CONF=${5} # IID_IN_GROUP_CONF
 
 
 

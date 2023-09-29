@@ -30,7 +30,7 @@ RAW_PEDIGREE_FILE_NAME_CONF=${4} # {pedigree_ch}
 BASH_FUNCTIONS_CONF=${5} # {BASH_FUNCTIONS_CONF_ch}
 r_main_functions_conf=${6} # {r_main_functions_conf_ch}
 r_check_lod_gael_conf=${7} # {r_check_lod_gael_conf_ch}
-
+SPLIT_IND_CONF=${8} # IID_IN_GROUP_CONF
 
 ################ END INITIALIZATION
 
@@ -49,6 +49,7 @@ FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
 file_name_Num=$(( ${#FILE_NAME[@]} - 1 )) # total number of elements in the array
 
+TEMPO_IND=$(echo ${SPLIT_IND_CONF} | sed 's/ /,/g') # space replacement by comma
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
@@ -69,6 +70,7 @@ echo -e "PEDIGREE_FILE_NAME: ${RAW_PEDIGREE_FILE_NAME_CONF}\n"
 echo -e "BASH_FUNCTIONS_CONF: ${BASH_FUNCTIONS_CONF}\n"
 echo -e "r_main_functions_conf: ${r_main_functions_conf}\n"
 echo -e "r_check_lod_gael_conf: ${r_check_lod_gael_conf}\n"
+echo -e "SPLIT_IND_CONF: ${SPLIT_IND_CONF}\n"
 echo -e "\n\n"
 
 source "${BASH_FUNCTIONS_CONF}"
@@ -258,7 +260,7 @@ if [[ $RUNNING_OP =~ rawfile_check ]] ; then
         echo -e "\nTHE ${!FILE_NAME[$i]} FILE WILL BE USED FOR SUBSEQUENT PROCESSINGS\nTHIS FILE IS IN ${FILE_NAME_PATH[$i]}/\n"
     done
 
-    R_PROC="${R_PROC} $r_main_functions_conf raw $R_OPT_TXT_CONF" # raw to specify that the check is at the raw step
+    R_PROC="${R_PROC} $r_main_functions_conf raw $TEMPO_IND $R_OPT_TXT_CONF" # raw to specify that the check is at the raw step
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
     $R_PROC

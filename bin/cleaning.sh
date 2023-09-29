@@ -28,7 +28,7 @@ PEDIGREE_FILE_NAME=${4} # {pedigree_ch}
 r_main_functions_conf=${5} # {r_main_functions_conf_ch}
 r_check_lod_gael_conf=${6} # {r_check_lod_gael_conf_ch}
 r_clean_lod_gael_conf=${7} # {r_clean_lod_gael_conf_ch}
-
+SPLIT_IND_CONF=${8} # IID_IN_GROUP_CONF
 
 
 
@@ -49,6 +49,8 @@ FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
 file_name_Num=$(( ${#FILE_NAME[@]} - 1 )) # total number of elements in the array
 
+TEMPO_IND=$(echo ${SPLIT_IND_CONF} | sed 's/ /,/g') # space replacement by comma
+
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
 
@@ -68,6 +70,7 @@ echo -e "PEDIGREE_FILE_NAME: ${PEDIGREE_FILE_NAME}\n"
 echo -e "r_main_functions_conf: ${r_main_functions_conf}\n"
 echo -e "r_check_lod_gael_conf: ${r_check_lod_gael_conf}\n"
 echo -e "r_clean_lod_gael_conf: ${r_clean_lod_gael_conf}\n"
+echo -e "SPLIT_IND_CONF: ${SPLIT_IND_CONF}\n"
 echo -e "\n\n"
 
 
@@ -181,7 +184,7 @@ if [[ $RUNNING_OP =~ postcleaning_check ]] ; then
         INPUT=$(echo ${FILE_NAME_PATH[$i]})/$(echo ${!FILE_NAME[$i]})
         R_PROC="${R_PROC} ${INPUT}"
     done
-    R_PROC="${R_PROC} $r_main_functions_conf postclean $R_OPT_TXT_CONF" # for R analysis after the loop
+    R_PROC="${R_PROC} $r_main_functions_conf postclean $TEMPO_IND $R_OPT_TXT_CONF" # for R analysis after the loop
     echo -e "\nTHE COMMAND USED FOR R ANALYSES IS:\n${R_PROC}\n"
     shopt -s expand_aliases # to be sure that alias are expended to the different environments
     $R_PROC
