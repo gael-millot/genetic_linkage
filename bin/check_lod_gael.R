@@ -588,7 +588,9 @@ for(i in 3:4){
   if( ! all(tempo)){
     fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, 3], collapse = " "), "IN COLUMN ", i, ") NOT IN COLUM 2"), output = output_file_name, sep = 2)
     fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, 3], collapse = " "), "IN COLUMN ", i, ") NOT IN COLUM 2"), output = output_error_file_name, sep = 2)
-    stop("FATHER OR MOTHER NOT PRESENT AS INDIV IN PEDFILE")
+    if(kind != "postsplit"){
+        stop(paste0("FATHER OR MOTHER NOT PRESENT AS INDIV IN PEDFILE: ", paste(pedfile[ ! tempo, 3], collapse = " ")))
+    }
   }else{
     fun.export.data(path = path.out, data = paste0("ALL ", tempo.name," ID (COLUMN ", i, ") PRESENT IN COLUM 2"), output = output_file_name, sep = 2)
   }
@@ -597,7 +599,9 @@ if(nrow(pedfile) != (ncol(genotype) - 1)){
     tempo <- paste0("BEWARE: THE NUMBER OF INDIVIDUALS IS NOT THE SAME IN THE GENOTYPE (", (ncol(genotype) - 1), ") AND PEDIGREE (", nrow(pedfile), ") FILES")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
-    stop(tempo)
+    if(kind == "postsplit"){
+        stop(tempo)
+    }
 }else{
     fun.export.data(path = path.out, data = paste0("THE NUMBER OF INDIVIDUALS IS THE SAME IN THE GENOTYPE AND PEDIGREE FILES: ", nrow(pedfile)), output = output_file_name, sep = 1)
 }
@@ -618,7 +622,9 @@ if( ! (all(geno.file.nb %in% pedfile$ind_ID) & all(pedfile$ind_ID %in% geno.file
         fun.export.data(path = path.out, data = tempo3, output = output_file_name, sep = 1)
         fun.export.data(path = path.out, data = tempo3, output = output_error_file_name, sep = 1)
     }
-    stop(paste0(tempo, "\n", tempo2, "\n", tempo3, "\n"))
+    if(kind == "postsplit"){
+        stop(paste0(tempo, "\n", tempo2, "\n", tempo3, "\n"))
+    }
 }else{
     tempo <- paste0("THE INDIVIDUALS ID ARE THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)

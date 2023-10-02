@@ -111,10 +111,9 @@ if [[ $RUNNING_OP =~ alohomora ]] ; then
     for i in "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" ; do # I left "" to set the numbers as character strings
         CHROMO_NB="c$i"
         if [[ ! -d ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB ]] ; then
-            echo -e "\n======== ERROR: THE ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB DIRECTORY IS MISSING"
-            exit 1
-        fi
-        if [[ ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/datain.${i} || ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/map.${i} || ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/merlin_map.${i} || ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/pedin.${i} ]] ; then
+            echo -e "\nWarning: THE ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB DIRECTORY IS MISSING"
+            # exit 1
+        elif [[ ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/datain.${i} || ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/map.${i} || ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/merlin_map.${i} || ! -f ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/pedin.${i} ]] ; then
             echo -e "\n======== ERROR: ONE OF THIS FILE AT LEAST IS MISSING:"
             echo -e "datain.${i}: ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/datain.${i}"
             echo -e "map.${i}: ${TEMPO_OUTPUT_PATH}/merlin/$CHROMO_NB/map.${i}"

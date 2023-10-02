@@ -3,9 +3,8 @@
 
 | usage | dependencies |
 | --- | --- |
-| [![Nextflow](https://img.shields.io/badge/code-Nextflow-blue?style=plastic)](https://www.nextflow.io/) | [![Dependencies: Nextflow Version](https://img.shields.io/badge/Nextflow-v22.10.3-blue?style=plastic)](https://github.com/nextflow-io/nextflow) |
-| [![License: GPL-3.0](https://img.shields.io/badge/licence-GPL%20(%3E%3D3)-green?style=plastic)](https://www.gnu.org/licenses) | [![Dependencies: Singularity Version](https://img.shields.io/badge/Singularity-v3.8.0-blue?style=plastic)](https://github.com/apptainer/apptainer) |
-
+| [![Nextflow](https://img.shields.io/badge/code-Nextflow-blue?style=plastic)](https://www.nextflow.io/) | [![Dependencies: Nextflow Version](https://img.shields.io/badge/Nextflow-v23.04.4.5881-blue?style=plastic)](https://github.com/nextflow-io/nextflow) |
+| [![License: GPL-3.0](https://img.shields.io/badge/licence-GPL%20(%3E%3D3)-green?style=plastic)](https://www.gnu.org/licenses) | [![Dependencies: Apptainer Version](https://img.shields.io/badge/Apptainer-v1.2.3-blue?style=plastic)](https://github.com/apptainer/apptainer) |
 
 <br /><br />
 ## TABLE OF CONTENTS
@@ -60,7 +59,7 @@ See the Alohomora_Format.doc in https://gmc.mdc-berlin.de/alohomora/docs.zip
 Installation of:<br />
 [nextflow DSL2](https://github.com/nextflow-io/nextflow)<br />
 [Graphviz](https://www.graphviz.org/download/), `sudo apt install graphviz` for Linux ubuntu<br />
-[Singularity/apptainer](https://github.com/apptainer/apptainer)<br />
+[Apptainer](https://github.com/apptainer/apptainer)<br />
 
 <br /><br />
 ### 2. Local running (personal computer)
@@ -72,8 +71,8 @@ Installation of:<br />
 
 <pre>
 DRIVE="Z"
-sudo mkdir /mnt/z
-sudo mount -t drvfs $DRIVE: /mnt/z
+sudo mkdir /mnt/share
+sudo mount -t drvfs $DRIVE: /mnt/share
 </pre>
 
 Warning: if no mounting, it is possible that nextflow does nothing, or displays a message like:
@@ -112,17 +111,17 @@ export CONF_BEFORE=/opt/gensoft/exe # on maestro
 
 export JAVA_CONF=java/13.0.2
 export JAVA_CONF_AFTER=bin/java # on maestro
-export SINGU_CONF=apptainer/1.1.5
-export SINGU_CONF_AFTER=bin/singularity # on maestro
+export APP_CONF=apptainer/1.2.3
+export APP_CONF_AFTER=bin/apptainer # on maestro
 export GIT_CONF=git/2.39.1
 export GIT_CONF_AFTER=bin/git # on maestro
 export GRAPHVIZ_CONF=graphviz/2.42.3
 export GRAPHVIZ_CONF_AFTER=bin/graphviz # on maestro
 
-MODULES="${CONF_BEFORE}/${JAVA_CONF}/${JAVA_CONF_AFTER},${CONF_BEFORE}/${SINGU_CONF}/${SINGU_CONF_AFTER},${CONF_BEFORE}/${GIT_CONF}/${GIT_CONF_AFTER}/${GRAPHVIZ_CONF}/${GRAPHVIZ_CONF_AFTER}"
+MODULES="${CONF_BEFORE}/${JAVA_CONF}/${JAVA_CONF_AFTER},${CONF_BEFORE}/${APP_CONF}/${APP_CONF_AFTER},${CONF_BEFORE}/${GIT_CONF}/${GIT_CONF_AFTER}/${GRAPHVIZ_CONF}/${GRAPHVIZ_CONF_AFTER}"
 cd ${EXEC_PATH}
-chmod 755 ${EXEC_PATH}/bin/*.*
-module load ${JAVA_CONF} ${SINGU_CONF} ${GIT_CONF} ${GRAPHVIZ_CONF}
+chmod 755 ${EXEC_PATH}/bin/*.* # not required if no bin folder
+module load ${JAVA_CONF} ${APP_CONF} ${GIT_CONF} ${GRAPHVIZ_CONF}
 </pre>
 
 <br /><br />
@@ -261,18 +260,29 @@ Eric Deveaud, HPC Core Facility, Institut Pasteur, Paris
 
 The developers & maintainers of the mentioned softwares and packages, including:
 
-- [Bash](https://www.gnu.org/software/bash/)
 - [R](https://www.r-project.org/)
 - [ggplot2](https://ggplot2.tidyverse.org/)
 - [ggtree](https://yulab-smu.top/treedata-book/)
 - [Nextflow](https://www.nextflow.io/)
-- [Singularity/Apptainer](https://apptainer.org/)
+- [Apptainer](https://apptainer.org/)
 - [Docker](https://www.docker.com/)
 - [Gitlab](https://about.gitlab.com/)
+- [Bash](https://www.gnu.org/software/bash/)
+- [Ubuntu](https://ubuntu.com/)
 
 
 <br /><br />
 ## WHAT'S NEW IN
+
+#### v3.0
+
+Code improved so that splitting is checked for all parents present in split pedigrees at the first step of nextflow
+
+
+#### v2.9
+
+code debugged.
+
 
 #### v2.8
 
