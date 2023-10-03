@@ -192,24 +192,24 @@ Descritpion:
 
 | Result folder | Description |
 | --- | --- |
-| **reports**: Folder containing the classical reports of nextflow including the *nextflow.config* file used. |
-| **merlin_reports**: Folder containing all the reports of the different processes. |
-| **Group\*c\*\*_merlin**: Folder containing the information provided by Merlin for each group of patients and for each chromosome. |
-| **complete_lodscore.tsv**: Whole Genome Lodscore. |
-| **cutoff\*complete_lodscore.tsv**: Lines of the *complete_lodscore.tsv* file above a Lodscore threshold defined in the nextflow.config file. |
-| **lodscore_whole_genome.pdf**: Plot of the Lodscores (both whole genome and per chromosome). Model used is indicated in the title, as well as some user settings (chr nb and lodscore cut-offs, separated by pipes). |
-| **lodscore_settings.pdf**: Plot of the *cutoff\*complete_lodscore.tsv* files. |
-| **complete_information.tsv**: Information of each SNP for each group of patients. |
-| **infor_whole_genome.pdf**: Plot of the *complete_information.tsv* files. |
-| **pedstats.markerinfo_c\***: Marker genotype statistics (one file per chromosome). |
-| **pedstats_c\*.pdf**: Summary of family structure (one file per chromosome). |
-| **raw_snp.freq.absent.in.map.txt**: raw snp in the freq file but absent in the map file. |
-| **raw_snp.genotype.absent.in.freq.txt**: raw snp in the genotype file but absent in the freq file. |
-| **raw_snp.genotype.absent.in.map.txt**: raw snp in the genotype file but absent in the map file. |
-| **raw_snp.map.absent.in.freq.txt**: raw snp in the map file but absent in the freq file. |
-| **raw_snp.not.geno.atall.in.genotype**: raw snp not genotyped in any of the indiv in the genotype file. |
-| **lod_data.RData**: R file of the data used to generate the *lodscore_whole_genome.pdf* file. |
-| **info_data.RData**: R file of the data used to generate the *infor_whole_genome.pdf* file. |
+| **reports** | Folder containing the classical reports of nextflow including the *nextflow.config* file used. |
+| **merlin_reports** | Folder containing all the reports of the different processes. |
+| **Group\*c\*\*_merlin** | Folder containing the information provided by Merlin for each group of patients and for each chromosome. |
+| **complete_lodscore.tsv** | Whole Genome Lodscore. |
+| **cutoff\*complete_lodscore.tsv** | Lines of the *complete_lodscore.tsv* file above a Lodscore threshold defined in the nextflow.config file. |
+| **lodscore_whole_genome.pdf** | Plot of the Lodscores (both whole genome and per chromosome). Model used is indicated in the title, as well as some user settings (chr nb and lodscore cut-offs, separated by pipes). |
+| **lodscore_settings.pdf** | Plot of the *cutoff\*complete_lodscore.tsv* files. |
+| **complete_information.tsv** | Information of each SNP for each group of patients. |
+| **infor_whole_genome.pdf** | Plot of the *complete_information.tsv* files. |
+| **pedstats.markerinfo_c\*** | Marker genotype statistics (one file per chromosome). |
+| **pedstats_c\*.pdf** | Summary of family structure (one file per chromosome). |
+| **raw_snp.freq.absent.in.map.txt** | raw snp in the freq file but absent in the map file. |
+| **raw_snp.genotype.absent.in.freq.txt** | raw snp in the genotype file but absent in the freq file. |
+| **raw_snp.genotype.absent.in.map.txt** | raw snp in the genotype file but absent in the map file. |
+| **raw_snp.map.absent.in.freq.txt** | raw snp in the map file but absent in the freq file. |
+| **raw_snp.not.geno.atall.in.genotype** | raw snp not genotyped in any of the indiv in the genotype file. |
+| **lod_data.RData** | R file of the data used to generate the *lodscore_whole_genome.pdf* file. |
+| **info_data.RData** | R file of the data used to generate the *infor_whole_genome.pdf* file. |
 
 
 <br /><br />
