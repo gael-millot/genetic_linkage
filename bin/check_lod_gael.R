@@ -50,7 +50,7 @@ erase.graphs = TRUE # write TRUE to erase all the graphic windows in R before st
 
 
 args <- commandArgs(trailingOnly = TRUE)  # recover arguments written after the call of the Rscript, ie after r_341_conf $check_lod_gael_conf 
-tempo.arg.names <- c("path.out", "output_file_name", "output_error_file_name", "genotype", "freq", "map", "pedfile", "r_main_functions", "kind", "split.ind", "optional.text") # objects names exactly in the same order as in the bash code and recovered in args
+tempo.arg.names <- c("path.out", "output_file_name", "output_error_file_name", "genotype", "freq", "map", "pedfile", "r_main_functions", "kind", "split.ind.ini", "optional.text") # objects names exactly in the same order as in the bash code and recovered in args
 if(length(args) != length(tempo.arg.names)){
   tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: THE NUMBER OF ELEMENTS IN args (", length(args),") IS DIFFERENT FROM THE NUMBER OF ELEMENTS IN tempo.arg.names (", length(tempo.arg.names),")\nargs:", paste0(args, collapse = ","), "\ntempo.arg.names:", paste0(tempo.arg.names, collapse = ","))
   stop(tempo.cat)
@@ -68,8 +68,16 @@ if( ! (kind %in% c("raw", "postclean", "postsplit") & length(kind) == 1) ){
     tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: THE kind ARGUMENT IN args (", kind,") MUST BE A SINGLE CHARACTER VALUE, EITHER raw, postclean OR postsplit\n\n================\n\n")
     stop(tempo.cat)
 }
-split.ind <- unlist(strsplit(split.ind, ","))
-
+if(kind == "raw"){ # _ separator to keep the different groups. See next line
+    #  split.ind.ini <- "1,2,3,4,5,7,8,25,26,27,36,38,39_1,2,9,10,11,15,16,21,23,40,42,43,44,55_1,2,13,14,17,18,19,20,50,51,52,56,57,58,59"
+    split.ind <- unlist(strsplit(split.ind.ini, "_"))
+    split.ind <- strsplit(split.ind, ",")
+    split.ind.all <- unlist(split.ind)
+}else{
+    # split.ind.ini <- "1,2,3,4,5,7,8,25,26,27,36,38,39,1,2,9,10,11,15,16,21,23,40,42,43,44,55,1,2,13,14,17,18,19,20,50,51,52,56,57,58,59"
+    split.ind <- unlist(strsplit(split.ind.ini, ","))
+    split.ind.all <- split.ind
+}
 
 ################ Parameters
 
@@ -129,6 +137,11 @@ snp_name_in_two_files_fun <- function(snp_data, data1, file_name1, file_name2, t
 
 ################################ End Functions
 
+################################ Debugging
+
+# load("C:\\Users\\gmillot\\Documents\\Git_projects\\genetic_linkage\\work\\99\\69764c4a9aa08aea32be2cf099370e\\all_objects.RData")
+
+################################ End Debugging
 
 ################################ Main code
 
@@ -141,6 +154,61 @@ if(erase.graphs == TRUE){
   graphics.off()
   # par.ini<-par(no.readonly=TRUE) # to recover the initial graphical parameters if required (reset)
   graphics.off()
+}
+
+
+if(kind == "raw"){ # _ separator to keep the different groups. See next line
+    #  split.ind.ini <- "1,2,3,4,5,7,8,25,26,27,36,38,39_1,2,9,10,11,15,16,21,23,40,42,43,44,55_1,2,13,14,17,18,19,20,50,51,52,56,57,58,59"
+    fun.export.data(path = path.out, data = paste0("\n\n\n\n################ SPLIT PEDIGREE ################"), output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = paste0("\n\n\n\n################ SPLIT PEDIGREE ################"), output = output_error_file_name, sep = 2)
+    tempo.cat <- paste0("THE INITIAL IID_IN_GROUP_CONF SPLIT PARAMETER OF THE nextflow.config FILE IS: ")
+    fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 1)
+    fun.export.data(path = path.out, data = split.ind, output = output_file_name, sep = 2)
+    for(i1 in 1:length(split.ind)){
+        tempo.cat <- paste0("GROUP ", i1, ":")
+        fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+        fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+        if(length(split.ind[[i1]]) > 17){
+            tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: THE GROUP ", i1, " OF THE IID_IN_GROUP_CONF SPLIT PARAMETER OF THE nextflow.config FILE IS OVER 17 INDIV\nMERLIN WILL BE TOO LONG TO PROCEED\n\n================\n\n")
+            fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+            fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+            stop(tempo.cat)
+        }
+    }
+    for(i1 in 1:(length(split.ind) - 1)){
+        for(i2 in (i1 + 1):length(split.ind)){
+            length_grp1 <- length(split.ind[[i1]])
+            length_grp2 <- length(split.ind[[i2]])
+            if(length_grp1 > length_grp2){
+                tempo_big <- split.ind[[i1]]
+                tempo_small <- split.ind[[i2]]
+            }else{
+                tempo_big <- split.ind[[i2]]
+                tempo_small <- split.ind[[i1]]
+            }
+            common_indiv <- tempo_big[tempo_big %in% tempo_small]
+            if(i1 == 1 & i2 == 2){
+                tempo_ini <- common_indiv
+            }
+            tempo.cat <- paste0("GROUP ", i1, " AND GROUP ", i2, ":")
+            fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+            fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+            if(length(common_indiv) != 2){
+                tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: GROUP ", i1, " AND GROUP ", i2, " MUST HAVE 2 COMMON INDIV\nHERE IT IS: ", paste(common_indiv, collapse = " "), "\n\n================\n\n")
+                fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+                fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+                stop(tempo.cat)
+            }
+            if( ! (i1 == 1 & i2 == 2)){
+                if( ! (all(common_indiv %in% tempo_ini) & all(tempo_ini %in% common_indiv))){
+                    tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: ALL GROUPS MUST HAVE THE SAME COMMON INDIV\nHERE GROUP ", i1, " AND GROUP ", i2, " HAVE: ", paste(common_indiv, collapse = " "), "\nBUT GROUP 1 AND GROUP 2 HAVE: ", paste(tempo_ini, collapse = " "), "\n\n================\n\n")
+                    fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+                    fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+                    stop(tempo.cat)
+                }
+            }
+        }
+    }
 }
 
 
@@ -161,10 +229,168 @@ if(kind == "raw"){
 
 ################ Checking
 
+
+####### pedigree file (pedfile.pro)
+
+geno.names <- names(genotype)[-1]
+if(kind == "postclean" | kind == "postsplit"){
+    geno.file.nb <- gsub(pattern = "_Call", replacement = "", x = geno.names)
+}else {
+    geno.file.nb <- geno.names
+    tempo <- paste0("REMINDER: THE CODE CANNOT WORK IF THE COLUMN NAME OF THE GENOTYPE FILE ARE NOT: \"3 LAST CHARACTERS CORRESPONDING TO THE ID INDIVIDUAL NUMBER IN THE pedfile.pro FILE (WITH LEADING ZERO, LIKE FINISHING BY 001 FOR INDIVIDUAL 1, etc.)\"")
+    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
+    fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
+    geno.file.nb <- substr(geno.names, nchar(geno.names) - 2, nchar(geno.names)) # keep the three last characters
+    geno.file.nb <- sub(x = geno.file.nb, pattern = "^0+", replacement = "") # remove the leading zeros
+}
+
+
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ pedfile FILE ################"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ pedfile FILE ################"), output = output_error_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("THE PEDIGREE FILE IS: ", args[tempo.arg.names == "pedfile"]), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("THE PEDIGREE FILE IS: ", args[tempo.arg.names == "pedfile"]), output = output_error_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("INITIAL COLUMN NAMES:"), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = names(pedfile), output = output_file_name, sep=1)
+if(is.null(names(pedfile)) | identical(names(pedfile), paste0("X", 1:ncol(pedfile))) | identical(names(pedfile), paste0("V", 1:ncol(pedfile)))){
+    fun.export.data(path = path.out, data = paste0("NO COLUMN NAMES DETECTED. COLUMN NAMES ADDED JUST FOR THIS ANALYSIS:"), output = output_file_name, sep = 2)
+    names(pedfile) <- c("genotype_ID", "ind_ID", "father_ID", "mother_ID", "sex", "status")
+    fun.export.data(path = path.out, data = names(pedfile), output = output_file_name, sep=1)
+}else{
+    fun.export.data(path = path.out, data = paste0("FILE SHOULD NOT HAVE COLUMN NAMES"), output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = paste0("FILE SHOULD NOT HAVE COLUMN NAMES"), output = output_error_file_name, sep = 2)
+}
+# Check
+tempo <- param_check_fun(data = pedfile, print = FALSE, class = "data.frame", length = 6)
+if(tempo$problem == TRUE){
+    fun.export.data(path = path.out, data = tempo$text, output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = tempo$text, output = output_error_file_name, sep = 2)
+}else{
+    fun.export.data(path = path.out, data = paste0(tempo$text, "\nCLASS: \"data.frame\" & NUMBER OF COLUMNS: 6"), output = output_file_name, sep = 2)
+}
+if( ! all(sapply(pedfile, typeof) == "integer")){
+  fun.export.data(path = path.out, data = paste0("FILE SHOULD BE MADE OF INTEGER ONLY"), output = output_file_name, sep = 2)
+  fun.export.data(path = path.out, data = paste0("FILE SHOULD BE MADE OF INTEGER ONLY"), output = output_error_file_name, sep = 2)
+}else{
+    fun.export.data(path = path.out, data = "FILE MADE OF INTEGER ONLY", output = output_file_name, sep = 2)
+}
+for(i in 5:6){
+  tempo <- param_check_fun(data = pedfile[, i], print = FALSE, options = 0:2)
+  if(tempo$problem == TRUE){
+    fun.export.data(path = path.out, data = tempo$text, output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = tempo$text, output = output_error_file_name, sep = 2)
+  }else{
+    fun.export.data(path = path.out, data = paste0(tempo$text, "\nCOLUMN ", i, " MADE OF 0-2 ONLY"), output = output_file_name, sep = 2)
+  }
+}
+for(i1 in 3:4){
+    if(i1 == 3){
+        tempo.name <- "FATHER"
+    }else{
+        tempo.name <- "MOTHER"
+    }
+    tempo <- pedfile[, i1] %in% c(pedfile[, 2], 0)
+    if( ! all(tempo)){
+        fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, i1], collapse = " "), "IN COLUMN ", i1, ") NOT IN COLUM 2"), output = output_file_name, sep = 2)
+        fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, i1], collapse = " "), "IN COLUMN ", i1, ") NOT IN COLUM 2"), output = output_error_file_name, sep = 2)
+        stop(paste0("FATHER OR MOTHER NOT PRESENT AS INDIV IN PEDFILE: ", paste(pedfile[ ! tempo, i1], collapse = " ")))
+    }else{
+        fun.export.data(path = path.out, data = paste0("ALL ", tempo.name," ID (COLUMN ", i1, ") PRESENT IN COLUM 2"), output = output_file_name, sep = 2)
+    }
+}
+if(nrow(pedfile) != (ncol(genotype) - 1)){
+    tempo <- paste0("BEWARE: THE NUMBER OF INDIVIDUALS IS NOT THE SAME IN THE GENOTYPE (", (ncol(genotype) - 1), ") AND PEDIGREE (", nrow(pedfile), ") FILES")
+    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
+    fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
+    if(kind == "postsplit"){
+        stop(tempo)
+    }
+}else{
+    fun.export.data(path = path.out, data = paste0("THE NUMBER OF INDIVIDUALS IS THE SAME IN THE GENOTYPE AND PEDIGREE FILES: ", nrow(pedfile)), output = output_file_name, sep = 1)
+}
+
+if( ! (all(geno.file.nb %in% pedfile$ind_ID) & all(pedfile$ind_ID %in% geno.file.nb))){
+    tempo <- paste0("BEWARE: THE INDIVIDUALS ID ARE NOT THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
+    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
+    fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
+    tempo2 <- NULL
+    if( ! all(geno.file.nb %in% pedfile$ind_ID)){
+        tempo2 <- paste0("ID OF GENOTYPE FILE NOT PRESENT IN PEDIGREE ", paste0(geno.names[ ! geno.file.nb %in% pedfile$ind_ID], collapse = " "))
+        fun.export.data(path = path.out, data = tempo2, output = output_file_name, sep = 1)
+        fun.export.data(path = path.out, data = tempo2, output = output_error_file_name, sep = 1)
+    }
+    tempo3 <- NULL
+    if( ! all(pedfile$ind_ID %in% geno.file.nb)){
+        tempo3 <- paste0("ID OF PEDIGREE FILE NOT PRESENT IN GENOTYPE ", paste0(pedfile[ ! pedfile$ind_ID %in% geno.file.nb], collapse = " "))
+        fun.export.data(path = path.out, data = tempo3, output = output_file_name, sep = 1)
+        fun.export.data(path = path.out, data = tempo3, output = output_error_file_name, sep = 1)
+    }
+    if(kind == "postsplit"){
+        stop(paste0(tempo, "\n", tempo2, "\n", tempo3, "\n"))
+    }
+}else{
+    tempo <- paste0("THE INDIVIDUALS ID ARE THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
+    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
+}
+
+if(kind == "raw"){
+    for(i1 in 1:length(split.ind)){
+        tempo_indiv <- split.ind[[i1]]
+        tempo_pedfile <- pedfile[pedfile$ind_ID %in% tempo_indiv, ]
+        for(i2 in 3:4){
+            if(i2 == 3){
+                tempo.name <- "FATHER"
+            }else{
+                tempo.name <- "MOTHER"
+            }
+            tempo <- tempo_pedfile[, i2] %in% c(tempo_indiv, 0)
+            if( ! all(tempo)){
+                tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: IID_IN_GROUP_CONF PARAMETER IN THE nextflow.config FILE NOT WELL DESIGNED\nPARENTS OF EACH INDIV MUST BE IN THE SUBSET\nHERE, ", tempo.name, " ", paste(tempo_pedfile[ ! tempo, i2], collapse = " "), " OF RESPECTIVE INDIV ", paste(tempo_pedfile[ ! tempo, 2], collapse = " "), "\nIS NOT IN THE SUBSET ", i1, "\n\n================\n\n")
+                fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+                fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+                stop(tempo.cat)
+            }
+        }
+    }
+}
+
+if(kind != "postsplit"){
+    if( ! all(split.ind.all %in% as.character(pedfile$ind_ID))){ # we cannot invent indiv ID not present in genotypes
+            tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: IID_IN_GROUP_CONF PARAMETER IN THE nextflow.config FILE HAVE UNKNOWN INDIV ID (NOT PRESENT IN THE GENOTYPE FILE): ", paste(split.ind.all[ ! split.ind.all %in% as.character(pedfile$ind_ID)], collapse = "\n"), "\n\n================\n\n")
+            fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
+            fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 2)
+            stop(tempo)
+    }
+    if(any( ! as.character(pedfile$ind_ID) %in% split.ind.all)){
+            tempo <- paste0("\n\nWARNING: THE FOLLOWING INDIV OF THE PEDIGREE FILE ARE NOT IN THE IID_IN_GROUP_CONF PARAMETER OF THE nextflow.config FILE, AND WILL BE REMOVED FROM THE LODSCORE COMPUTATION: ", paste(as.character(pedfile$ind_ID)[ ! as.character(pedfile$ind_ID) %in% split.ind], collapse = "\n"), "\n\n")
+            fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
+    }
+}
+
+
+#end check
+tempo <- object_info_fun(data = pedfile)
+fun.export.data(path = path.out, data = paste0("######## BASIC INFORMATION:"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("NUMBER OF FAMILIES: ", length(table(pedfile[, 1]))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF INDIVIDUALS: ", length(table(pedfile[, 2]))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF FATHERS: ", length(table(pedfile[, 3]))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF MOTHERS: ", length(table(pedfile[, 3]))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF UNKNOWN SEX: ", length(which(pedfile[, 5] == 0))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF MALES: ", length(which(pedfile[, 5] == 1))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF FEMALES: ", length(which(pedfile[, 5] == 2))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF UNKNOWN STATUS: ", length(which(pedfile[, 6] == 0))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF UNAFFECTED: ", length(which(pedfile[, 6] == 1))), output = output_file_name, sep = 1)
+fun.export.data(path = path.out, data = paste0("NUMBER OF AFFECTED: ", length(which(pedfile[, 6] == 2))), output = output_file_name, sep = 1)
+
+
+
+
+
 ####### Allele frequency file (freq)
 
-fun.export.data(path = path.out, data = paste0("################ FREQ FILE ################"), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("################ FREQ FILE ################"), output = output_error_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ FREQ FILE ################"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ FREQ FILE ################"), output = output_error_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("THE freq FILE IS: ", args[tempo.arg.names == "freq"]), output = output_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("THE freq FILE IS: ", args[tempo.arg.names == "freq"]), output = output_error_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = output_file_name, sep = 2)
@@ -229,8 +455,8 @@ fun.export.data(path = path.out, data = paste0("NUMBER OF SNP ON AUTOSOMES: ", l
 
 ####### map file (map)
 
-fun.export.data(path = path.out, data = paste0("################ map FILE ################"), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("################ map FILE ################"), output = output_error_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ map FILE ################"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ map FILE ################"), output = output_error_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("THE MAP FILE IS: ", args[tempo.arg.names == "map"]), output = output_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("THE MAP FILE IS: ", args[tempo.arg.names == "map"]), output = output_error_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = output_file_name, sep = 2)
@@ -351,8 +577,8 @@ if(identical(sort(map.snp), sort(freq.snp))){
 
 ####### genotype file (Family.txt)
 
-fun.export.data(path = path.out, data = paste0("################ Genotype FILE ################"), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("################ Genotype FILE ################"), output = output_error_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ Genotype FILE ################"), output = output_file_name, sep = 2)
+fun.export.data(path = path.out, data = paste0("\n\n\n\n################ Genotype FILE ################"), output = output_error_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("THE GENOTYPE FILE IS: ", args[tempo.arg.names == "genotype"]), output = output_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("THE GENOTYPE FILE IS: ", args[tempo.arg.names == "genotype"]), output = output_error_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = output_file_name, sep = 2)
@@ -512,152 +738,21 @@ if(any(apply(genotype[, -1] == empty.geno | genotype[, -1] == "AB", 1, all) & ! 
 fun.export.data(path = path.out, data = paste0("TOTAL NUMBER OF AA, BB AND AB NON INFORMATIVE SNP:", AA.sum + BB.sum + AB.sum), output = output_file_name, sep = 2)
 fun.export.data(path = path.out, data = paste0("TOTAL PROPORTION OF AA, BB AND AB NON INFORMATIVE SNP:", (AA.sum + BB.sum + AB.sum) / nrow(genotype[, -1])), output = output_file_name, sep = 2)
 
-geno.names <- names(genotype)[-1]
-if(kind == "postclean" | kind == "postsplit"){
-    geno.file.nb <- gsub(pattern = "_Call", replacement = "", x = geno.names)
-}else {
-    geno.file.nb <- geno.names
-    tempo <- paste0("REMINDER: THE CODE CANNOT WORK IF THE COLUMN NAME OF THE GENOTYPE FILE ARE NOT: \"3 LAST CHARACTERS CORRESPONDING TO THE ID INDIVIDUAL NUMBER IN THE pedfile.pro FILE (WITH LEADING ZERO, LIKE FINISHING BY 001 FOR INDIVIDUAL 1, etc.)\"")
-    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
-    fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
-    geno.file.nb <- substr(geno.names, nchar(geno.names) - 2, nchar(geno.names)) # keep the three last characters
-    geno.file.nb <- sub(x = geno.file.nb, pattern = "^0+", replacement = "") # remove the leading zeros
-}
+
 
 if(kind != "postsplit"){
-    if( ! all(split.ind %in% geno.file.nb)){ # we cannot invent indiv ID not present in genotypes
-            tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: IID_IN_GROUP_CONF PARAMETER IN THE nextflow.config FILE HAVE UNKNOWN INDIV ID (NOT PRESENT IN THE GENOTYPE FILE): ", paste(split.ind[ ! split.ind %in% geno.file.nb], collapse = "\n"), "\n\n================\n\n")
+    if( ! all(split.ind.all %in% geno.file.nb)){ # we cannot invent indiv ID not present in genotypes
+            tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: IID_IN_GROUP_CONF PARAMETER IN THE nextflow.config FILE HAVE UNKNOWN INDIV ID (NOT PRESENT IN THE GENOTYPE FILE): ", paste(split.ind.all[ ! split.ind.all %in% geno.file.nb], collapse = "\n"), "\n\n================\n\n")
             fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
             fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 2)
             stop(tempo)
     }
-    if(any( ! geno.file.nb %in% split.ind)){
-            tempo <- paste0("\n\nWARNING: THE FOLLOWING INDIV OF THE GENOTYPE FILE ARE NOT IN THE IID_IN_GROUP_CONF PARAMETER OF THE nextflow.config FILE, AND WILL BE REMOVED FROM THE LODSCORE COMPUTATION: ", paste(geno.file.nb[ ! geno.file.nb %in% split.ind], collapse = "\n"), "\n\n")
+    if(any( ! geno.file.nb %in% split.ind.all)){
+            tempo <- paste0("\n\nWARNING: THE FOLLOWING INDIV OF THE GENOTYPE FILE ARE NOT IN THE IID_IN_GROUP_CONF PARAMETER OF THE nextflow.config FILE, AND WILL BE REMOVED FROM THE LODSCORE COMPUTATION: ", paste(geno.file.nb[ ! geno.file.nb %in% split.ind.all], collapse = "\n"), "\n\n")
             fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
     }
 }
 
-
-####### pedigree file (pedfile.pro)
-
-fun.export.data(path = path.out, data = paste0("################ pedfile FILE ################"), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("################ pedfile FILE ################"), output = output_error_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("THE PEDIGREE FILE IS: ", args[tempo.arg.names == "pedfile"]), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("THE PEDIGREE FILE IS: ", args[tempo.arg.names == "pedfile"]), output = output_error_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("######## SCAN:"), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("INITIAL COLUMN NAMES:"), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = names(pedfile), output = output_file_name, sep=1)
-if(is.null(names(pedfile)) | identical(names(pedfile), paste0("X", 1:ncol(pedfile))) | identical(names(pedfile), paste0("V", 1:ncol(pedfile)))){
-    fun.export.data(path = path.out, data = paste0("NO COLUMN NAMES DETECTED. COLUMN NAMES ADDED JUST FOR THIS ANALYSIS:"), output = output_file_name, sep = 2)
-    names(pedfile) <- c("genotype_ID", "ind_ID", "father_ID", "mother_ID", "sex", "status")
-    fun.export.data(path = path.out, data = names(pedfile), output = output_file_name, sep=1)
-}else{
-    fun.export.data(path = path.out, data = paste0("FILE SHOULD NOT HAVE COLUMN NAMES"), output = output_file_name, sep = 2)
-    fun.export.data(path = path.out, data = paste0("FILE SHOULD NOT HAVE COLUMN NAMES"), output = output_error_file_name, sep = 2)
-}
-# Check
-tempo <- param_check_fun(data = pedfile, print = FALSE, class = "data.frame", length = 6)
-if(tempo$problem == TRUE){
-    fun.export.data(path = path.out, data = tempo$text, output = output_file_name, sep = 2)
-    fun.export.data(path = path.out, data = tempo$text, output = output_error_file_name, sep = 2)
-}else{
-    fun.export.data(path = path.out, data = paste0(tempo$text, "\nCLASS: \"data.frame\" & NUMBER OF COLUMNS: 6"), output = output_file_name, sep = 2)
-}
-if( ! all(sapply(pedfile, typeof) == "integer")){
-  fun.export.data(path = path.out, data = paste0("FILE SHOULD BE MADE OF INTEGER ONLY"), output = output_file_name, sep = 2)
-  fun.export.data(path = path.out, data = paste0("FILE SHOULD BE MADE OF INTEGER ONLY"), output = output_error_file_name, sep = 2)
-}else{
-    fun.export.data(path = path.out, data = "FILE MADE OF INTEGER ONLY", output = output_file_name, sep = 2)
-}
-for(i in 5:6){
-  tempo <- param_check_fun(data = pedfile[, i], print = FALSE, options = 0:2)
-  if(tempo$problem == TRUE){
-    fun.export.data(path = path.out, data = tempo$text, output = output_file_name, sep = 2)
-    fun.export.data(path = path.out, data = tempo$text, output = output_error_file_name, sep = 2)
-  }else{
-    fun.export.data(path = path.out, data = paste0(tempo$text, "\nCOLUMN ", i, " MADE OF 0-2 ONLY"), output = output_file_name, sep = 2)
-  }
-}
-for(i in 3:4){
-  if(i == 3){
-    tempo.name <- "FATHER"
-  }else{
-    tempo.name <- "MOTHER"
-  }
-  tempo <- pedfile[, 3] %in% c(pedfile[, 2], 0)
-  if( ! all(tempo)){
-    fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, 3], collapse = " "), "IN COLUMN ", i, ") NOT IN COLUM 2"), output = output_file_name, sep = 2)
-    fun.export.data(path = path.out, data = paste0("PROBLEM: ", tempo.name," ID (", paste(pedfile[ ! tempo, 3], collapse = " "), "IN COLUMN ", i, ") NOT IN COLUM 2"), output = output_error_file_name, sep = 2)
-    if(kind != "postsplit"){
-        stop(paste0("FATHER OR MOTHER NOT PRESENT AS INDIV IN PEDFILE: ", paste(pedfile[ ! tempo, 3], collapse = " ")))
-    }
-  }else{
-    fun.export.data(path = path.out, data = paste0("ALL ", tempo.name," ID (COLUMN ", i, ") PRESENT IN COLUM 2"), output = output_file_name, sep = 2)
-  }
-}
-if(nrow(pedfile) != (ncol(genotype) - 1)){
-    tempo <- paste0("BEWARE: THE NUMBER OF INDIVIDUALS IS NOT THE SAME IN THE GENOTYPE (", (ncol(genotype) - 1), ") AND PEDIGREE (", nrow(pedfile), ") FILES")
-    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
-    fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
-    if(kind == "postsplit"){
-        stop(tempo)
-    }
-}else{
-    fun.export.data(path = path.out, data = paste0("THE NUMBER OF INDIVIDUALS IS THE SAME IN THE GENOTYPE AND PEDIGREE FILES: ", nrow(pedfile)), output = output_file_name, sep = 1)
-}
-
-if( ! (all(geno.file.nb %in% pedfile$ind_ID) & all(pedfile$ind_ID %in% geno.file.nb))){
-    tempo <- paste0("BEWARE: THE INDIVIDUALS ID ARE NOT THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
-    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
-    fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
-    tempo2 <- NULL
-    if( ! all(geno.file.nb %in% pedfile$ind_ID)){
-        tempo2 <- paste0("ID OF GENOTYPE FILE NOT PRESENT IN PEDIGREE ", paste0(geno.names[ ! geno.file.nb %in% pedfile$ind_ID], collapse = " "))
-        fun.export.data(path = path.out, data = tempo2, output = output_file_name, sep = 1)
-        fun.export.data(path = path.out, data = tempo2, output = output_error_file_name, sep = 1)
-    }
-    tempo3 <- NULL
-    if( ! all(pedfile$ind_ID %in% geno.file.nb)){
-        tempo3 <- paste0("ID OF PEDIGREE FILE NOT PRESENT IN GENOTYPE ", paste0(pedfile[ ! pedfile$ind_ID %in% geno.file.nb], collapse = " "))
-        fun.export.data(path = path.out, data = tempo3, output = output_file_name, sep = 1)
-        fun.export.data(path = path.out, data = tempo3, output = output_error_file_name, sep = 1)
-    }
-    if(kind == "postsplit"){
-        stop(paste0(tempo, "\n", tempo2, "\n", tempo3, "\n"))
-    }
-}else{
-    tempo <- paste0("THE INDIVIDUALS ID ARE THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
-    fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
-}
-
-if(kind != "postsplit"){
-    if( ! all(split.ind %in% as.character(pedfile$ind_ID))){ # we cannot invent indiv ID not present in genotypes
-            tempo <- paste0("\n\n================\n\nERROR IN check_lod_gael: IID_IN_GROUP_CONF PARAMETER IN THE nextflow.config FILE HAVE UNKNOWN INDIV ID (NOT PRESENT IN THE GENOTYPE FILE): ", paste(split.ind[ ! split.ind %in% as.character(pedfile$ind_ID)], collapse = "\n"), "\n\n================\n\n")
-            fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
-            fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 2)
-            stop(tempo)
-    }
-    if(any( ! as.character(pedfile$ind_ID) %in% split.ind)){
-            tempo <- paste0("\n\nWARNING: THE FOLLOWING INDIV OF THE PEDIGREE FILE ARE NOT IN THE IID_IN_GROUP_CONF PARAMETER OF THE nextflow.config FILE, AND WILL BE REMOVED FROM THE LODSCORE COMPUTATION: ", paste(as.character(pedfile$ind_ID)[ ! as.character(pedfile$ind_ID) %in% split.ind], collapse = "\n"), "\n\n")
-            fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
-    }
-}
-
-
-#end check
-tempo <- object_info_fun(data = pedfile)
-fun.export.data(path = path.out, data = paste0("######## BASIC INFORMATION:"), output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 2)
-fun.export.data(path = path.out, data = paste0("NUMBER OF FAMILIES: ", length(table(pedfile[, 1]))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF INDIVIDUALS: ", length(table(pedfile[, 2]))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF FATHERS: ", length(table(pedfile[, 3]))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF MOTHERS: ", length(table(pedfile[, 3]))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF UNKNOWN SEX: ", length(which(pedfile[, 5] == 0))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF MALES: ", length(which(pedfile[, 5] == 1))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF FEMALES: ", length(which(pedfile[, 5] == 2))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF UNKNOWN STATUS: ", length(which(pedfile[, 6] == 0))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF UNAFFECTED: ", length(which(pedfile[, 6] == 1))), output = output_file_name, sep = 1)
-fun.export.data(path = path.out, data = paste0("NUMBER OF AFFECTED: ", length(which(pedfile[, 6] == 2))), output = output_file_name, sep = 1)
 
 fun.export.data(path = path.out, data = paste0("################ END OF PROCESS"), output = output_file_name, sep = 2)
 

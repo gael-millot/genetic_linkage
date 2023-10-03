@@ -2,8 +2,9 @@ nextflow.enable.dsl=2
 /*
 #########################################################################
 ##                                                                     ##
-##     linkage.nf                                                      ##
+##     main.nf                                                         ##
 ##                                                                     ##
+##     genetic_linkage                                                 ##
 ##     Gael A. Millot                                                  ##
 ##     Bioinformatics and Biostatistics Hub                            ##
 ##     Computational Biology Department                                ##
@@ -608,34 +609,31 @@ workflow {
     }else if(RAW_PEDIGREE_FILE_NAME_CONF == "pedigree.pro"){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_PEDIGREE_FILE_NAME_CONF}\nFILE CANNOT BE NAMED pedigree.pro FOR THIS CODE\n\n========\n\n"
     }
-    if( ! file(RAW_INPUT_DIR_CONF).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_INPUT_DIR_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_INPUT_DIR_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
-    }
-    if( ! file(RAW_INPUT_DIR_CONF+"/"+RAW_GENOTYPE_FILE_NAME_CONF).exists()){
+    if( ! file(RAW_GENOTYPE_FILE_NAME_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_GENOTYPE_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
-        RAW_GENOTYPE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${RAW_GENOTYPE_FILE_NAME_CONF}", checkIfExists: false)
+        RAW_GENOTYPE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_GENOTYPE_FILE_NAME_CONF}", checkIfExists: false)
         //TEMPO_GENOTYPE_FILE_NAME = file(RAW_INPUT_DIR_CONF+"/"+RAW_GENOTYPE_FILE_NAME_CONF).baseName
     }
-    if( ! file(RAW_INPUT_DIR_CONF+"/"+RAW_FREQ_FILE_NAME_CONF).exists()){
+    if( ! file(RAW_FREQ_FILE_NAME_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_FREQ_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_FREQ_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
-        RAW_FREQ_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${RAW_FREQ_FILE_NAME_CONF}", checkIfExists: false)
+        RAW_FREQ_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_FREQ_FILE_NAME_CONF}", checkIfExists: false)
     }
-   if( ! file(RAW_INPUT_DIR_CONF+"/"+RAW_MAP_FILE_NAME_CONF).exists()){
+   if( ! file(RAW_MAP_FILE_NAME_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_MAP_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_MAP_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
-        RAW_MAP_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${RAW_MAP_FILE_NAME_CONF}", checkIfExists: false)
+        RAW_MAP_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_MAP_FILE_NAME_CONF}", checkIfExists: false)
     }
-   if( ! file(RAW_INPUT_DIR_CONF+"/"+RAW_PEDIGREE_FILE_NAME_CONF).exists()){
+   if( ! file(RAW_PEDIGREE_FILE_NAME_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_PEDIGREE_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
-        RAW_PEDIGREE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${RAW_PEDIGREE_FILE_NAME_CONF}", checkIfExists: false)
+        RAW_PEDIGREE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_PEDIGREE_FILE_NAME_CONF}", checkIfExists: false)
     }
-   if( ! file(RAW_INPUT_DIR_CONF+"/"+human_chr_info).exists()){
+   if( ! file(human_chr_info).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID human_chr_info PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${human_chr_info}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
-        human_chr_info_ch = Channel.fromPath("${RAW_INPUT_DIR_CONF}/${human_chr_info}", checkIfExists: false)
+        human_chr_info_ch = Channel.fromPath("${human_chr_info}", checkIfExists: false)
     }
     if( ! IID_IN_GROUP_CONF in String){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID IID_IN_GROUP_CONF PARAMETER IN linkage.config FILE:\n${IID_IN_GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"

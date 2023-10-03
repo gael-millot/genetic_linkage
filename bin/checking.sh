@@ -49,7 +49,7 @@ FILE_NAME=("GENOTYPE_FILE_NAME" "FREQ_FILE_NAME" "MAP_FILE_NAME" "PEDIGREE_FILE_
 FILE_NAME_PATH=("${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}" "${INPUT_DIR_PATH}") # path of the four FILE_NAME
 file_name_Num=$(( ${#FILE_NAME[@]} - 1 )) # total number of elements in the array
 
-TEMPO_IND=$(echo ${SPLIT_IND_CONF} | sed 's/ /,/g') # space replacement by comma
+TEMPO_IND=$(echo ${SPLIT_IND_CONF} | sed 's/ /_/g') # space replacement by comma
 
 ################ END SPECIAL VARIABLES DUE TO THE SLURM -> NEXTFLOW UPGRADE
 
