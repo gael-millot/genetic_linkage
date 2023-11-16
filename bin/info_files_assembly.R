@@ -180,35 +180,35 @@ for(loop.chromo.nb in 1:length(chromo.nb)){ #big loop
 
 ################ Processing
 
-
-    for(i in 1:(nb_of_groups - 1)){
-        for(j in i:nb_of_groups){
-            if( ! identical(get(paste0("info", i))$SNP, get(paste0("info", j))$SNP)){
-                tempo.cat <- paste0("\nPROBLEM WITH SNP ORDER IN info" , i, " AND info" , j, " IN CHROMO ", chromo.nb[loop.chromo.nb], "\nTHE FILES CONCERNED ARE:\ninfo" , i, ": ", paste0(path.out, "/info_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv"), "\ninfo" , j, ": ", paste0(path.out, "/info_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv"))
-                test.log <- FALSE
-                if(nrow(get(paste0("lod", i))) == 0 & nrow(get(paste0("lod", j))) != 0){
-                    test.log <- TRUE
-                    tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN lod" , i, " WHICH IS ", paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv\nBEWARE: THE LODSCORE ADDITION WILL NOT TAKE THIS FILE INTO ACCOUNT (LODSCORE DECREASED FOR CHROMO ", chromo.nb[loop.chromo.nb], " COMPARED TO THE OTHER CHROMOSOMES)"))
+    if(nb_of_groups > 1){
+        for(i in 1:(nb_of_groups - 1)){
+            for(j in i:nb_of_groups){
+                if( ! identical(get(paste0("info", i))$SNP, get(paste0("info", j))$SNP)){
+                    tempo.cat <- paste0("\nPROBLEM WITH SNP ORDER IN info" , i, " AND info" , j, " IN CHROMO ", chromo.nb[loop.chromo.nb], "\nTHE FILES CONCERNED ARE:\ninfo" , i, ": ", paste0(path.out, "/info_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv"), "\ninfo" , j, ": ", paste0(path.out, "/info_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv"))
+                    test.log <- FALSE
+                    if(nrow(get(paste0("lod", i))) == 0 & nrow(get(paste0("lod", j))) != 0){
+                        test.log <- TRUE
+                        tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN lod" , i, " WHICH IS ", paste0(path.out, "/lodscore_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv\nBEWARE: THE LODSCORE ADDITION WILL NOT TAKE THIS FILE INTO ACCOUNT (LODSCORE DECREASED FOR CHROMO ", chromo.nb[loop.chromo.nb], " COMPARED TO THE OTHER CHROMOSOMES)"))
+                    }
+                    if(nrow(get(paste0("lod", i))) != 0 & nrow(get(paste0("lod", j))) == 0){
+                        test.log <- TRUE
+                        tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN info" , j, " WHICH IS ", paste0(path.out, "/info_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv\n"))
+                    }
+                    fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
+                    if(test.log == TRUE){
+                        stop(paste0("\n\n", tempo.cat, "\n\n", sep =""))
+                    }else{
+                        cat(paste0("\n\n", tempo.cat, "\n\n", sep =""))
+                    }
                 }
-                if(nrow(get(paste0("lod", i))) != 0 & nrow(get(paste0("lod", j))) == 0){
-                    test.log <- TRUE
-                    tempo.cat <- paste0(tempo.cat, "\nTHIS IS BECAUSE NO ROWS IN info" , j, " WHICH IS ", paste0(path.out, "/info_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv\n"))
-                }
-                fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
-                if(test.log == TRUE){
+                if( ! identical(get(paste0("map", i))$Marker, get(paste0("map", j))$Marker)){
+                    tempo.cat <- paste0("\nPROBLEM WITH Marker ORDER IN map" , i, " AND map" , j, " IN CHROMO ", chromo.nb[loop.chromo.nb], "\nTHE FILES CONCERNED ARE:\nmap" , i, ": ", paste0(path.out, "/map_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv"), "\nmap" , j, ": ", paste0(path.out, "/map_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv"))
+                    fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
                     stop(paste0("\n\n", tempo.cat, "\n\n", sep =""))
-                }else{
-                    cat(paste0("\n\n", tempo.cat, "\n\n", sep =""))
                 }
-            }
-            if( ! identical(get(paste0("map", i))$Marker, get(paste0("map", j))$Marker)){
-                tempo.cat <- paste0("\nPROBLEM WITH Marker ORDER IN map" , i, " AND map" , j, " IN CHROMO ", chromo.nb[loop.chromo.nb], "\nTHE FILES CONCERNED ARE:\nmap" , i, ": ", paste0(path.out, "/map_Group", i, "_c", chromo.nb[loop.chromo.nb], ".tsv"), "\nmap" , j, ": ", paste0(path.out, "/map_Group", j, "_c", chromo.nb[loop.chromo.nb], ".tsv"))
-                fun.export.data(path = path.out, data = tempo.cat, output = error_file_name, sep = 2)
-                stop(paste0("\n\n", tempo.cat, "\n\n", sep =""))
             }
         }
     }
-
 
     for(i in 1:nb_of_groups){
         #check that ok between information and map order

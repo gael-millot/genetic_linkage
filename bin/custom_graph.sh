@@ -72,12 +72,12 @@ echo -e "\n\n"
 echo -e "\n\n################ CUSTOM GRAPH\n\n"
 
 
-if [[ $MERLIN_ANALYSE_OPTION_CONF == "--best" ]] ; then
+if [[ "$MERLIN_ANALYSE_OPTION_CONF" == "--best" ]] ; then
     echo -e "HAPLOTYPE INFERENCE (ANALYSE IS: $MERLIN_ANALYSE_OPTION_CONF)\n"
 else
-    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--model" ]] ; then
+    if [[ "$MERLIN_ANALYSE_OPTION_CONF" == "--model" ]] ; then
         MODEL_PRINT="MODEL: ${MERLIN_ANALYSE_OPTION_CONF} | $(echo $MERLIN_PARAM_CONF | sed 's/\t/ /g')"
-    elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]]; then
+    elif [[ "$MERLIN_ANALYSE_OPTION_CONF" == "--npl" || "$MERLIN_ANALYSE_OPTION_CONF" == "--npl --exp" ]]; then
         MODEL_PRINT="MODEL: ${MERLIN_ANALYSE_OPTION_CONF}"
         echo -e "IN THE merlin.lod FILE, ALL THE TRAIT [ALL] HAVE BEEN REPLACED BY TRAIT[ALL]\n"
     else

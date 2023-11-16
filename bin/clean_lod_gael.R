@@ -59,6 +59,24 @@ for(i in 1:length(tempo.arg.names)){
   assign(tempo.arg.names[i], args[i])
   # stopifnot(!is.na(file))
 }
+
+
+################ Debug
+
+# path.out <- "."
+# output_file_name <- "r_cleaning_checking_report.txt"
+# genotype <- "./genotype.txt"
+# freq <- "./freq.txt"
+# map <- "./map.txt"
+# pedfile <- "./pedigree.pro"
+# r_main_functions <- "R_main_functions_gael_20180123.R"
+# optional.text <- "notxt"
+
+################ End Debug
+
+
+
+
 # dir_path <- dirname(path.vcf.file) # recover the path of path.vcf.file
 # filename <- basename(path.vcf.file) # recover the name of the file (end of path.vcf.file)
 if(optional.text == "notxt"){
@@ -146,6 +164,7 @@ if(any(apply(genotype[, -1] == "--" | genotype[, -1] == "AB", 1, all))){
 # header renamed
 geno.names <- names(genotype)[-1]
 geno.file.nb <- substr(geno.names, nchar(geno.names) - 2, nchar(geno.names))
+geno.file.nb <- sub(x = geno.file.nb, pattern = "^X", replacement = "") # remove the X
 geno.file.nb <- sub(x = geno.file.nb, pattern = "^0+", replacement = "") # remove the leading zeros
 geno.file.nb <- sub(x = geno.file.nb, pattern = "$", replacement = "_Call") # add _Call at the end of tecah column name
 names(genotype)[-1] <- geno.file.nb
@@ -222,7 +241,8 @@ if(all(geno.names %in% pedfile.names) & all(pedfile.names %in% geno.names)){
     fun.export.data(path = path.out, data = paste0("THE IND NUMBERS OF pedfile ARE ALL IN THE genotype COLUMN NAMES, AND VICE-VERSA"), output = output_file_name, sep = 2)
 }else{
     fun.export.data(path = path.out, data = paste0("### PROBLEM: THE IND NUMBERS OF pedfile ARE NOT ALL IN THE genotype COLUMN NAMES, OR VICE-VERSA"), output = output_file_name, sep = 1)
-    fun.export.data(path = path.out, data = data.frame(GENOTYPE_NAME = sort(as.numeric(geno.names)), PEDIGREE_NAME = sort(as.numeric(pedfile.names))), output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = data.frame(GENOTYPE_NAME = unique(sort(as.numeric(geno.names)))), output = output_file_name, sep = 2)
+    fun.export.data(path = path.out, data = data.frame(GENOTYPE_NAME = unique(sort(as.numeric(pedfile.names)))), output = output_file_name, sep = 2)
     if(any( ! geno.names %in% pedfile.names)){
         fun.export.data(path = path.out, data = paste0("COLUMNS REMOVED FROM THE GENOTYPE FILE:", paste(geno.names[ ! geno.names %in% pedfile.names], collapse = ", ")), output = output_file_name)
         genotype <- genotype[ , c(1, which(geno.names %in% pedfile.names) + 1)]

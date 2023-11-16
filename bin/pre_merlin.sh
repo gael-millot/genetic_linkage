@@ -69,14 +69,29 @@ shopt -s expand_aliases # to be sure that alias are expended to the different en
 
 cd c${CHROMO_NB}b # to add all the outputs in the ${CHROMO_NB} folder, which can then be channeled into the merlin process
 if [[ ${CHROMO_NB} == 23 ]] ; then 
-    EXEC1="pedstats -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --chromosomeX --pdf"
+    EXEC1="pedstats -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --chromosomeX --pdf --ignoreMendelianErrors"
+    #EXEC1: PEDSTATS provides a text summary of the input pedigree and data files
+    # see http://csg.sph.umich.edu/abecasis/Pedstats/tour/text.html for examples
+    # for http://csg.sph.umich.edu/abecasis/Pedstats/program_options.html for the description of the options
+    # -d: data (file present in )
+    # -p: pedigree
+    # --chromosomeX: Calculate statistics for X-linked loci. In this case, males are hemizygous and carry only one chromosome. In the pedigree file they should be encoded as if they carried two identical alleles
+    # --pdf: Generate charts summarizing contents of pedigree file in Adobe PDF format
+    # --ignoreMendelianErrors: Calculate statistics even if Mendelian inconsistencies are present in the pedigree. The default behavior is to list inconsistencies and stop. 
     echo -e "\nPROCESS 1/1: $EXEC1\n"
     $EXEC1
 else
-    EXEC1="pedstats -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --pdf"
+    EXEC1="pedstats -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} --pdf --ignoreMendelianErrors"
+    #EXEC1: PEDSTATS provides a text summary of the input pedigree and data files
+    # see http://csg.sph.umich.edu/abecasis/Pedstats/tour/text.html for examples
+    # for http://csg.sph.umich.edu/abecasis/Pedstats/program_options.html for the description of the options
+    # -d: data (file present in )
+    # -p: pedigree
+    # --pdf: Generate charts summarizing contents of pedigree file in Adobe PDF format
+    # --ignoreMendelianErrors: Calculate statistics even if Mendelian inconsistencies are present in the pedigree. The default behavior is to list inconsistencies and stop. 
     EXEC2="merlin -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/merlin_map.${CHROMO_NB} --error --quiet --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999"
-    # EXEC1: Merlin preanalyse to detect errors 
-    # see http://csg.sph.umich.edu/abecasis/MERLIN/reference.html fro the description of the options
+    # EXEC2: Merlin preanalyse to detect errors 
+    # see http://csg.sph.umich.edu/abecasis/MERLIN/reference.html for the description of the options
     # -d: data (file present in )
     # -p: pedigree
     # -m: genetic map
@@ -86,7 +101,7 @@ else
     # -- swap
     # -- megabytes: RAM
     EXEC3="pedwipe -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB}"
-    # EXEC2: remove the mendelian errors (which results in a smoother lod score)
+    # EXEC3: remove the mendelian errors (which results in a smoother lod score)
     # Merlin using clean data and pedigree to generate the lodscore
     # --pdf:
     # --markerNames:

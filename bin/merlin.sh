@@ -83,18 +83,20 @@ if [[ ${CHROMO_NB} == 23 ]] ; then
     if [[ $MERLIN_ANALYSE_OPTION_CONF == "--model" ]] ; then
         MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF} ${OUTPUT_DIR_PATH}/param.tbl"
     elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]] ; then
-        MODEL_SET=${MERLIN_ANALYSE_OPTION_CONF}
+        MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF}"
+    elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl --exp" ]] ; then
+        MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF}"
     elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--best" ]] ; then
         MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF} --horizontal"
     else
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl OR --best\n"
+        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model, --npl, --npl --exp OR --best\n"
         exit 1
     fi
     EXEC1="minx -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/pedin.${CHROMO_NB} -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET"
     echo -e "\nBEWARE: MENDELIAN ERRORS NOT WIPED OUT IN CHROMO 23 (CHROMO X)\n"
     echo -e "\nPROCESS 1/1: $EXEC1\n"
     $EXEC1
-    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]] ; then
+    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl"  ||  $MERLIN_ANALYSE_OPTION_CONF == "--npl --exp" ]] ; then
         sed -i -r "s/TRAIT\ \[ALL\]/TRAIT\[ALL\]/g" merlin-nonparametric.tbl
         sed -i -r "/(^na\tna\tmin.*)|(^na\tna\tmax.*)/d" merlin-nonparametric.tbl
         # awk '{if $3 != "min" && $3 != "max"){print $0}}' ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin.lod > 
@@ -103,11 +105,13 @@ else
     if [[ $MERLIN_ANALYSE_OPTION_CONF == "--model" ]] ; then
         MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF} ${OUTPUT_DIR_PATH}/param.tbl"
     elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]] ; then
-        MODEL_SET=${MERLIN_ANALYSE_OPTION_CONF}
+        MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF}"
+    elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl --exp" ]] ; then
+        MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF}"
     elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--best" ]] ; then
         MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF} --horizontal"
     else
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model OR --npl OR --best\n"
+        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model, --npl, --npl --exp OR --best\n"
         exit 1
     fi
     EXEC1="merlin -d ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.dat -p ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/wiped.ped -m ${OUTPUT_DIR_PATH}/c${CHROMO_NB}b/merlin_map.${CHROMO_NB} --error --quiet --pdf --bit:${bit_nb} --minutes:3600 --smallSwap --megabytes:9999 --markerNames --perFamily --rankFamilies --information --tabulate $MODEL_SET"
@@ -117,7 +121,7 @@ else
     # --model: parametric model uses these values, non parametric models do not use them
     echo -e "\nPROCESS 1/1: $EXEC1\n"
     $EXEC1
-    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ]] ; then
+    if [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl" ||  $MERLIN_ANALYSE_OPTION_CONF == "--npl --exp" ]] ; then
         sed -i -r "s/TRAIT\ \[ALL\]/TRAIT\[ALL\]/g" merlin-nonparametric.tbl
         sed -i -r "/(^na\tna\tmin.*)|(^na\tna\tmax.*)/d" merlin-nonparametric.tbl
     fi

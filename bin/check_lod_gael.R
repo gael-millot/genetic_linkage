@@ -172,39 +172,41 @@ if(kind == "raw"){ # _ separator to keep the different groups. See next line
             tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: THE GROUP ", i1, " OF THE IID_IN_GROUP_CONF SPLIT PARAMETER OF THE nextflow.config FILE IS OVER 17 INDIV\nMERLIN WILL BE TOO LONG TO PROCEED\n\n================\n\n")
             fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
             fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
-            stop(tempo.cat)
+            # stop(tempo.cat)
         }
     }
-    for(i1 in 1:(length(split.ind) - 1)){
-        for(i2 in (i1 + 1):length(split.ind)){
-            length_grp1 <- length(split.ind[[i1]])
-            length_grp2 <- length(split.ind[[i2]])
-            if(length_grp1 > length_grp2){
-                tempo_big <- split.ind[[i1]]
-                tempo_small <- split.ind[[i2]]
-            }else{
-                tempo_big <- split.ind[[i2]]
-                tempo_small <- split.ind[[i1]]
-            }
-            common_indiv <- tempo_big[tempo_big %in% tempo_small]
-            if(i1 == 1 & i2 == 2){
-                tempo_ini <- common_indiv
-            }
-            tempo.cat <- paste0("GROUP ", i1, " AND GROUP ", i2, ":")
-            fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
-            fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
-            if(length(common_indiv) != 2){
-                tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: GROUP ", i1, " AND GROUP ", i2, " MUST HAVE 2 COMMON INDIV\nHERE IT IS: ", paste(common_indiv, collapse = " "), "\n\n================\n\n")
+    if(length(split.ind) > 1){
+        for(i1 in 1:(length(split.ind) - 1)){
+            for(i2 in (i1 + 1):length(split.ind)){
+                length_grp1 <- length(split.ind[[i1]])
+                length_grp2 <- length(split.ind[[i2]])
+                if(length_grp1 > length_grp2){
+                    tempo_big <- split.ind[[i1]]
+                    tempo_small <- split.ind[[i2]]
+                }else{
+                    tempo_big <- split.ind[[i2]]
+                    tempo_small <- split.ind[[i1]]
+                }
+                common_indiv <- tempo_big[tempo_big %in% tempo_small]
+                if(i1 == 1 & i2 == 2){
+                    tempo_ini <- common_indiv
+                }
+                tempo.cat <- paste0("GROUP ", i1, " AND GROUP ", i2, ":")
                 fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
                 fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
-                stop(tempo.cat)
-            }
-            if( ! (i1 == 1 & i2 == 2)){
-                if( ! (all(common_indiv %in% tempo_ini) & all(tempo_ini %in% common_indiv))){
-                    tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: ALL GROUPS MUST HAVE THE SAME COMMON INDIV\nHERE GROUP ", i1, " AND GROUP ", i2, " HAVE: ", paste(common_indiv, collapse = " "), "\nBUT GROUP 1 AND GROUP 2 HAVE: ", paste(tempo_ini, collapse = " "), "\n\n================\n\n")
+                if(length(common_indiv) != 2){
+                    tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: GROUP ", i1, " AND GROUP ", i2, " MUST HAVE 2 COMMON INDIV\nHERE IT IS: ", paste(common_indiv, collapse = " "), "\n\n================\n\n")
                     fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
                     fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
                     stop(tempo.cat)
+                }
+                if( ! (i1 == 1 & i2 == 2)){
+                    if( ! (all(common_indiv %in% tempo_ini) & all(tempo_ini %in% common_indiv))){
+                        tempo.cat <- paste0("\n\n================\n\nERROR IN check_lod_gael: ALL GROUPS MUST HAVE THE SAME COMMON INDIV\nHERE GROUP ", i1, " AND GROUP ", i2, " HAVE: ", paste(common_indiv, collapse = " "), "\nBUT GROUP 1 AND GROUP 2 HAVE: ", paste(tempo_ini, collapse = " "), "\n\n================\n\n")
+                        fun.export.data(path = path.out, data = tempo.cat, output = output_file_name, sep = 2)
+                        fun.export.data(path = path.out, data = tempo.cat, output = output_error_file_name, sep = 2)
+                        stop(tempo.cat)
+                    }
                 }
             }
         }
@@ -298,7 +300,7 @@ for(i1 in 3:4){
         fun.export.data(path = path.out, data = paste0("ALL ", tempo.name," ID (COLUMN ", i1, ") PRESENT IN COLUM 2"), output = output_file_name, sep = 2)
     }
 }
-if(nrow(pedfile) != (ncol(genotype) - 1)){
+if(length(unique(pedfile[ , 2])) != (ncol(genotype) - 1)){
     tempo <- paste0("BEWARE: THE NUMBER OF INDIVIDUALS IS NOT THE SAME IN THE GENOTYPE (", (ncol(genotype) - 1), ") AND PEDIGREE (", nrow(pedfile), ") FILES")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
@@ -309,19 +311,20 @@ if(nrow(pedfile) != (ncol(genotype) - 1)){
     fun.export.data(path = path.out, data = paste0("THE NUMBER OF INDIVIDUALS IS THE SAME IN THE GENOTYPE AND PEDIGREE FILES: ", nrow(pedfile)), output = output_file_name, sep = 1)
 }
 
-if( ! (all(geno.file.nb %in% pedfile$ind_ID) & all(pedfile$ind_ID %in% geno.file.nb))){
+pedfile_ind_ID <- unique(pedfile$ind_ID)
+if( ! (all(geno.file.nb %in% pedfile_ind_ID) & all(pedfile_ind_ID %in% geno.file.nb))){
     tempo <- paste0("BEWARE: THE INDIVIDUALS ID ARE NOT THE SAME IN THE GENOTYPE AND PEDIGREE FILES")
     fun.export.data(path = path.out, data = tempo, output = output_file_name, sep = 1)
     fun.export.data(path = path.out, data = tempo, output = output_error_file_name, sep = 1)
     tempo2 <- NULL
-    if( ! all(geno.file.nb %in% pedfile$ind_ID)){
-        tempo2 <- paste0("ID OF GENOTYPE FILE NOT PRESENT IN PEDIGREE ", paste0(geno.names[ ! geno.file.nb %in% pedfile$ind_ID], collapse = " "))
+    if( ! all(geno.file.nb %in% pedfile_ind_ID)){
+        tempo2 <- paste0("ID OF GENOTYPE FILE NOT PRESENT IN PEDIGREE ", paste0(geno.names[ ! geno.file.nb %in% pedfile_ind_ID], collapse = " "))
         fun.export.data(path = path.out, data = tempo2, output = output_file_name, sep = 1)
         fun.export.data(path = path.out, data = tempo2, output = output_error_file_name, sep = 1)
     }
     tempo3 <- NULL
-    if( ! all(pedfile$ind_ID %in% geno.file.nb)){
-        tempo3 <- paste0("ID OF PEDIGREE FILE NOT PRESENT IN GENOTYPE ", paste0(pedfile[ ! pedfile$ind_ID %in% geno.file.nb], collapse = " "))
+    if( ! all(pedfile_ind_ID %in% geno.file.nb)){
+        tempo3 <- paste0("ID OF PEDIGREE FILE NOT PRESENT IN GENOTYPE ", paste0(pedfile_ind_ID[ ! pedfile_ind_ID %in% geno.file.nb], collapse = " "))
         fun.export.data(path = path.out, data = tempo3, output = output_file_name, sep = 1)
         fun.export.data(path = path.out, data = tempo3, output = output_error_file_name, sep = 1)
     }

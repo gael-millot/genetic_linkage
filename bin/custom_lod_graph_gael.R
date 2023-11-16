@@ -200,7 +200,7 @@ if(all(is.na(output.data$Lodscore))){
         ylab = "LODSCORE", 
         genomewideline = 3, 
         suggestiveline = FALSE, 
-        main = paste0("WHOLE GENOME\nMODEL: ", model, "\nX-AXIS RANGE: ", min(chr.info$LENGTH_CUMUL_TO_ADD), "-", max(chr.info$LENGTH_CUMUL)), 
+        main = paste0("WHOLE GENOME\n", model, "\nX-AXIS RANGE: ", min(chr.info$LENGTH_CUMUL_TO_ADD), "-", max(chr.info$LENGTH_CUMUL)), 
         xlim = c(min(chr.info$LENGTH_CUMUL_TO_ADD), max(chr.info$LENGTH_CUMUL)), 
         ylim = tempo.ylim, 
         cex = 0.6, 

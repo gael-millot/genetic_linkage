@@ -92,6 +92,10 @@ process checking {
     """
     #!/bin/bash -uel
     # -l is required for the module command
+    if [[ -e "genotype.txt" || -e "freq.txt" || -e "map.txt" || -e "pedigree.pro" ]] ; then
+        echo -e "\n### ERROR ### INPUT FILES CANNOT BE NAMED genotype.txt, freq.txt, map.txt OR pedigree.pro\n"
+        exit 1
+    fi
     checking.sh \
 ${RAW_GENOTYPE_FILE_NAME_CONF_ch} \
 ${RAW_FREQ_FILE_NAME_CONF_ch} \
@@ -348,18 +352,20 @@ ${bit_nb} \
 
     # the following lines are for the next processes
     INFO_FILE="merlin-info.tbl"
-    if [[ ${MERLIN_ANALYSE_OPTION_CONF} == "--best" ]] ; then
+    if [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--best" ]] ; then
         echo -e "WARNING: HAPLOTYPE INFERENCE (ANALYSE IS: $MERLIN_ANALYSE_OPTION_CONF)\nNO LODSCORE OR INFORMATION FILE RETURNED BY THE PIPELINE (CODE of merlin.sh FILEHAS TO BE MODIFIED)"
         LOD_FILE="no-lodscore-computed.tbl"
         INFO_FILE="no-information-computed.tbl"
         echo "" > ${group_name}_c\${CHROMO_NB}_merlin/\${LOD_FILE}
         echo "" > ${group_name}_c\${CHROMO_NB}_merlin/\${LOD_FILE}
-    elif [[ ${MERLIN_ANALYSE_OPTION_CONF} == "--model" ]] ; then
+    elif [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--model" ]] ; then
         LOD_FILE="merlin-parametric.tbl"
-    elif [[ ${MERLIN_ANALYSE_OPTION_CONF} == "--npl" ]] ; then
+    elif [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--npl" ]] ; then
+        LOD_FILE="merlin-nonparametric.tbl"
+    elif [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--npl --exp" ]] ; then
         LOD_FILE="merlin-nonparametric.tbl"
     else
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --best, --model OR --npl\n"
+        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --best, --model, --npl OR --npl --exp\n"
         exit 1
     fi
     awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' \${LOD_FILE} > TEMPO1_FILE # add the group name as last column
@@ -637,6 +643,9 @@ workflow {
     }
     if( ! IID_IN_GROUP_CONF in String){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID IID_IN_GROUP_CONF PARAMETER IN linkage.config FILE:\n${IID_IN_GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
+    }
+    if(MERLIN_ANALYSE_OPTION_CONF != "--model"){
+        MERLIN_PARAM_CONF="NONE"
     }
    if( ! file(BASH_FUNCTIONS_CONF).exists()){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID BASH_FUNCTIONS_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${BASH_FUNCTIONS_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"

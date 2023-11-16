@@ -50,7 +50,7 @@
 
 See the Alohomora_Format.doc in https://gmc.mdc-berlin.de/alohomora/docs.zip
 
-The dataset used in the *nextflow.config* file, as example, is available at https://doi.org/10.5281/zenodo.8403784
+The dataset used in the *nextflow.config* file, as example, is available at https://doi.org/10.5281/zenodo.10144885
 
 <br /><br />
 ## HOW TO RUN
@@ -186,7 +186,7 @@ Use chmod to change the user rights.
 <br /><br />
 ## OUTPUT
 
-An example of results is present at this address: https://zenodo.org/record/8403816/files/linkage_1696331487.zip
+An example of results is present at this address: https://zenodo.org/records/10144885/files/linkage_1700161112.zip
 
 Descritpion:
 
@@ -259,9 +259,25 @@ The developers & maintainers of the mentioned softwares and packages, including:
 - [Bash](https://www.gnu.org/software/bash/)
 - [Ubuntu](https://ubuntu.com/)
 
+Special acknowledgement to:
+
+- [Goncalo Abecasis et al.](https://genome.sph.umich.edu/wiki/Abecasis_Lab) for the release of [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
+- [Franz Rüschendorf et al.] for the release of [Alohomora](https://doi.org/10.1093/bioinformatics/bti264)
+
 
 <br /><br />
 ## WHAT'S NEW IN
+
+#### v3.2
+
+- Model option --npl --exp added
+- New simple dataset
+
+
+#### v3.1
+
+Bug fixed in clean_lod_gael.R
+
 
 #### v3.0
 
