@@ -314,9 +314,9 @@ process merlin {
 
     output:
     path "Group*"
-    path "lodscore_*", emit: lod_ch
-    path "map_*", emit: map_ch
-    path "info_*", emit: info_ch
+    path "lodscore_*", emit: lod_ch, optional: true
+    path "map_*", emit: map_ch, optional: true
+    path "info_*", emit: info_ch, optional: true
     path "merlin_report*"
 
     script:
@@ -353,11 +353,9 @@ ${bit_nb} \
     # the following lines are for the next processes
     INFO_FILE="merlin-info.tbl"
     if [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--best" ]] ; then
-        echo -e "WARNING: HAPLOTYPE INFERENCE (ANALYSE IS: $MERLIN_ANALYSE_OPTION_CONF)\nNO LODSCORE OR INFORMATION FILE RETURNED BY THE PIPELINE (CODE of merlin.sh FILEHAS TO BE MODIFIED)"
-        LOD_FILE="no-lodscore-computed.tbl"
-        INFO_FILE="no-information-computed.tbl"
-        echo "" > ${group_name}_c\${CHROMO_NB}_merlin/\${LOD_FILE}
-        echo "" > ${group_name}_c\${CHROMO_NB}_merlin/\${LOD_FILE}
+        echo -e "WARNING: HAPLOTYPE INFERENCE (ANALYSE IS: $MERLIN_ANALYSE_OPTION_CONF)\nNO LODSCORE OR INFORMATION FILE RETURNED BY THE PIPELINE"
+        # LOD_FILE="no-lodscore-computed.tbl"
+        # echo "" > ${group_name}_c\${CHROMO_NB}_merlin/\${LOD_FILE}
     elif [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--model" ]] ; then
         LOD_FILE="merlin-parametric.tbl"
     elif [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--npl" ]] ; then
@@ -365,15 +363,17 @@ ${bit_nb} \
     elif [[ "${MERLIN_ANALYSE_OPTION_CONF}" == "--npl --exp" ]] ; then
         LOD_FILE="merlin-nonparametric.tbl"
     else
-        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --best, --model, --npl OR --npl --exp\n"
+        echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE nextflow.config FILE: SHOULD BE EITHER --best, --model, --npl OR --npl --exp\n"
         exit 1
     fi
-    awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' \${LOD_FILE} > TEMPO1_FILE # add the group name as last column
-    awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' \${INFO_FILE} > TEMPO2_FILE # add the group name as last column
-    awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' MAP_FILE > TEMPO3_FILE # add the group name as last column
-    cp TEMPO1_FILE "lodscore_${group_name}_c\${CHROMO_NB}.tsv" # rename to facilitate export into channel
-    cp TEMPO2_FILE "info_${group_name}_c\${CHROMO_NB}.tsv" # rename to facilitate export into channel
-    cp TEMPO3_FILE "map_${group_name}_c\${CHROMO_NB}.txt" # rename to facilitate export into channel
+    if [[ ! "${MERLIN_ANALYSE_OPTION_CONF}" == "--best" ]] ; then
+        awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' \${LOD_FILE} > TEMPO1_FILE # add the group name as last column
+        awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' \${INFO_FILE} > TEMPO2_FILE # add the group name as last column
+        awk -v var1=${group_name} 'BEGIN{OFS="" ; ORS=""}{if(NR==1){print \$0"\\tGROUP\\n"}else{print \$0"\\t"var1"\\n"}}' MAP_FILE > TEMPO3_FILE # add the group name as last column
+        cp TEMPO1_FILE "lodscore_${group_name}_c\${CHROMO_NB}.tsv" # rename to facilitate export into channel
+        cp TEMPO2_FILE "info_${group_name}_c\${CHROMO_NB}.tsv" # rename to facilitate export into channel
+        cp TEMPO3_FILE "map_${group_name}_c\${CHROMO_NB}.txt" # rename to facilitate export into channel
+    fi
     """
 }
 
@@ -616,80 +616,83 @@ workflow {
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_PEDIGREE_FILE_NAME_CONF}\nFILE CANNOT BE NAMED pedigree.pro FOR THIS CODE\n\n========\n\n"
     }
     if( ! file(RAW_GENOTYPE_FILE_NAME_CONF).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_GENOTYPE_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${RAW_GENOTYPE_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         RAW_GENOTYPE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_GENOTYPE_FILE_NAME_CONF}", checkIfExists: false)
         //TEMPO_GENOTYPE_FILE_NAME = file(RAW_INPUT_DIR_CONF+"/"+RAW_GENOTYPE_FILE_NAME_CONF).baseName
     }
     if( ! file(RAW_FREQ_FILE_NAME_CONF).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_FREQ_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_FREQ_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_FREQ_FILE_NAME_CONF PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${RAW_FREQ_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         RAW_FREQ_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_FREQ_FILE_NAME_CONF}", checkIfExists: false)
     }
    if( ! file(RAW_MAP_FILE_NAME_CONF).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_MAP_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_MAP_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_MAP_FILE_NAME_CONF PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${RAW_MAP_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         RAW_MAP_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_MAP_FILE_NAME_CONF}", checkIfExists: false)
     }
    if( ! file(RAW_PEDIGREE_FILE_NAME_CONF).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${RAW_PEDIGREE_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_PEDIGREE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${RAW_PEDIGREE_FILE_NAME_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         RAW_PEDIGREE_FILE_NAME_CONF_ch = Channel.fromPath("${RAW_PEDIGREE_FILE_NAME_CONF}", checkIfExists: false)
     }
    if( ! file(human_chr_info).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID human_chr_info PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${human_chr_info}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID human_chr_info PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${human_chr_info}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         human_chr_info_ch = Channel.fromPath("${human_chr_info}", checkIfExists: false)
     }
     if( ! IID_IN_GROUP_CONF in String){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID IID_IN_GROUP_CONF PARAMETER IN linkage.config FILE:\n${IID_IN_GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID IID_IN_GROUP_CONF PARAMETER IN nextflow.config FILE:\n${IID_IN_GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
+    }
+    if( ! (MERLIN_ANALYSE_OPTION_CONF =~ /(^\-\-npl)|(^\-\-model)|(^\-\-best)|(^\-\-npl\ \-\-exp)/)){
+       error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID MERLIN_ANALYSE_OPTION_CONF PARAMETER IN nextflow.config FILE:\n${MERLIN_ANALYSE_OPTION_CONF}\nMUST BE EITHER --model, --npl, --npl --exp OR --best\n\n========\n\n"
     }
     if(MERLIN_ANALYSE_OPTION_CONF != "--model"){
         MERLIN_PARAM_CONF="NONE"
     }
    if( ! file(BASH_FUNCTIONS_CONF).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID BASH_FUNCTIONS_CONF PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${BASH_FUNCTIONS_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID BASH_FUNCTIONS_CONF PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${BASH_FUNCTIONS_CONF}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         BASH_FUNCTIONS_CONF_ch = Channel.fromPath("${BASH_FUNCTIONS_CONF}", checkIfExists: false)
     }
    if( ! file(r_main_functions_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_main_functions_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_main_functions_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_main_functions_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_main_functions_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_main_functions_conf_ch = Channel.fromPath("${r_main_functions_conf}", checkIfExists: false)
     }
    if( ! file(r_check_lod_gael_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_check_lod_gael_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_check_lod_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_check_lod_gael_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_check_lod_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_check_lod_gael_conf_ch = Channel.fromPath("${r_check_lod_gael_conf}", checkIfExists: false)
     }
    if( ! file(r_clean_lod_gael_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_clean_lod_gael_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_clean_lod_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_clean_lod_gael_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_clean_lod_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_clean_lod_gael_conf_ch = Channel.fromPath("${r_clean_lod_gael_conf}", checkIfExists: false)
     }
    if( ! file(r_lod_files_assembly_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_lod_files_assembly_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_lod_files_assembly_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_lod_files_assembly_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_lod_files_assembly_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_lod_files_assembly_conf_ch = Channel.fromPath("${r_lod_files_assembly_conf}", checkIfExists: false)
     }
    if( ! file(r_custom_lod_graph_gael_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_custom_lod_graph_gael_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_custom_lod_graph_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_custom_lod_graph_gael_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_custom_lod_graph_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_custom_lod_graph_gael_conf_ch = Channel.fromPath("${r_custom_lod_graph_gael_conf}", checkIfExists: false)
     }
 
    if( ! file(r_info_files_assembly_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_info_files_assembly_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_info_files_assembly_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_info_files_assembly_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_info_files_assembly_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_info_files_assembly_conf_ch = Channel.fromPath("${r_info_files_assembly_conf}", checkIfExists: false)
     }
    if( ! file(r_custom_info_graph_gael_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_custom_info_graph_gael_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${r_custom_info_graph_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID r_custom_info_graph_gael_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${r_custom_info_graph_gael_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         r_custom_info_graph_gael_conf_ch = Channel.fromPath("${r_custom_info_graph_gael_conf}", checkIfExists: false)
     }
    if( ! file(alohomora_bch_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID alohomora_bch_conf PARAMETER IN linkage.config FILE (DOES NOT EXIST): ${alohomora_bch_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID alohomora_bch_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${alohomora_bch_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
         alohomora_bch_conf_ch = Channel.fromPath("${alohomora_bch_conf}", checkIfExists: false)
     }
@@ -783,48 +786,52 @@ workflow {
 //merlin.out.group_name_ch.merge(merlin.out.lod_ch).view() // merge do [Group2, /mnt/c/Users/Gael/Documents/Git_projects/linkage_analysis/work/33/001c85880ea771d44900f6f094d64b/lod_Group2_c13_merlin-parametric.tbl]
 //merlin.out.lod_ch.collect().view() //
 
-    merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 LODSCORE FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
-    merlin.out.map_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 MAP FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+    if(MERLIN_ANALYSE_OPTION_CONF != "--best"){
 
-    lod_files_assembly(
-        merlin.out.lod_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
-        merlin.out.map_ch.collect(),
-        splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
-        r_main_functions_conf_ch,
-        r_lod_files_assembly_conf_ch
-    )
+        merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 LODSCORE FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+        merlin.out.map_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 MAP FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
 
-    custom_lod_graph(
-        lod_files_assembly.out.full_ch,
-        r_custom_lod_graph_gael_conf_ch,
-        r_main_functions_conf_ch,
-        human_chr_info_ch, 
-        MERLIN_ANALYSE_OPTION_CONF,
-        MERLIN_PARAM_CONF,
-        MERLIN_DISPLAY_CHROMO_CONF,
-        MERLIN_LOD_CUTOFF_CONF
-    )
+        lod_files_assembly(
+            merlin.out.lod_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
+            merlin.out.map_ch.collect(),
+            splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
+            r_main_functions_conf_ch,
+            r_lod_files_assembly_conf_ch
+        )
 
-    merlin.out.info_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 GENETIC INFO FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
+        custom_lod_graph(
+            lod_files_assembly.out.full_ch,
+            r_custom_lod_graph_gael_conf_ch,
+            r_main_functions_conf_ch,
+            human_chr_info_ch, 
+            MERLIN_ANALYSE_OPTION_CONF,
+            MERLIN_PARAM_CONF,
+            MERLIN_DISPLAY_CHROMO_CONF,
+            MERLIN_LOD_CUTOFF_CONF
+        )
 
-    info_files_assembly(
-        merlin.out.info_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
-        merlin.out.map_ch.collect(),
-        splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
-        r_main_functions_conf_ch,
-        r_info_files_assembly_conf_ch
-    )
+        merlin.out.info_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 GENETIC INFO FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
 
-    custom_info_graph(
-        info_files_assembly.out.full_info_ch,
-        r_custom_info_graph_gael_conf_ch,
-        r_main_functions_conf_ch,
-        human_chr_info_ch, 
-        MERLIN_ANALYSE_OPTION_CONF,
-        MERLIN_PARAM_CONF,
-        MERLIN_DISPLAY_CHROMO_CONF,
-        MERLIN_LOD_CUTOFF_CONF
-    )
+        info_files_assembly(
+            merlin.out.info_ch.collect(), // collect is used to get the 69 channels made of path from lod.ch into a single list with 69 path
+            merlin.out.map_ch.collect(),
+            splitting.out.group_dir_ch.flatten().count(), // count the number of groups and return a single value. Flatten() used otherwise a single list and thus return 1
+            r_main_functions_conf_ch,
+            r_info_files_assembly_conf_ch
+        )
+
+        custom_info_graph(
+            info_files_assembly.out.full_info_ch,
+            r_custom_info_graph_gael_conf_ch,
+            r_main_functions_conf_ch,
+            human_chr_info_ch, 
+            MERLIN_ANALYSE_OPTION_CONF,
+            MERLIN_PARAM_CONF,
+            MERLIN_DISPLAY_CHROMO_CONF,
+            MERLIN_LOD_CUTOFF_CONF
+        )
+
+    }
 
     backup(
         config_file, 

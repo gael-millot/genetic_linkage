@@ -109,7 +109,7 @@ else
     elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--npl --exp" ]] ; then
         MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF}"
     elif [[ $MERLIN_ANALYSE_OPTION_CONF == "--best" ]] ; then
-        MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF} --horizontal"
+        MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF}" #  MODEL_SET="${MERLIN_ANALYSE_OPTION_CONF} --horizontal" for horizontal haplotypes
     else
         echo -e "\n### ERROR ###  PROBLEM WITH THE MERLIN_ANALYSE_OPTION_CONF PARAMETER IN THE linkage.config FILE: SHOULD BE EITHER --model, --npl, --npl --exp OR --best\n"
         exit 1

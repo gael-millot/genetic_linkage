@@ -28,6 +28,7 @@
 - Basic quality control of initial file structures (genotypes, pedigree information, SNP allele frequencies and SNP positions on human reference genome).
 - Quality control analysis and file preparation by the Alohomora software (removal of uninformative SNPs and SNPs with Mendelian errors).
 - Linkage and information analysis by the Merlin software.
+- Use Merin. See the tutorial and other info [here](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
 
 
 <br /><br />
@@ -267,6 +268,11 @@ Special acknowledgement to:
 
 <br /><br />
 ## WHAT'S NEW IN
+
+#### v3.3
+
+Haplotype added.
+
 
 #### v3.2
 
