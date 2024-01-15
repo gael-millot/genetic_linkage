@@ -1,0 +1,77 @@
+
+
+#########################################################################
+##                                                                     ##
+##     alohomora_bch_haplo_20231212                                    ##
+##                                                                     ##
+##     Alexandre Mathieu                                               ##
+##     GHFC                                                            ##
+##     Neuroscience Department                                         ##
+##     Institut Pasteur Paris                                          ##
+##                                                                     ##
+##     Gael A. Millot                                                  ##
+##     Bioinformatics and Biostatistics Hub                            ##
+##     Institut Pasteur Paris                                          ##
+##                                                                     ##
+#########################################################################
+
+# alohomora.bch
+# this default batch executes ALOHOMORA with all options for quality control
+# Lines have been commented to focus on haplotyping
+# usage: alohomora --nogui [-b <alohomora.bch>] [-p <pedfile>] [-g <genotypefile>]
+
+
+$skip_list=0
+#$skipfile="skiplist.txt"
+
+
+### give genetic map- and allele frequency files ###
+$chip="Illumina"
+$genmap="DeCode"
+$allfreq="Caucasian"
+$decode_map_illumi="map" # map file must be called "map"
+$freq_cauc_illumi="freq" # freq file must be called "freq"
+
+&SaveCurrEnv
+&ReadInfiles
+&CompareSampleIDs
+&CallingRate
+&CalcAllFreq
+&CheckGender
+&PrintGRRFile
+&PedCheck
+&PlotPedCheckErr
+$del_errors=1
+# $subsets=0
+# &Merlin
+# chdir("merlin")
+# system("../merlin_start_dominant.pl")
+# chdir("..")
+# &CreMerlinErrList
+
+#### Select markers for Linkage Analysis ####
+
+## Select markers by distance and minor allele frequency ##
+# $select_dist=1
+# $msminbases=65000
+# $msminfreq=0
+
+## Select markers by chromosome, first and last position ##
+$select_pos=1
+$mschrom=
+$firstmspos=
+$lastmspos=
+
+&MarkerSelection
+
+#### END Select markers for Linkage Analysis ####
+
+
+&Allegro
+#$subsets=0
+#&Genehunter
+#&Merlin
+#&Plink
+
+&Quit
+

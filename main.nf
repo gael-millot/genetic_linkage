@@ -7,7 +7,6 @@ nextflow.enable.dsl=2
 ##     genetic_linkage                                                 ##
 ##     Gael A. Millot                                                  ##
 ##     Bioinformatics and Biostatistics Hub                            ##
-##     Computational Biology Department                                ##
 ##     Institut Pasteur Paris                                          ##
 ##                                                                     ##
 #########################################################################
@@ -207,7 +206,7 @@ process alohomora {
     path group_dir_ch // 3 parallelization expected (if 3 pedigrees)
     path r_main_functions_conf_ch
     path r_check_lod_gael_conf_ch
-    path alohomora_bch_conf_ch
+    path alohomora_bch_linkage_ch
     val IID_IN_GROUP_CONF
 
     output:
@@ -241,7 +240,7 @@ process alohomora {
 \${PEDIGREE_FILE_NAME} \
 ${r_main_functions_conf_ch} \
 ${r_check_lod_gael_conf_ch} \
-${alohomora_bch_conf_ch} \
+${alohomora_bch_linkage_ch} \
 "${IID_IN_GROUP_CONF}" \
 > >(tee -a alohomora_report_\${GROUP_NAME}.log)
     """
@@ -644,8 +643,8 @@ workflow {
     if( ! IID_IN_GROUP_CONF in String){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID IID_IN_GROUP_CONF PARAMETER IN nextflow.config FILE:\n${IID_IN_GROUP_CONF}\nMUST BE A STRING\n\n========\n\n"
     }
-    if( ! (MERLIN_ANALYSE_OPTION_CONF =~ /(^\-\-npl)|(^\-\-model)|(^\-\-best)|(^\-\-npl\ \-\-exp)/)){
-       error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID MERLIN_ANALYSE_OPTION_CONF PARAMETER IN nextflow.config FILE:\n${MERLIN_ANALYSE_OPTION_CONF}\nMUST BE EITHER --model, --npl, --npl --exp OR --best\n\n========\n\n"
+    if( ! (MERLIN_ANALYSE_OPTION_CONF =~ /(^\-\-npl$)|(^\-\-model$)|(^\-\-npl\ \-\-exp$)|(^NULL$)/)){
+       error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID MERLIN_ANALYSE_OPTION_CONF PARAMETER IN nextflow.config FILE:\n${MERLIN_ANALYSE_OPTION_CONF}\nMUST BE EITHER NULL, --model, --npl OR --npl --exp\n\n========\n\n"
     }
     if(MERLIN_ANALYSE_OPTION_CONF != "--model"){
         MERLIN_PARAM_CONF="NONE"
@@ -691,11 +690,23 @@ workflow {
     }else{
         r_custom_info_graph_gael_conf_ch = Channel.fromPath("${r_custom_info_graph_gael_conf}", checkIfExists: false)
     }
-   if( ! file(alohomora_bch_conf).exists()){
-        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID alohomora_bch_conf PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${alohomora_bch_conf}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+   if( ! file(alohomora_bch_linkage).exists()){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID alohomora_bch_linkage PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${alohomora_bch_linkage}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
     }else{
-        alohomora_bch_conf_ch = Channel.fromPath("${alohomora_bch_conf}", checkIfExists: false)
+        alohomora_bch_linkage_ch = Channel.fromPath("${alohomora_bch_linkage}", checkIfExists: false)
     }
+   if( ! file(alohomora_bch_haplo).exists()){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID alohomora_bch_haplo PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${alohomora_bch_haplo}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }else{
+        alohomora_bch_haplo_ch = Channel.fromPath("${alohomora_bch_haplo}", checkIfExists: false)
+    }
+   if( ! file(allegro_script).exists()){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID allegro_script PARAMETER IN nextflow.config FILE (DOES NOT EXIST): ${allegro_script}\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }else{
+        allegro_script_ch = Channel.fromPath("${allegro_script}", checkIfExists: false)
+    }
+
+
 
 
     // below : those variable are already used in the config file. Thus, to late to check them. And not possible to check inside the config file
@@ -763,30 +774,29 @@ workflow {
         splitting.out.group_dir_ch.flatten(), // flatten split the list into several objects (required for parallelization)
         r_main_functions_conf_ch.first(),
         r_check_lod_gael_conf_ch.first(),
-        alohomora_bch_conf_ch.first(),
+        alohomora_bch_linkage_ch.first(),
         IID_IN_GROUP_CONF
     )
 
 //alohomora.out.chr_dir_ch.transpose().view()
 
-    pre_merlin(
-        alohomora.out.chr_dir_ch.transpose(),
-        bit_nb // transpose is used because chr_dir_ch is a single group_name associated with 23 path, three times (3 groups). Thus, transpose makes one group_name associated with 23 path, three times -> 69 channes
-    )
 
-//pre_merlin.out.chr_dir_ch2.view()
 
-    merlin(
-        pre_merlin.out.chr_dir_ch2, // 
-        MERLIN_ANALYSE_OPTION_CONF,
-        MERLIN_PARAM_CONF,
-        bit_nb
-    )
+    if(MERLIN_ANALYSE_OPTION_CONF != "NULL"){
 
-//merlin.out.group_name_ch.merge(merlin.out.lod_ch).view() // merge do [Group2, /mnt/c/Users/Gael/Documents/Git_projects/linkage_analysis/work/33/001c85880ea771d44900f6f094d64b/lod_Group2_c13_merlin-parametric.tbl]
-//merlin.out.lod_ch.collect().view() //
+        pre_merlin(
+            alohomora.out.chr_dir_ch.transpose(),
+            bit_nb // transpose is used because chr_dir_ch is a single group_name associated with 23 path, three times (3 groups). Thus, transpose makes one group_name associated with 23 path, three times -> 69 channes
+        )
 
-    if(MERLIN_ANALYSE_OPTION_CONF != "--best"){
+    //pre_merlin.out.chr_dir_ch2.view()
+
+        merlin(
+            pre_merlin.out.chr_dir_ch2, // 
+            MERLIN_ANALYSE_OPTION_CONF,
+            MERLIN_PARAM_CONF,
+            bit_nb
+        )
 
         merlin.out.lod_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 LODSCORE FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
         merlin.out.map_ch.count().subscribe { n -> if ( n == 0 ){error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\n0 MAP FILE RETURNED BY THE merlin PROCESS\n\n========\n\n"}}
