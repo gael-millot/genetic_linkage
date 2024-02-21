@@ -713,9 +713,6 @@ workflow {
     // system_exec
     // out_ini
     print("\n\nRESULT DIRECTORY: ${out_path}")
-    print("\n\nWARNING: PARAMETERS ALREADY INTERPRETED IN THE .config FILE:")
-    print("    system_exec: ${system_exec}")
-    print("    out_path: ${out_path_ini}")
     if("${system_exec}" != "local"){
         print("    queue: ${queue}")
         print("    qos: ${qos}")

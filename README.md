@@ -1,10 +1,8 @@
-[//]: # "#to make links in gitlab: example with racon https://github.com/isovic/racon"
-[//]: # "tricks in markdown: https://openclassrooms.com/fr/courses/1304236-redigez-en-markdown"
-
-| usage | dependencies |
+| Usage | Requirement |
 | --- | --- |
 | [![Nextflow](https://img.shields.io/badge/code-Nextflow-blue?style=plastic)](https://www.nextflow.io/) | [![Dependencies: Nextflow Version](https://img.shields.io/badge/Nextflow-v23.04.4.5881-blue?style=plastic)](https://github.com/nextflow-io/nextflow) |
 | [![License: GPL-3.0](https://img.shields.io/badge/licence-GPL%20(%3E%3D3)-green?style=plastic)](https://www.gnu.org/licenses) | [![Dependencies: Apptainer Version](https://img.shields.io/badge/Apptainer-v1.2.3-blue?style=plastic)](https://github.com/apptainer/apptainer) |
+| | [![Dependencies: Graphviz Version](https://img.shields.io/badge/Graphviz-v2.42.2-blue?style=plastic)](https://www.graphviz.org/download/) |
 
 <br /><br />
 ## TABLE OF CONTENTS
@@ -34,24 +32,40 @@
 <br /><br />
 ## CONTENT
 
-**main.nf**: File that can be executed using a linux terminal, a MacOS terminal or Windows 10 WSL2.
-<br /><br />
-**nextflow.config**: Parameter settings for the main.nf file. Users have to open this file, set the desired settings and save these modifications before execution.
-<br /><br />
-**bin**: Folder containing script files that are used by the main.nf file.
+| Files and folder | Description |
+| --- | --- |
+| **main.nf** | File that can be executed using a linux terminal, a MacOS terminal or Windows 10 WSL2. |
+| **nextflow.config** | Parameter settings for the *main.nf* file. Users have to open this file, set the desired settings and save these modifications before execution. |
+| **bin folder** | Contains files required by the *main.nf* file. |
 
 
 <br /><br />
 ## INPUT
 
-- A genotype file.
-- An allelic frequency file.
-- A raw map file. BEWARE: replace the spaces in the Header.
-- A raw pedigree file.
+| Required files |
+| --- |
+| A genotype file. |
+| An allelic frequency file. |
+| A map file. BEWARE: no space allowed in the Header. |
+| A pedigree file. |
+| A pedigree file. |
 
 See the Alohomora_Format.doc in https://gmc.mdc-berlin.de/alohomora/docs.zip
 
-The dataset used in the *nextflow.config* file, as example, is available at https://doi.org/10.5281/zenodo.10144885
+<br />
+
+The dataset used in the *nextflow.config* file, as example, is available at https://zenodo.org/records/10667234.
+
+<br />
+
+| File name | Description |
+| --- | --- |
+| **genotype.tsv** | Genotype file. Available [here](https://zenodo.org/records/10667234/files/genotype.tsv). |
+| **freq_NFE_hg19.txt** | Allelic frequency file. Available [here](https://zenodo.org/records/10667234/files/freq_NFE_hg19.txt). |
+| **map_hg19.txt** | Map file. Available [here](https://zenodo.org/records/10667234/files/map_hg19.txt). |
+| **pedigree.txt** | Pedigree file. Available [here](https://zenodo.org/records/10667234/files/pedigree.txt). |
+| **hg19_grch37p5_chr_size_cumul.txt** | Coordinates of the hg19_grch37p5 Human Genome for plots. Available [here](https://zenodo.org/records/10667234/files/hg19_grch37p5_chr_size_cumul.txt). |
+
 
 <br /><br />
 ## HOW TO RUN
@@ -63,19 +77,19 @@ Installation of:<br />
 [Graphviz](https://www.graphviz.org/download/), `sudo apt install graphviz` for Linux ubuntu<br />
 [Apptainer](https://github.com/apptainer/apptainer)<br />
 
-<br /><br />
+
 ### 2. Local running (personal computer)
 
 
-#### 2.1. main.nf file in the personal computer
+####	2.1. *main.nf* file in the personal computer
 
 - Mount a server if required:
 
-<pre>
-DRIVE="Z"
+```
+DRIVE="Z" # change the letter to fit the correct drive
 sudo mkdir /mnt/share
 sudo mount -t drvfs $DRIVE: /mnt/share
-</pre>
+```
 
 Warning: if no mounting, it is possible that nextflow does nothing, or displays a message like:
 <pre>
@@ -83,31 +97,32 @@ Launching `main.nf` [loving_morse] - revision: d5aabe528b
 /mnt/share/Users
 </pre>
 
-- Run the following command from where the main.nf and nextflow.config files are (example: \\wsl$\Ubuntu-20.04\home\gael):
+- Run the following command from where the *main.nf* and *nextflow.config* files are (example: \\wsl$\Ubuntu-20.04\home\gael):
 
-<pre>
+```
 nextflow run main.nf -c nextflow.config
-</pre>
+```
 
 with -c to specify the name of the config file used.
 
-<br /><br />
-#### 2.3. main.nf file in the public gitlab repository
+
+#### 2.2.	*main.nf* file in the public git repository
 
 Run the following command from where you want the results:
 
-<pre>
-nextflow run -hub pasteur gmillot/genetic_linkage -r v1.0.0
-</pre>
+```
+nextflow run gael-millot/genetic_linkage # github, or nextflow run http://github.com/gael-millot/genetic_linkage
+nextflow run -hub pasteur gmillot/genetic_linkage -r v1.0.0 # gitlab
+```
 
-<br /><br />
+
 ### 3. Distant running (example with the Pasteur cluster)
 
-#### 3.1. Pre-execution
+####	3.1. Pre-execution
 
 Copy-paste this after having modified the EXEC_PATH variable:
 
-<pre>
+```
 EXEC_PATH="/pasteur/zeus/projets/p01/BioIT/gmillot/genetic_linkage" # where the bin folder of the main.nf script is located
 export CONF_BEFORE=/opt/gensoft/exe # on maestro
 
@@ -122,88 +137,91 @@ export GRAPHVIZ_CONF_AFTER=bin/graphviz # on maestro
 
 MODULES="${CONF_BEFORE}/${JAVA_CONF}/${JAVA_CONF_AFTER},${CONF_BEFORE}/${APP_CONF}/${APP_CONF_AFTER},${CONF_BEFORE}/${GIT_CONF}/${GIT_CONF_AFTER}/${GRAPHVIZ_CONF}/${GRAPHVIZ_CONF_AFTER}"
 cd ${EXEC_PATH}
-chmod 755 ${EXEC_PATH}/bin/*.* # not required if no bin folder
+chmod 755 ${EXEC_PATH}/bin/*.*
 module load ${JAVA_CONF} ${APP_CONF} ${GIT_CONF} ${GRAPHVIZ_CONF}
-</pre>
+```
 
-<br /><br />
-#### 3.2. main.nf file in a cluster folder
 
-Modify the second line of the code below, and run from where the main.nf and nextflow.config files are (which has been set thanks to the EXEC_PATH variable above):
+####	3.2. *main.nf* file in a cluster folder
 
-<pre>
+Modify the second line of the code below, and run from where the *main.nf* and *nextflow.config* files are (which has been set thanks to the EXEC_PATH variable above):
+
+```
 HOME_INI=$HOME
 HOME="${ZEUSHOME}/genetic_linkage/" # $HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/, for instance. See NFX_HOME in the nextflow software script
 trap '' SIGINT
 nextflow run --modules ${MODULES} main.nf -c nextflow.config
 HOME=$HOME_INI
 trap SIGINT
-</pre>
+```
 
-<br /><br />
-#### 3.3. main.nf file in the public gitlab repository
+
+####	3.3. *main.nf* file in the public git repository
 
 Modify the first and third lines of the code below, and run (results will be where the EXEC_PATH variable has been set above):
 
-<pre>
+```
 VERSION="v1.0"
 HOME_INI=$HOME
 HOME="${ZEUSHOME}/genetic_linkage/" # $HOME changed to allow the creation of .nextflow into /$ZEUSHOME/genetic_linkage/, for instance. See NFX_HOME in the nextflow software script
 trap '' SIGINT
-nextflow run --modules ${MODULES} -hub pasteur gmillot/genetic_linkage -r $VERSION -c $HOME/nextflow.config
+nextflow run --modules ${MODULES} gael-millot/genetic_linkage -r $VERSION -c $HOME/nextflow.config #github, or nextflow run --modules ${MODULES} http://github.com/gael-millot/genetic_linkage -r $VERSION -c $HOME/nextflow.config
+nextflow run --modules ${MODULES} -hub pasteur gmillot/genetic_linkage -r $VERSION -c $HOME/nextflow.config # gitlab
 HOME=$HOME_INI
 trap SIGINT
-</pre>
+```
 
-<br /><br />
+
 ### 4. Error messages and solutions
 
-#### Message 1
-```
-Unknown error accessing project `gmillot/genetic_linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/genetic_linkage
-```
-
-Purge using:
+####	Message 1
 <pre>
-rm -rf /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot*
+Unknown error accessing project `gmillot/genetic_linkage` -- Repository may be corrupted: /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot/genetic_linkage
 </pre>
 
-#### Message 2
+Purge using:
 ```
+rm -rf /pasteur/sonic/homes/gmillot/.nextflow/assets/gmillot*
+```
+
+####	Message 2
+<pre>
 WARN: Cannot read project manifest -- Cause: Remote resource not found: https://gitlab.pasteur.fr/api/v4/projects/gmillot%2Fgenetic_linkage
-```
+</pre>
 
 Contact Gael Millot (distant repository is not public).
 
-#### Message 3
-
-```
+####	Message 3
+<pre>
 permission denied
-```
+</pre>
 
-Use chmod to change the user rights.
+Use chmod to change the user rights. Example linked to files in the bin folder: 
+```
+chmod 755 bin/*.*
+```
 
 
 <br /><br />
 ## OUTPUT
 
-An example of results is present at this address: https://zenodo.org/records/10144885/files/linkage_1700161112.zip
+An example of results is present at this address: https://zenodo.org/records/10667234/files/linkage_analysis_1708550143.zip
 
-Descritpion:
+Description:
 
 | Result folder | Description |
 | --- | --- |
 | **reports** | Folder containing the classical reports of nextflow including the *nextflow.config* file used. |
 | **merlin_reports** | Folder containing all the reports of the different processes. |
-| **Group\*c\*\*_merlin** | Folder containing the information provided by Merlin for each group of patients and for each chromosome. |
+| **Group\<GR NB\>c\<CHR NB\>_merlin** | Folder containing the information provided by Merlin for each group of patients and for each chromosome. |
 | **complete_lodscore.tsv** | Whole Genome Lodscore. |
-| **cutoff\*complete_lodscore.tsv** | Lines of the *complete_lodscore.tsv* file above a Lodscore threshold defined in the nextflow.config file. |
+| **cutoff\<CUTOFF NB\>complete_lodscore.tsv** | Optional file containing the lines of the *complete_lodscore.tsv* file above a Lodscore threshold defined in the nextflow.config file. |
 | **lodscore_whole_genome.pdf** | Plot of the Lodscores (both whole genome and per chromosome). Model used is indicated in the title, as well as some user settings (chr nb and lodscore cut-offs, separated by pipes). |
 | **lodscore_settings.pdf** | Plot of the *cutoff\*complete_lodscore.tsv* files. |
 | **complete_information.tsv** | Information of each SNP for each group of patients. |
 | **infor_whole_genome.pdf** | Plot of the *complete_information.tsv* files. |
-| **pedstats.markerinfo_c\*** | Marker genotype statistics (one file per chromosome). |
-| **pedstats_c\*.pdf** | Summary of family structure (one file per chromosome). |
+| **pedstats.markerinfo_c\<CHR NB\>** | Marker genotype statistics (one file per chromosome). |
+| **pedstats_c\<CHR NB\>.pdf** | Summary of family structure (one file per chromosome). |
 | **raw_snp.freq.absent.in.map.txt** | raw snp in the freq file but absent in the map file. |
 | **raw_snp.genotype.absent.in.freq.txt** | raw snp in the genotype file but absent in the freq file. |
 | **raw_snp.genotype.absent.in.map.txt** | raw snp in the genotype file but absent in the map file. |
@@ -217,7 +235,7 @@ Descritpion:
 ## VERSIONS
 
 
-The different releases are tagged [here](https://gitlab.pasteur.fr/gmillot/genetic_linkage/-/tags)
+The different releases are tagged [here](https://github.com/gael-millot/genetic_linkage/tags)
 
 <br /><br />
 ## LICENCE
@@ -238,24 +256,25 @@ Not yet published
 ## CREDITS
 
 
-[Gael A. Millot](https://gitlab.pasteur.fr/gmillot), Hub, Institut Pasteur, Paris, France
+Alexandre Mathieu, GHFC team, Institut Pasteur, Paris
+
+Eric Deveaud, HPC Core Facility, Institut Pasteur, Paris
+
+[Gael A. Millot](https://github.com/gael-millot), Hub, Institut Pasteur, Paris, France
 
 <br /><br />
 ## ACKNOWLEDGEMENTS
 
 
-Alexandre Mathieu, GHFC team, Institut Pasteur, Paris
-
-Eric Deveaud, HPC Core Facility, Institut Pasteur, Paris
-
 The developers & maintainers of the mentioned softwares and packages, including:
 
 - [R](https://www.r-project.org/)
 - [ggplot2](https://ggplot2.tidyverse.org/)
-- [ggtree](https://yulab-smu.top/treedata-book/)
 - [Nextflow](https://www.nextflow.io/)
 - [Apptainer](https://apptainer.org/)
 - [Docker](https://www.docker.com/)
+- [Git](https://git-scm.com/)
+- [Github](https://github.com/)
 - [Gitlab](https://about.gitlab.com/)
 - [Bash](https://www.gnu.org/software/bash/)
 - [Ubuntu](https://ubuntu.com/)
@@ -263,7 +282,7 @@ The developers & maintainers of the mentioned softwares and packages, including:
 Special acknowledgement to:
 
 - [Goncalo Abecasis et al.](https://genome.sph.umich.edu/wiki/Abecasis_Lab) for the release of [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
-- [Franz Rüschendorf et al.] for the release of [Alohomora](https://doi.org/10.1093/bioinformatics/bti264)
+- Franz Rüschendorf et al. for the release of [Alohomora](https://doi.org/10.1093/bioinformatics/bti264)
 
 
 <br /><br />
