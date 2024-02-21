@@ -54,17 +54,17 @@ See the Alohomora_Format.doc in https://gmc.mdc-berlin.de/alohomora/docs.zip
 
 <br />
 
-The dataset used in the *nextflow.config* file, as example, is available at https://zenodo.org/records/10667234.
+The dataset used in the *nextflow.config* file, as example, is available at https://zenodo.org/records/10689924.
 
 <br />
 
 | File name | Description |
 | --- | --- |
-| **genotype.tsv** | Genotype file. Available [here](https://zenodo.org/records/10667234/files/genotype.tsv). |
-| **freq_NFE_hg19.txt** | Allelic frequency file. Available [here](https://zenodo.org/records/10667234/files/freq_NFE_hg19.txt). |
-| **map_hg19.txt** | Map file. Available [here](https://zenodo.org/records/10667234/files/map_hg19.txt). |
-| **pedigree.txt** | Pedigree file. Available [here](https://zenodo.org/records/10667234/files/pedigree.txt). |
-| **hg19_grch37p5_chr_size_cumul.txt** | Coordinates of the hg19_grch37p5 Human Genome for plots. Available [here](https://zenodo.org/records/10667234/files/hg19_grch37p5_chr_size_cumul.txt). |
+| **genotype.tsv** | Genotype file. Available [here](https://zenodo.org/records/10689924/files/genotype.tsv). |
+| **freq_NFE_hg19.txt** | Allelic frequency file. Available [here](https://zenodo.org/records/10689924/files/freq_NFE_hg19.txt). |
+| **map_hg19.txt** | Map file. Available [here](https://zenodo.org/records/10689924/files/map_hg19.txt). |
+| **pedigree.txt** | Pedigree file. Available [here](https://zenodo.org/records/10689924/files/pedigree.txt). |
+| **hg19_grch37p5_chr_size_cumul.txt** | Coordinates of the hg19_grch37p5 Human Genome for plots. Available [here](https://zenodo.org/records/10689924/files/hg19_grch37p5_chr_size_cumul.txt). |
 
 
 <br /><br />
@@ -205,7 +205,7 @@ chmod 755 bin/*.*
 <br /><br />
 ## OUTPUT
 
-An example of results is present at this address: https://zenodo.org/records/10667234/files/linkage_analysis_1708550143.zip
+An example of results is present at this address: https://zenodo.org/records/10689924/files/linkage_analysis_1708550143.zip
 
 Description:
 
