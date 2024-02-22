@@ -288,6 +288,12 @@ Special acknowledgement to:
 <br /><br />
 ## WHAT'S NEW IN
 
+#### v3.4
+
+- Transfert into github
+- Zenodo url added in nextflow.config
+
+
 #### v3.3
 
 Haplotype added.
