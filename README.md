@@ -73,9 +73,9 @@ The dataset used in the *nextflow.config* file, as example, is available at http
 ### 1. Prerequisite
 
 Installation of:<br />
-[nextflow DSL2](https://github.com/nextflow-io/nextflow)<br />
+[nextflow DSL2](https://gael-millot.github.io/protocols/docs/Protocol%20152-rev0%20DSL2.html#_Toc159933761)<br />
 [Graphviz](https://www.graphviz.org/download/), `sudo apt install graphviz` for Linux ubuntu<br />
-[Apptainer](https://github.com/apptainer/apptainer)<br />
+[Apptainer](https://gael-millot.github.io/protocols/docs/Protocol%20135-rev0%20APPTAINER.html#_Toc160091693)<br />
 
 
 ### 2. Local running (personal computer)
