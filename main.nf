@@ -558,15 +558,13 @@ process backup {
     """
 }
 
+//////// end Processes
+
+//////// Workflow
 
 workflow {
 
-    //////// Options of nextflow run
-
     print("\n\nINITIATION TIME: ${workflow.start}")
-
-    //////// end Options of nextflow run
-
 
     //////// Options of nextflow run
 
@@ -577,11 +575,15 @@ workflow {
     //////// end Options of nextflow run
 
 
+
     //////// Variables
 
-    modules = params.modules // remove the dot -> can be used in bash scripts
-    config_file = workflow.configFiles[0] // better to use this than config_file = file("${projectDir}/ig_clustering.config") because the latter is not good if -c option of nextflow run is used
+    config_file = workflow.configFiles[0] // better to use this than config_file = file("${projectDir}/nextflow.config") because the latter is not good if -c option of nextflow run is used // file() create a path object necessary o then create the file
     log_file = file("${launchDir}/.nextflow.log")
+
+    // from parameters (options of the nexflow command line)
+    modules = params.modules // remove the dot -> can be used in bash scripts
+    // end from parameters (options of the nexflow command line)
 
 
     //////// end Variables
@@ -594,6 +596,7 @@ workflow {
 
 
     //////// Checks
+
     if( ! (RAW_GENOTYPE_FILE_NAME_CONF in String) ){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_GENOTYPE_FILE_NAME_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
     }else if(RAW_GENOTYPE_FILE_NAME_CONF == "genotype.txt"){
@@ -705,9 +708,6 @@ workflow {
     }else{
         allegro_script_ch = Channel.fromPath("${allegro_script}", checkIfExists: false)
     }
-
-
-
 
     // below : those variable are already used in the config file. Thus, to late to check them. And not possible to check inside the config file
     // system_exec
@@ -844,9 +844,13 @@ workflow {
         config_file, 
         log_file
     )
-}
 
     //////// end Main
 
+}
 
-//////// end Processes
+//////// end Workflow
+
+
+
+

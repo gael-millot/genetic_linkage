@@ -288,6 +288,11 @@ Special acknowledgement to:
 <br /><br />
 ## WHAT'S NEW IN
 
+### 3.5
+
+- In the nextflow.config file, upgrade singularity -> apptainer.
+
+
 #### v3.4
 
 - Transfert into github
