@@ -596,7 +596,68 @@ workflow {
 
 
     //////// Checks
-
+    //// check of the bin folder
+    if( ! (file("${projectDir}/bin/allegro_20231213.pl").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE allegro_20231213.pl FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/alohomora.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE alohomora.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/alohomora_bch_haplo_20231213").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE alohomora_bch_haplo_20231213 FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/alohomora_bch_linkage_20180221").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE alohomora_bch_linkage_20180221 FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/check_lod_gael.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE check_lod_gael.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/checking.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE checking.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/clean_lod_gael.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE clean_lod_gael.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/cleaning.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE cleaning.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/custom_graph.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE custom_graph.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/custom_info_graph_gael.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE custom_info_graph_gael.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/custom_lod_graph_gael.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE custom_lod_graph_gael.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/info_files_assembly.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE info_files_assembly.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/info_files_assembly.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE info_files_assembly.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/little_bash_functions_v2.0.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE little_bash_functions_v2.0.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/lod_files_assembly.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE lod_files_assembly.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/lod_files_assembly.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE lod_files_assembly.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/merlin.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE merlin.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/pre_merlin.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE pre_merlin.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/R_main_functions_gael_20180123.R").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE R_main_functions_gael_20180123.R FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    if( ! (file("${projectDir}/bin/splitting.sh").exists()) ){
+        error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nTHE splitting.sh FILE MUST BE PRESENT IN THE ./bin FOLDER, WHERE THE main.nf file IS PRESENT\nIF POINTING TO A DISTANT SERVER, CHECK THAT IT IS MOUNTED\n\n========\n\n"
+    }
+    //// end check of the bin folder
     if( ! (RAW_GENOTYPE_FILE_NAME_CONF in String) ){
         error "\n\n========\n\nERROR IN NEXTFLOW EXECUTION\n\nINVALID RAW_GENOTYPE_FILE_NAME_CONF PARAMETER IN nextflow.config FILE:\n${RAW_GENOTYPE_FILE_NAME_CONF}\nMUST BE A SINGLE CHARACTER STRING\n\n========\n\n"
     }else if(RAW_GENOTYPE_FILE_NAME_CONF == "genotype.txt"){
