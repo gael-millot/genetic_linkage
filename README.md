@@ -1,5 +1,5 @@
 | Usage | Requirement |
-| --- | --- |
+| :--- | :--- |
 | [![Nextflow](https://img.shields.io/badge/code-Nextflow-blue?style=plastic)](https://www.nextflow.io/) | [![Dependencies: Nextflow Version](https://img.shields.io/badge/Nextflow-v23.04.4.5881-blue?style=plastic)](https://github.com/nextflow-io/nextflow) |
 | [![License: GPL-3.0](https://img.shields.io/badge/licence-GPL%20(%3E%3D3)-green?style=plastic)](https://www.gnu.org/licenses) | [![Dependencies: Apptainer Version](https://img.shields.io/badge/Apptainer-v1.2.3-blue?style=plastic)](https://github.com/apptainer/apptainer) |
 | | [![Dependencies: Graphviz Version](https://img.shields.io/badge/Graphviz-v2.42.2-blue?style=plastic)](https://www.graphviz.org/download/) |
@@ -24,16 +24,15 @@
 ## AIM
 
 - Basic quality control of initial file structures (genotypes, pedigree information, SNP allele frequencies and SNP positions on human reference genome).
-- Quality control analysis and file preparation by the Alohomora software (removal of uninformative SNPs and SNPs with Mendelian errors).
-- Linkage and information analysis by the Merlin software.
-- Use Merin. See the tutorial and other info [here](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
+- Quality control analysis and file preparation by the [Alohomora](https://doi.org/10.1093/bioinformatics/bti264) software (removal of uninformative SNPs and SNPs with Mendelian errors).
+- Linkage and information analysis by the [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) software. See the tutorial and other info [here](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
 
 
 <br /><br />
 ## CONTENT
-
+<br />
 | Files and folder | Description |
-| --- | --- |
+| :--- | :--- |
 | **main.nf** | File that can be executed using a linux terminal, a MacOS terminal or Windows 10 WSL2. |
 | **nextflow.config** | Parameter settings for the *main.nf* file. Users have to open this file, set the desired settings and save these modifications before execution. |
 | **bin folder** | Contains files required by the *main.nf* file. |
@@ -41,9 +40,9 @@
 
 <br /><br />
 ## INPUT
-
+<br />
 | Required files |
-| --- |
+| :--- |
 | A genotype file. |
 | An allelic frequency file. |
 | A map file. BEWARE: no space allowed in the Header. |
@@ -59,7 +58,7 @@ The dataset used in the *nextflow.config* file, as example, is available at http
 <br />
 
 | File name | Description |
-| --- | --- |
+| :--- | :--- |
 | **genotype.tsv** | Genotype file. Available [here](https://zenodo.org/records/10689924/files/genotype.tsv). |
 | **freq_NFE_hg19.txt** | Allelic frequency file. Available [here](https://zenodo.org/records/10689924/files/freq_NFE_hg19.txt). |
 | **map_hg19.txt** | Map file. Available [here](https://zenodo.org/records/10689924/files/map_hg19.txt). |
@@ -210,7 +209,7 @@ An example of results is present at this address: https://zenodo.org/records/106
 Description:
 
 | Result folder | Description |
-| --- | --- |
+| :--- | :--- |
 | **reports** | Folder containing the classical reports of nextflow including the *nextflow.config* file used. |
 | **merlin_reports** | Folder containing all the reports of the different processes. |
 | **Group\<GR NB\>c\<CHR NB\>_merlin** | Folder containing the information provided by Merlin for each group of patients and for each chromosome. |
@@ -235,7 +234,7 @@ Description:
 ## VERSIONS
 
 
-The different releases are tagged [here](https://github.com/gael-millot/genetic_linkage/tags)
+The different releases are tagged [here](https://github.com/gael-millot/genetic_linkage/tags).
 
 <br /><br />
 ## LICENCE
@@ -249,7 +248,7 @@ See the GNU General Public License for more details at https://www.gnu.org/licen
 ## CITATION
 
 
-Not yet published
+Not yet published.
 
 
 <br /><br />
@@ -288,7 +287,7 @@ Special acknowledgement to:
 <br /><br />
 ## WHAT'S NEW IN
 
-### 3.5
+#### v3.5
 
 - In the nextflow.config file, upgrade singularity -> apptainer.
 
@@ -356,22 +355,22 @@ Bug solved in the R_main_functions_gael_20180123.R file
 Empty channel solved
 
 
-### v2.2
+#### v2.2
 
 pdf debugged and .Rdata returned, for making nice graphs thenafter
 
 
-### v2.1
+#### v2.1
 
 Small improve of main.nf file + README file
 
 
-### v2.0
+#### v2.0
 
 Pipeline ok. The checking process output has to be debugged (a few error messages) but not critical for the analysis
 
 
-### v1.0
+#### v1.0
 
 Pipeline ok but lack the information assembly and the checking part has to be debugged
 
