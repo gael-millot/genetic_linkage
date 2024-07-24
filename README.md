@@ -37,7 +37,7 @@
 | **main.nf** | File that can be executed using a linux terminal, a MacOS terminal or Windows 10 WSL2. |
 | **nextflow.config** | Parameter settings for the *main.nf* file. Users have to open this file, set the desired settings and save these modifications before execution. |
 | **bin folder** | Contains files required by the *main.nf* file. |
-
+| **Licence.txt** | Licence of the release. |
 
 <br /><br />
 ## INPUT
@@ -244,7 +244,7 @@ The different releases are tagged [here](https://github.com/gael-millot/genetic_
 
 This package of scripts can be redistributed and/or modified under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 Distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchandability or fitness for a particular purpose.
-See the GNU General Public License for more details at https://www.gnu.org/licenses.
+See the GNU General Public License for more details at https://www.gnu.org/licenses or in the Licence.txt attached file.
 
 <br /><br />
 ## CITATION
