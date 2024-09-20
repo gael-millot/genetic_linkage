@@ -24,6 +24,7 @@
 
 
    - [AIM](#aim)
+   - [WARNINGS](#warnings)
    - [CONTENT](#content)
    - [INPUT](#input)
    - [HOW TO RUN](#how-to-run)
@@ -39,9 +40,13 @@
 ## AIM
 
 - Basic quality control of initial file structures (genotypes, pedigree information, SNP allele frequencies and SNP positions on human reference genome).
-- Quality control analysis and file preparation by the [Alohomora](https://doi.org/10.1093/bioinformatics/bti264) software (removal of uninformative SNPs and SNPs with Mendelian errors).
+- Quality control analysis and file preparation by the [Alohomora](https://doi.org/10.1093/bioinformatics/bti264) and [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) softwares (gender check, filiation check, removal of uninformative SNPs and SNPs with Mendelian errors).
 - Linkage and information analysis by the [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) software. See the tutorial and other info [here](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
 
+<br /><br />
+## WARNINGS
+
+The script does not perform any filtering regarding call rate, standard deviation of the log R ratio (LRR) and B allele frequency (BAF) of the SNP. Please, contact me if you need my R script to do that.
 
 <br /><br />
 ## CONTENT
@@ -297,8 +302,8 @@ The developers & maintainers of the mentioned softwares and packages, including:
 
 Special acknowledgement to:
 
-- [Goncalo Abecasis et al.](https://genome.sph.umich.edu/wiki/Abecasis_Lab) for the release of [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
-- Franz Rüschendorf et al. for the release of [Alohomora](https://doi.org/10.1093/bioinformatics/bti264)
+- [Goncalo Abecasis et al.](https://genome.sph.umich.edu/wiki/Abecasis_Lab) for the release of [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) and [Pedstats](http://csg.sph.umich.edu/abecasis/Pedstats/). 
+- Franz Rüschendorf et al. for the release of [Alohomora](https://doi.org/10.1093/bioinformatics/bti264).
 
 
 <br /><br />
