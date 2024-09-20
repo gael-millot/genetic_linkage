@@ -41,12 +41,12 @@
 
 - Basic quality control of initial file structures (genotypes, pedigree information, SNP allele frequencies and SNP positions on human reference genome).
 - Quality control analysis and file preparation by the [Alohomora](https://doi.org/10.1093/bioinformatics/bti264) and [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) softwares (gender check, filiation check, removal of uninformative SNPs and SNPs with Mendelian errors).
-- Linkage and information analysis by the [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) software. See the tutorial and other info [here](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html)
+- Linkage and information analysis by the [Merlin](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html) software. See the tutorial and other info [here](https://csg.sph.umich.edu/abecasis/Merlin/tour/linkage.html).
 
 <br /><br />
 ## WARNINGS
 
-The script does not perform any filtering regarding call rate, standard deviation of the log R ratio (LRR) and B allele frequency (BAF) of the SNP. Please, contact me if you need my R script to do that.
+The script does not perform any filtering regarding call rate, standard deviation of the log R ratio (LRR) and B allele frequency (BAF) of the SNPs. Please, contact me if you need my R script to do that.
 
 <br /><br />
 ## CONTENT
@@ -71,7 +71,7 @@ The script does not perform any filtering regarding call rate, standard deviatio
 | A pedigree file. |
 | A pedigree file. |
 
-See the Alohomora_Format.doc in https://gmc.mdc-berlin.de/alohomora/docs.zip
+See the Alohomora_Format.doc in https://gmc.mdc-berlin.de/alohomora/docs.zip.
 
 <br />
 
