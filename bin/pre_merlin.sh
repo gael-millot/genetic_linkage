@@ -101,7 +101,7 @@ else
     # -- swap
     # -- megabytes: RAM
     EXEC3="pedwipe -d ${OUTPUT_DIR_PATH}/datain.${CHROMO_NB} -p ${OUTPUT_DIR_PATH}/pedin.${CHROMO_NB}"
-    # EXEC3: remove the mendelian errors (which results in a smoother lod score)
+    # EXEC3: remove the mendelian errors (which results in a smoother lod score), pedwipe is installed with merlin I believe
     # Merlin using clean data and pedigree to generate the lodscore
     # --pdf:
     # --markerNames:
